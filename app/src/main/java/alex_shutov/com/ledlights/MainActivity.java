@@ -45,8 +45,24 @@ public class MainActivity extends AppCompatActivity {
 
     void test(){
 
-        btScanner.getPairedevices();
-        btScanner.startDiscovery();
+        //btScanner.getPairedevices();
+
+        btScanner.getPairedDevices()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(sd -> {
+                    Toast.makeText(MainActivity.this, "Found " + sd.size() + " paired devices",
+                            Toast.LENGTH_SHORT).show();
+        });
+
+        btScanner.makeDiscoverable();
+        btScanner.startDiscovery()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(device -> {
+                   Toast.makeText(MainActivity.this, "device found: " + device.getName() + " " +
+                   device.getAddress(), Toast.LENGTH_SHORT).show();
+                }, e -> {}, () -> {
+                    Toast.makeText(MainActivity.this, "Completed", Toast.LENGTH_SHORT).show();
+                });
 
     }
 

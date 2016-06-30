@@ -8,12 +8,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 
 import rx.Observable;
+import rx.Subscriber;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
@@ -26,8 +24,9 @@ public class BTDeviceScanner {
     private Context context;
     private BluetoothAdapter btAdapter;
 
+    private DeviceReceiver deviceReceiver;
     private PublishSubject<Set<BluetoothDevice>> sourcePairedDevices;
-
+    private boolean isReceiverRegistered;
 
     public BTDeviceScanner(Context context){
         this.context = context;
@@ -36,49 +35,109 @@ public class BTDeviceScanner {
 
     private void init(){
         btAdapter = BluetoothAdapter.getDefaultAdapter();
+        deviceReceiver = new DeviceReceiver();
         sourcePairedDevices = PublishSubject.create();
+        isReceiverRegistered = false;
     }
 
+    public boolean isBluetoothEnabled(){
+        return null != btAdapter && btAdapter.isEnabled();
+    }
+
+    /**
+     * Turn Bluetooth ON or throw exception otherwise. It requires
+     * BLUETOOTH_ADMIN permission
+     * @throws IllegalStateException
+     */
+    public void turnOnBluetooth() throws IllegalStateException {
+        if (isBluetoothEnabled()){
+            throw new IllegalStateException("Bluetooth is already ON");
+        }
+        btAdapter.enable();
+    }
+
+    /**
+     * Turn Bluetooth FF or throw exception otherwise. It requires
+     * BLUETOOTH_ADMIN permission
+     * @throws IllegalStateException
+     */
+    public void turnOffBluetooth() throws IllegalStateException {
+        if (!isBluetoothEnabled()){
+            throw new IllegalStateException("Bluetooth is already OFF");
+        }
+        btAdapter.disable();
+    }
+
+    public Observable<Set<BluetoothDevice>> getPairedDevices(){
+        Observable<Set<BluetoothDevice>> res = Observable.create(s -> {
+            Set<BluetoothDevice> devices = getPairedDevicesSet();
+            s.onNext(devices);
+            s.onCompleted();
+        });
+        return Observable.defer(()-> res)
+                .subscribeOn(Schedulers.computation())
+                .observeOn(Schedulers.computation());
+    }
 
     public Observable<Set<BluetoothDevice>> getPairedDevicesSource(){
         return sourcePairedDevices.asObservable().subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.computation());
     }
-
     /**
-     * get paired devices from bt adapter and pass to 'paired devices' pipe
+     * get paired devices from bt adapter
      */
-    public void getPairedevices() {
+    private Set<BluetoothDevice> getPairedDevicesSet() {
         Set<BluetoothDevice> devices = btAdapter.getBondedDevices();
         for (BluetoothDevice device : devices){
             logBluetoothDevice(device);
         }
         Log.i(LOG_TAG, "There are " + devices.size() + " paired devices");
-        // notify source of paired devices
-        sourcePairedDevices.onNext(devices);
+        return devices;
     }
 
-    /** Stop discovery first and then start anew */
-    public void startDiscovery(){
+    /**
+     * Stops device discovery if it is active and start anew. New discovered devices come to
+     * DeviceReceiver BroadcastReceiver which passes those to rx chain. If user does not
+     * subscribe to returned Observable, all devices found in that time will be missed.
+     * @return source of discovered devices.
+     */
+    public Observable<BluetoothDevice> startDiscovery(){
         stopDiscovery();
-        // register for receiving events when device is discovered
+        // register for receiving discovered devices
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        context.registerReceiver(deviceDiscoveryReceiver, filter);
-
+        context.registerReceiver(deviceReceiver, filter);
+        // register for discovery termination event
         filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-        context.registerReceiver(deviceDiscoveryReceiver, filter);
+        context.registerReceiver(deviceReceiver, filter);
+        isReceiverRegistered = true;
+        btAdapter.startDiscovery();
+        // use existing BroadcastReceiver as subscription.
+        return Observable.defer(() -> Observable.create(deviceReceiver))
+                .subscribeOn(Schedulers.computation())
+                .observeOn(Schedulers.computation());
     }
 
     /**
      * cancel BT discovery and unregister BroadcastReceiver receiving newly found devices
      */
     public void stopDiscovery(){
-        if (null != btAdapter){
+        if (null != btAdapter && btAdapter.isDiscovering()){
             btAdapter.cancelDiscovery();
         }
-        context.unregisterReceiver(deviceDiscoveryReceiver);
+        if (isReceiverRegistered) {
+            context.unregisterReceiver(deviceReceiver);
+            isReceiverRegistered = false;
+        }
     }
 
+    public void makeDiscoverable(){
+        if (btAdapter.getScanMode() !=
+                BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
+            Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+            discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+            context.startActivity(discoverableIntent);
+        }
+    }
 
     /**
      * Print all bluetooth device info into log
@@ -91,9 +150,22 @@ public class BTDeviceScanner {
         Log.i(LOG_TAG, "Device bluetooth class: " + device.getBluetoothClass().toString());
     }
 
-    private void turnOnBluetooth(){}
+    /**
+     * Receiver, which handle all discovered devices. We need only not paired devices, because we
+     * can query paired devices explicitly and try to connect one of those.
+     * This class implement Observable.OnSubscribe<BluetoothDevice> for passing discovered
+     * devices down to rx chain.
+     * 'drain'- chain input. drain = null if we scheduled discovery and saved source Observable's
+     * reference, but by some reason did not subscribed to it yet.
+     */
+    class DeviceReceiver extends BroadcastReceiver implements Observable.OnSubscribe<BluetoothDevice> {
 
-    private BroadcastReceiver deviceDiscoveryReceiver = new BroadcastReceiver() {
+        Subscriber<? super BluetoothDevice> drain;
+        @Override
+        public void call(Subscriber<? super BluetoothDevice> subscriber) {
+            drain = subscriber;
+        }
+
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -104,13 +176,25 @@ public class BTDeviceScanner {
                 // we need only not paired devices, paired ones it returned by different method
                 if (device.getBondState() != BluetoothDevice.BOND_BONDED){
                     // handle device
-                    Log.i(LOG_TAG, "discovered not paired device: " + device.getName() + " "
-                    + device.getAddress());
+                    Log.i(LOG_TAG, "-----------------------------------------");
+                    Log.i(LOG_TAG, "discovered not paired device ");
+                    logBluetoothDevice(device);
+                    if (null != drain) {
+                        drain.onNext(device);
+                    }
                 }
 
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)){
                 Log.i(LOG_TAG, "discovery finished");
+                if (btAdapter.isDiscovering()){
+                    Log.i(LOG_TAG, "Disabling discovery from broadcast receiver");
+                }
+                if (null != drain) {
+                    drain.onCompleted();
+                    // operation complete, we don't need it anymore
+                    drain = null;
+                }
             }
         }
-    };
+    }
 }
