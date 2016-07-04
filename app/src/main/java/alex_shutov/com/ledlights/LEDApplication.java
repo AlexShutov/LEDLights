@@ -2,6 +2,7 @@ package alex_shutov.com.ledlights;
 
 import android.app.Application;
 
+import alex_shutov.com.ledlights.Bluetooth.BTConnector;
 import alex_shutov.com.ledlights.Bluetooth.BTDeviceScanner;
 
 /**
@@ -10,12 +11,14 @@ import alex_shutov.com.ledlights.Bluetooth.BTDeviceScanner;
 public class LEDApplication extends Application{
 
     BTDeviceScanner btScanner;
+    BTConnector btConnector;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
         btScanner = new BTDeviceScanner(this);
+        btConnector = new BTConnector(this);
     }
 
     @Override
@@ -25,6 +28,10 @@ public class LEDApplication extends Application{
 
     public BTDeviceScanner getDeviceScanner(){
         return btScanner;
+    }
+
+    public BTConnector getBtConnector(){
+        return btConnector;
     }
 
 }

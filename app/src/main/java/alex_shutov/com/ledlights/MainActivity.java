@@ -1,15 +1,14 @@
 package alex_shutov.com.ledlights;
 
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
 import java.util.Set;
 
+import alex_shutov.com.ledlights.Bluetooth.BTConnector;
 import alex_shutov.com.ledlights.Bluetooth.BTDeviceScanner;
 import rx.Observable;
 import rx.Subscription;
@@ -18,6 +17,8 @@ import rx.android.schedulers.AndroidSchedulers;
 public class MainActivity extends AppCompatActivity {
 
     private BTDeviceScanner btScanner;
+    private BTConnector btConnector;
+
     Subscription subscriptionPaired;
 
     @Override
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
         LEDApplication app = (LEDApplication) getApplication();
 
         btScanner = app.getDeviceScanner();
+        btConnector = app.getBtConnector();
 
         Observable<Set<BluetoothDevice>> pairedDevicesSrc = btScanner.getPairedDevicesSource();
         subscriptionPaired = pairedDevicesSrc
@@ -36,9 +38,32 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
-        Button btn = (Button) findViewById(R.id.btnTest);
+        // setup scanner 'test'
+        Button btn = (Button) findViewById(R.id.btn_bt_scan);
         btn.setOnClickListener(v -> {
             scanDevices();
+        });
+
+        // setup 'accept insecure' for connector
+        btn = (Button) findViewById(R.id.btn_bt_accept_insecure);
+        btn.setOnClickListener(v -> {
+            btConnector.acceptConnection(false);
+        });
+        // setup 'stop accept insecure' button
+        btn = (Button) findViewById(R.id.btn_bt_stop_acc_insecure);
+        btn.setOnClickListener(v -> {
+            btConnector.stopAcceptingConnection();
+        });
+
+        // setup 'connect secure' button
+        btn = (Button) findViewById(R.id.btn_bt_connect_insecure);
+        btn.setOnClickListener(v -> {
+            btConnector.connect(false);
+        });
+        // setup 'stop connect insecure' button
+        btn = (Button) findViewById(R.id.btn_bt_stop_conn_insecure);
+        btn.setOnClickListener(v -> {
+
         });
 
     }
@@ -65,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
                 });
 
     }
-
 
     @Override
     protected void onDestroy() {

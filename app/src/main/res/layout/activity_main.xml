@@ -12,12 +12,49 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Test"
-        android:id="@+id/btnTest"
+        android:text="Scan for devices"
+        android:id="@+id/btn_bt_scan"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Accept Insecure"
+        android:id="@+id/btn_bt_accept_insecure"
+        android:layout_below="@+id/btn_bt_scan"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginLeft="23dp"
-        android:layout_marginStart="23dp"
-        android:layout_marginTop="42dp" />
+        android:layout_marginTop="20dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Stop acc insecure"
+        android:id="@+id/btn_bt_stop_acc_insecure"
+        android:layout_alignTop="@+id/btn_bt_accept_insecure"
+        android:layout_toRightOf="@+id/btn_bt_scan"
+        android:layout_toEndOf="@+id/btn_bt_scan"
+        android:layout_marginLeft="19dp"
+        android:layout_marginStart="19dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="conn insecure"
+        android:id="@+id/btn_bt_connect_insecure"
+        android:layout_below="@+id/btn_bt_accept_insecure"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="33dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Stop conn Insecure"
+        android:id="@+id/btn_bt_stop_conn_insecure"
+        android:layout_alignTop="@+id/btn_bt_connect_insecure"
+        android:layout_alignRight="@+id/btn_bt_stop_acc_insecure"
+        android:layout_alignEnd="@+id/btn_bt_stop_acc_insecure" />
 </RelativeLayout>
