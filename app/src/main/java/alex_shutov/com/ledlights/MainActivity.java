@@ -38,12 +38,12 @@ public class MainActivity extends AppCompatActivity {
 
         Button btn = (Button) findViewById(R.id.btnTest);
         btn.setOnClickListener(v -> {
-            test();
+            scanDevices();
         });
 
     }
 
-    void test(){
+    void scanDevices(){
 
         //btScanner.getPairedevices();
 

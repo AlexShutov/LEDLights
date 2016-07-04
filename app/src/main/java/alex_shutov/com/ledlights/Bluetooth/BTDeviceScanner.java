@@ -135,6 +135,7 @@ public class BTDeviceScanner {
                 BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
             Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
             discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+            discoverableIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(discoverableIntent);
         }
     }
@@ -145,9 +146,12 @@ public class BTDeviceScanner {
      */
     private void logBluetoothDevice(BluetoothDevice device){
         Log.i(LOG_TAG, "-----------------------------------------");
-        Log.i(LOG_TAG, "Device name: " + device.getName());
-        Log.i(LOG_TAG, "Device address: " + device.getAddress());
-        Log.i(LOG_TAG, "Device bluetooth class: " + device.getBluetoothClass().toString());
+        String deviceName = device.getName();
+        Log.i(LOG_TAG, "Device name: " + deviceName);
+        String deviceAddress = device.getAddress();
+        Log.i(LOG_TAG, "Device address: " + deviceAddress);
+        String bluetoothClass = device.getBluetoothClass().toString();
+        Log.i(LOG_TAG, "Device bluetooth class: " + bluetoothClass);
     }
 
     /**
