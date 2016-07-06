@@ -26,28 +26,42 @@ public class BTConnector {
     private static final String LOG_TAG = BTConnector.class.getSimpleName().toString();
 
 
-    // Unique UUID for this application
-    private static final UUID MY_UUID_SECURE =
-            UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
-    private static final UUID MY_UUID_INSECURE =
-            UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
-
     // name for SDP record when creating server socket
     private static final String NAME_SECURE = "AppSecure";
     private static final String NAME_INSECURE = "AppInsecure";
 
+
+    /**
+     * We can use the one and only uuid when communicating between handhelds,
+     * but this app is meant to be used with phone or  BT-05 adapter (IoT), which has
+     * predefined UUID, and it has to b
+     */
+    private final UUID uuidSecure;
+    private final UUID uuidInsecure;
+
     private Context context;
     private final BluetoothAdapter btAdapter;
 
-    AcceptThread acceptThread;
+    /**
+     * Instances of threads, responsible for bluetooth 'workflow'
+     */
+    private AcceptThread acceptThread;
+    private ConnectThread connectThread;
 
 
-    public BTConnector(Context context){
+    public BTConnector(Context context, String uuidSecure, String uuidInsecure){
         this.context = context;
+        this.uuidSecure = UUID.fromString(uuidSecure);
+        this.uuidInsecure = UUID.fromString(uuidInsecure);
         btAdapter = BluetoothAdapter.getDefaultAdapter();
         acceptThread = null;
     }
 
+    /**
+     * Just helper method, switches thread and show popup
+     * TODO: move to interface with outer world
+     * @param msg
+     */
     private void showToast(String msg){
         Observable<String> r = Observable.just(msg)
                 .subscribeOn(Schedulers.computation())
@@ -80,6 +94,9 @@ public class BTConnector {
         }
     }
 
+    /**
+     * Thread, responsible for accepting incoming connections
+     */
     private class AcceptThread extends Thread {
 
         private final BluetoothServerSocket serverSocket;
@@ -88,14 +105,13 @@ public class BTConnector {
         public AcceptThread(boolean secure){
             BluetoothServerSocket tmp = null;
             socketType = secure ? "Secure" : "Insecure";
-
             try {
                 if (secure){
                     tmp = btAdapter.listenUsingRfcommWithServiceRecord(NAME_SECURE,
-                            MY_UUID_SECURE);
+                            uuidSecure);
                 } else {
                     tmp = btAdapter.listenUsingInsecureRfcommWithServiceRecord(NAME_INSECURE,
-                            MY_UUID_INSECURE);
+                            uuidInsecure);
                 }
             } catch (IOException e){
                 Log.e(LOG_TAG, "Socket type: " + socketType + " listen() failed, ", e);
@@ -128,6 +144,10 @@ public class BTConnector {
                 }
             }
         }
+
+        /**
+         * Stopping server socket will interrupt blocking call. This method is thread-safe
+         */
         public void cancel(){
             String msg = "Socket type " + socketType + " cancel " + this;
             Log.d(LOG_TAG, msg);
@@ -166,7 +186,6 @@ public class BTConnector {
         }
     }
 
-    private ConnectThread connectThread;
 
     /**
      * Thread for connecting to Bluettoth device in background
@@ -184,17 +203,16 @@ public class BTConnector {
 
             try {
                 if (secure) {
-                    tmp = device.createRfcommSocketToServiceRecord(MY_UUID_SECURE);
+                    tmp = device.createRfcommSocketToServiceRecord(uuidSecure);
                 }
                 else {
-                    tmp = device.createInsecureRfcommSocketToServiceRecord(MY_UUID_INSECURE);
+                    tmp = device.createInsecureRfcommSocketToServiceRecord(uuidInsecure);
                 }
             } catch (IOException e){
                 Log.e(LOG_TAG, "can't create socket (" + socketType + ") in create() method ");
             }
             socket = tmp;
         }
-
 
         @Override
         public void run() {
@@ -216,8 +234,6 @@ public class BTConnector {
                     ")", closeExc);
                 }
                 // TODO: notify user about failed connection
-
-
                 return;
             }
 
@@ -229,7 +245,6 @@ public class BTConnector {
             String msg = "Bluetooth device connected";
             showToast(msg);
             Log.i(LOG_TAG, msg);
-
         }
 
         public void cancel(){
