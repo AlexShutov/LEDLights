@@ -1,13 +1,17 @@
 package alex_shutov.com.ledlights.Bluetooth;
 
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.UUID;
 
 import rx.Observable;
@@ -20,10 +24,7 @@ import rx.schedulers.Schedulers;
 public class BTConnector {
 
     private static final String LOG_TAG = BTConnector.class.getSimpleName().toString();
-    // my Samsung Galaxy Tab 3 - initiates connection
-    private static final String ADDRESS_TABLET = "18:1E:B0:52:42:AD";
-    // test phone from work (Xiaomi MI) - accept connection
-    private static final String ADDRESS_PHONE = "A0:86:C6:8F:73:1A";
+
 
     // Unique UUID for this application
     private static final UUID MY_UUID_SECURE =
@@ -61,9 +62,9 @@ public class BTConnector {
      * @param isSecure
      */
     public void acceptConnection(boolean isSecure){
-        showToast("Accepting connection ");
         // one thread instance at a time
         stopAcceptingConnection();
+        showToast("Accepting connection ");
         acceptThread = new AcceptThread(isSecure);
         acceptThread.start();
     }
@@ -78,23 +79,6 @@ public class BTConnector {
             acceptThread = null;
         }
     }
-
-    /**
-     * Connect insecure to a given device
-     * @param isSecure
-     */
-    public void connect(boolean isSecure){
-
-    }
-
-    /**
-     * Stop thread trying to establish connection
-     */
-    public void stopConnecting(){
-
-    }
-
-
 
     private class AcceptThread extends Thread {
 
@@ -133,7 +117,7 @@ public class BTConnector {
                     Log.e(LOG_TAG, "Socket type: " + socketType + " accept() failed ", e);
                     break;
                 }
-
+                showToast("Connection accepted");
                 if (null != socket){
                     // TODO: add synchronization object interface
                     synchronized (BTConnector.this){
@@ -161,7 +145,101 @@ public class BTConnector {
         }
     }
 
-    
+    /**
+     * Connect insecure to a given device
+     * @param isSecure
+     */
+    public void connect(BluetoothDevice device,  boolean isSecure){
+        // stop connecting first
+        stopConnecting();
+        connectThread = new ConnectThread(device, isSecure);
+        connectThread.start();
+    }
+
+    /**
+     * Stop thread trying to establish connection
+     */
+    public void stopConnecting(){
+        if (null != connectThread){
+            connectThread.cancel();
+            connectThread = null;
+        }
+    }
+
+    private ConnectThread connectThread;
+
+    /**
+     * Thread for connecting to Bluettoth device in background
+     */
+    private class ConnectThread extends Thread {
+
+        private final BluetoothSocket socket;
+        private final BluetoothDevice device;
+        private String socketType;
+
+        public ConnectThread (BluetoothDevice device, boolean secure){
+            this.device = device;
+            BluetoothSocket tmp = null;
+            socketType = secure ? "Secure" : "Insecure";
+
+            try {
+                if (secure) {
+                    tmp = device.createRfcommSocketToServiceRecord(MY_UUID_SECURE);
+                }
+                else {
+                    tmp = device.createInsecureRfcommSocketToServiceRecord(MY_UUID_INSECURE);
+                }
+            } catch (IOException e){
+                Log.e(LOG_TAG, "can't create socket (" + socketType + ") in create() method ");
+            }
+            socket = tmp;
+        }
+
+
+        @Override
+        public void run() {
+            Log.i(LOG_TAG, "Connection thread is started (" + socketType + ")");
+            setName("ConnectThread" + socketType);
+
+            //TODO: it will be moved out of here
+            btAdapter.cancelDiscovery();
+            // Connect to BluetoothSocket
+            try {
+                socket.connect();
+            } catch (IOException e){
+                Log.i(LOG_TAG, "Connection failed");
+                // close socket
+                try {
+                    socket.close();
+                } catch (IOException closeExc){
+                    Log.e(LOG_TAG, "Can't close socket after failed connection (" + socketType +
+                    ")", closeExc);
+                }
+                // TODO: notify user about failed connection
+
+
+                return;
+            }
+
+            synchronized (BTConnector.this){
+                connectThread = null;
+            }
+
+            // TODO: start another thread for exchanging the data (see bluetoothChat sample)
+            String msg = "Bluetooth device connected";
+            showToast(msg);
+            Log.i(LOG_TAG, msg);
+
+        }
+
+        public void cancel(){
+            try {
+                socket.close();
+            } catch (IOException e){
+                Log.e(LOG_TAG, "Closing connection (" + socketType + ") failed", e);
+            }
+        }
+    }
 
     
 }

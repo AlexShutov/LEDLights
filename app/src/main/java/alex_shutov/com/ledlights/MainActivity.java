@@ -1,8 +1,10 @@
 package alex_shutov.com.ledlights;
 
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -15,6 +17,14 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
+
+    // my Samsung Galaxy Tab 3 - initiates connection
+    private static final String ADDRESS_TABLET = "18:1E:B0:52:42:AD";
+
+    private static final String ADDRESS_NEXUS = "B0:EC:71:D9:BD:E9";
+    // test phone from work (Xiaomi MI) - accept connection
+    private static final String ADDRESS_PHONE = "A0:86:C6:8F:73:1A";
 
     private BTDeviceScanner btScanner;
     private BTConnector btConnector;
@@ -55,16 +65,19 @@ public class MainActivity extends AppCompatActivity {
             btConnector.stopAcceptingConnection();
         });
 
-        // setup 'connect secure' button
+        // setup 'connect insecure' button
         btn = (Button) findViewById(R.id.btn_bt_connect_insecure);
         btn.setOnClickListener(v -> {
-            btConnector.connect(false);
+            connectToDevice(false);
         });
         // setup 'stop connect insecure' button
         btn = (Button) findViewById(R.id.btn_bt_stop_conn_insecure);
         btn.setOnClickListener(v -> {
+            btConnector.stopConnecting();
 
         });
+
+
 
     }
 
@@ -88,7 +101,23 @@ public class MainActivity extends AppCompatActivity {
                 }, e -> {}, () -> {
                     Toast.makeText(MainActivity.this, "Completed", Toast.LENGTH_SHORT).show();
                 });
+    }
 
+    void connectToDevice(boolean isSecure){
+        BluetoothDevice device = null;
+        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+        try {
+            device = adapter.getRemoteDevice(ADDRESS_NEXUS);
+        } catch (IllegalArgumentException e){
+        }
+        if (null == device){
+            String msg = "There is no such device";
+            Log.i(LOG_TAG, msg);
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Toast.makeText(this, "Device exist", Toast.LENGTH_SHORT).show();
+        btConnector.connect(device, isSecure);
     }
 
     @Override
