@@ -39,13 +39,24 @@ public class BTConnector {
     private Context context;
     private final BluetoothAdapter btAdapter;
 
-    AcceptThread acceptThread;
+    /**
+     * When we're managing handhelds, connection can be secure or insecure, but in case of
+     * HC-05 (04) we need only insecure thread, because these adapters does not support
+     * encription.
+     * We can accept connection either secure or insecure simultaneously, but there is single
+     * thread for connection.
+     */
+    private AcceptThread acceptSecure;
+    private AcceptThread acceptInsecure;
+    private ConnectThread connectThread;
 
 
     public BTConnector(Context context){
         this.context = context;
         btAdapter = BluetoothAdapter.getDefaultAdapter();
-        acceptThread = null;
+        // clear accept threads
+        acceptSecure = null;
+        acceptInsecure = null;
     }
 
     private void showToast(String msg){
@@ -59,24 +70,32 @@ public class BTConnector {
 
     /**
      * start listening for Bluetooth incoming connection by starting new thread.
-     * @param isSecure
      */
-    public void acceptConnection(boolean isSecure){
+    public void acceptConnection(){
         // one thread instance at a time
         stopAcceptingConnection();
         showToast("Accepting connection ");
-        acceptThread = new AcceptThread(isSecure);
-        acceptThread.start();
+        // init accept threads
+        acceptSecure = new AcceptThread(true);
+        acceptSecure.start();
+        acceptInsecure = new AcceptThread(false);
+        acceptInsecure.start();
     }
 
     /**
      * cancel BluetoothServerSocket if it wait for connection
      */
     public void stopAcceptingConnection(){
-        if (null != acceptThread){
+        if (null != acceptSecure || null != acceptInsecure){
             showToast("stopping accepting connection");
-            acceptThread.cancel();
-            acceptThread = null;
+        }
+        if (null != acceptSecure){
+            acceptSecure.cancel();
+            acceptSecure = null;
+        }
+        if (null != acceptInsecure){
+            acceptInsecure.cancel();
+            acceptInsecure = null;
         }
     }
 
@@ -117,7 +136,7 @@ public class BTConnector {
                     Log.e(LOG_TAG, "Socket type: " + socketType + " accept() failed ", e);
                     break;
                 }
-                showToast("Connection accepted");
+                showToast("Connection accepted (" + socketType + ")");
                 if (null != socket){
                     // TODO: add synchronization object interface
                     synchronized (BTConnector.this){
@@ -166,7 +185,6 @@ public class BTConnector {
         }
     }
 
-    private ConnectThread connectThread;
 
     /**
      * Thread for connecting to Bluettoth device in background

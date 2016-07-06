@@ -55,21 +55,29 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // setup 'accept insecure' for connector
-        btn = (Button) findViewById(R.id.btn_bt_accept_insecure);
+        btn = (Button) findViewById(R.id.btn_bt_accept);
         btn.setOnClickListener(v -> {
-            btConnector.acceptConnection(false);
+            btConnector.acceptConnection();
         });
         // setup 'stop accept insecure' button
-        btn = (Button) findViewById(R.id.btn_bt_stop_acc_insecure);
+        btn = (Button) findViewById(R.id.btn_bt_stop_accepting);
         btn.setOnClickListener(v -> {
             btConnector.stopAcceptingConnection();
         });
+
 
         // setup 'connect insecure' button
         btn = (Button) findViewById(R.id.btn_bt_connect_insecure);
         btn.setOnClickListener(v -> {
             connectToDevice(false);
         });
+        // setup 'connect secure' button
+        btn = (Button) findViewById(R.id.btn_bt_connect_secure);
+        btn.setOnClickListener(v -> {
+            connectToDevice(true);
+        });
+
+
         // setup 'stop connect insecure' button
         btn = (Button) findViewById(R.id.btn_bt_stop_conn_insecure);
         btn.setOnClickListener(v -> {
