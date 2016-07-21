@@ -25,11 +25,17 @@ public class MainActivity extends AppCompatActivity {
     private static final String ADDRESS_NEXUS = "B0:EC:71:D9:BD:E9";
     // test phone from work (Xiaomi MI) - accept connection
     private static final String ADDRESS_PHONE = "A0:86:C6:8F:73:1A";
+    // test hc05 adapter address
+    private static final String HC_05 = "98:D3:31:20:A0:08";
 
     private BTDeviceScanner btScanner;
     private BTConnector btConnector;
 
     Subscription subscriptionPaired;
+
+    private void showToast(String msg){
+        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,12 +63,12 @@ public class MainActivity extends AppCompatActivity {
         // setup 'accept insecure' for connector
         btn = (Button) findViewById(R.id.btn_bt_accept);
         btn.setOnClickListener(v -> {
-            btConnector.acceptConnection();
+
         });
         // setup 'stop accept insecure' button
         btn = (Button) findViewById(R.id.btn_bt_stop_accepting);
         btn.setOnClickListener(v -> {
-            btConnector.stopAcceptingConnection();
+
         });
 
 
@@ -81,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         // setup 'stop connect insecure' button
         btn = (Button) findViewById(R.id.btn_bt_stop_conn_insecure);
         btn.setOnClickListener(v -> {
-            btConnector.stopConnecting();
+
 
         });
 
@@ -96,15 +102,20 @@ public class MainActivity extends AppCompatActivity {
         btScanner.getPairedDevices()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(sd -> {
-                    Toast.makeText(MainActivity.this, "Found " + sd.size() + " paired devices",
-                            Toast.LENGTH_SHORT).show();
+                    String message = "Found " + sd.size() + " paired devices:";
+                    showToast(message);
+                    for (BluetoothDevice device : sd){
+                        message = "device found: " + device.getName() + " " +
+                                device.getAddress();
+                        showToast(message);
+                    }
         });
 
         btScanner.makeDiscoverable();
         btScanner.startDiscovery()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(device -> {
-                   Toast.makeText(MainActivity.this, "device found: " + device.getName() + " " +
+                   Toast.makeText(MainActivity.this, "paired device found: " + device.getName() + " " +
                    device.getAddress(), Toast.LENGTH_SHORT).show();
                 }, e -> {}, () -> {
                     Toast.makeText(MainActivity.this, "Completed", Toast.LENGTH_SHORT).show();
@@ -118,14 +129,7 @@ public class MainActivity extends AppCompatActivity {
             device = adapter.getRemoteDevice(ADDRESS_NEXUS);
         } catch (IllegalArgumentException e){
         }
-        if (null == device){
-            String msg = "There is no such device";
-            Log.i(LOG_TAG, msg);
-            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-            return;
-        }
         Toast.makeText(this, "Device exist", Toast.LENGTH_SHORT).show();
-        btConnector.connect(device, isSecure);
     }
 
     @Override
