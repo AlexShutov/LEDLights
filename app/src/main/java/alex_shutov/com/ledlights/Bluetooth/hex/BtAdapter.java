@@ -5,9 +5,11 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 
 import alex_shutov.com.ledlights.Bluetooth.BluetoothChatService;
 import alex_shutov.com.ledlights.Bluetooth.BtDevice;
+import alex_shutov.com.ledlights.Bluetooth.Constants;
 import alex_shutov.com.ledlights.HexGeneral.Adapter;
 import alex_shutov.com.ledlights.HexGeneral.PortInfo;
 import alex_shutov.com.ledlights.HexGeneral.PortListener;
@@ -16,9 +18,9 @@ import alex_shutov.com.ledlights.HexGeneral.PortListener;
  * Created by Alex on 7/25/2016.
  */
 public class BtAdapter extends Adapter implements BtPort {
+    private static final String LOG_TAG = BtAdapter.class.getSimpleName();
     private static final String DISPATCHER_THREAD_NAME = "bluetooth_comm_dispatch_thread";
     /** priority of a thread, dispatching messages */
-    private static final int DISPATCHER_THREAD_PRIORITY = Thread.MIN_PRIORITY;
     private static final PortInfo portInfo;
     static {
         portInfo = new PortInfo();
@@ -42,7 +44,7 @@ public class BtAdapter extends Adapter implements BtPort {
      * handling all messages consequently.
      * We first create DispatcherThread and then it initializes commHandler when its Looper is ready.
      */
-    private DispatcherThread dispatcherThread;
+    private HandlerThread dispatcherThread;
     private DispatcherHandler dispatcherHandler;
 
 
@@ -55,9 +57,19 @@ public class BtAdapter extends Adapter implements BtPort {
     private void initialize(){
         /** it will be initialized within Dispatcher thread (when Looper is ready)  */
         dispatcherHandler = null;
-        dispatcherThread = new DispatcherThread(DISPATCHER_THREAD_NAME,
-                DISPATCHER_THREAD_PRIORITY);
-        btService = null;
+        dispatcherThread = new HandlerThread(DISPATCHER_THREAD_NAME);
+        /** use Looper instance from dispatcher thread */
+        dispatcherHandler = new DispatcherHandler(dispatcherThread.getLooper());
+        btService = new BluetoothChatService(context, dispatcherHandler);
+        /**
+         * Inform listener that port is ready
+         */
+        PortListener listener = getPortListener();
+        if (null != listener){
+            listener.onPortReady();
+        } else {
+            Log.e(LOG_TAG, "Port listener reference is null during BtAdapter creation");
+        }
     }
 
     @Override
@@ -116,37 +128,23 @@ public class BtAdapter extends Adapter implements BtPort {
 
     }
 
-    /**
-     * Receives Messages from BluetoothChatService, parses those messages and
-     * trigger corresponding callback methods in BtPortListener callback (on this
-     * background thread)
-     */
-    private class DispatcherThread extends HandlerThread {
-        public DispatcherThread(String name, int priority) {
-            super(name, priority);
-        }
-
-        @Override
-        protected void onLooperPrepared() {
-            dispatcherHandler = new DispatcherHandler();
-            /** now we have Handler for dispatching messages, so we can create
-             * BluetoothChatService ( it receive final Handler reference)
-             */
-            btService = new BluetoothChatService(context, dispatcherHandler);
-            /**
-             * Inform listener that port is ready
-             */
-            PortListener listener = getPortListener();
-            if (null != listener){
-                listener.onPortReady();
-            }
-        }
-    }
-
     private class DispatcherHandler extends Handler{
+
+        public DispatcherHandler(Looper looper) {
+            super(looper);
+        }
+
         @Override
         public void handleMessage(Message msg) {
-
+            PortListener feedback = getPortListener();
+            if (null == feedback){
+                Log.e(LOG_TAG, "Feedback interface is null, ignoring message");
+                return;
+            }
+            switch (msg.what){
+                case Constants.MESSAGE_STATE_CHANGE:
+                    break;
+            }
         }
     }
 }
