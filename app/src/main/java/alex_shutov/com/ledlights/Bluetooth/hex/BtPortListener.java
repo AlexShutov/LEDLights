@@ -7,12 +7,20 @@ import alex_shutov.com.ledlights.HexGeneral.PortListener;
  * Created by Alex on 7/25/2016.
  */
 public interface BtPortListener extends PortListener {
+
     /**
-     * is called whenever Bluetooth's state is changed. see
-     * BluetoothChatService for more details on state constants
+     * Is called whenever BT service's state changes - methods below represent parsed state in
+     * 'state' argument - see BluetoothChatService's state variables
      * @param state
      */
     void onStateChanged(int state);
+    /**
+     * Those callback is called when MESSAGE_STATE_CHANGE message is dispatched
+     */
+    void onStateConnected();
+    void onStateConnecting();
+    void onStateListening();
+    void onStateIdle();
 
     /**
      * Notifies that bytes were received from connected device

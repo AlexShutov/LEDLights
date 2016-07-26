@@ -136,13 +136,37 @@ public class BtAdapter extends Adapter implements BtPort {
 
         @Override
         public void handleMessage(Message msg) {
-            PortListener feedback = getPortListener();
+            /** Assume everything is OK - no cast checking */
+            BtPortListener feedback = (BtPortListener) getPortListener();
             if (null == feedback){
                 Log.e(LOG_TAG, "Feedback interface is null, ignoring message");
                 return;
             }
+            String logMsg = "Dispatching message ";
             switch (msg.what){
-                case Constants.MESSAGE_STATE_CHANGE:
+                case Constants.MESSAGE_STATE_CHANGE:;
+                    int newState = msg.arg1;
+                    /** call general method and then parsed versions - for convenience */
+                    feedback.onStateChanged(newState);
+                    switch (newState){
+                        case BluetoothChatService.STATE_CONNECTED:
+                            logMsg += " device connected";
+                            feedback.onStateConnected();
+                            break;
+                        case BluetoothChatService.STATE_CONNECTING:
+                            logMsg += " device connecting";
+                            feedback.onStateConnecting();
+                            break;
+                        case BluetoothChatService.STATE_LISTEN:
+                            logMsg += " adapter is listning for incoming connections";
+                            feedback.onStateListening();
+                            break;
+                        case BluetoothChatService.STATE_NONE:
+                            logMsg += " adapter is IDLE";
+                            feedback.onStateIdle();
+                            break;
+                    }
+                    Log.d(LOG_TAG, logMsg);
                     break;
             }
         }
