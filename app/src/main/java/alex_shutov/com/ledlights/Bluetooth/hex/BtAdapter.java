@@ -1,6 +1,7 @@
 package alex_shutov.com.ledlights.Bluetooth.hex;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
@@ -167,6 +168,37 @@ public class BtAdapter extends Adapter implements BtPort {
                             break;
                     }
                     Log.d(LOG_TAG, logMsg);
+                    break;
+                case Constants.MESSAGE_READ:
+                    int messageSize = msg.arg1;
+                    byte[] message = (byte[]) msg.obj;
+                    Log.i(LOG_TAG, "Received " + messageSize+ " bytes in message");
+                    feedback.onMessageRead(message, messageSize);
+                    break;
+                case Constants.MESSAGE_WRITE:
+                    Log.i(LOG_TAG, "Message sent");
+                    feedback.onMessageSent();
+                    break;
+                case Constants.MESSAGE_DEVICE_NAME:
+                    Bundle b = msg.getData();
+                    if (!b.containsKey(Constants.DEVICE_NAME)){
+                        Log.e(LOG_TAG, "Device connected, but message doesn't have device " +
+                                "name");
+                        return;
+                    }
+                    BtDevice device = new BtDevice();
+                    String deviceName = b.getString(Constants.DEVICE_NAME);
+                    Log.i(LOG_TAG, "Device: " + deviceName + " is connected");
+                    device.setDeviceName(deviceName);
+                    feedback.onDeviceConnected(device);
+                    break;
+                case Constants.MESSAGE_CONNECTION_FAILED:
+                    Log.i(LOG_TAG, "Connectioin failed");
+                    feedback.onConnectioinFailed();
+                    break;
+                case Constants.MESSAGE_CONNECTION_LOST:
+                    Log.i(LOG_TAG, "Connection lost");
+                    feedback.onConnectionLost();
                     break;
             }
         }

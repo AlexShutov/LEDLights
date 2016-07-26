@@ -29,6 +29,8 @@ public interface BtPortListener extends PortListener {
      */
     void onMessageRead(byte[] message, int messageSize);
 
+    void onMessageSent();
+
     /**
      * Inform program that Bluetooth adapter accepted incoming
      * connection from another device
