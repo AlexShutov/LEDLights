@@ -5,4 +5,6 @@ package alex_shutov.com.ledlights.HexGeneral;
  */
 
 public interface PortListener {
+    void onPortReady();
+    void onCriticalFailure(Exception e);
 }

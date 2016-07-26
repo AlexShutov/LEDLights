@@ -4,6 +4,9 @@ package alex_shutov.com.ledlights.HexGeneral;
  * Created by lodoss on 22/07/16.
  */
 public class PortInfo {
+
+    public static final int PORT_BLUETOOTH_RAW = 1;
+
     /**
      * we may want to assign numbers to ports
      */
