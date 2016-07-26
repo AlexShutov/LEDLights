@@ -22,6 +22,9 @@ public interface BtPort extends Port {
     String getUuidInsecure();
     void setUuidInsecure(String uuidInsecure) throws IllegalStateException;
 
+    String getNameSecure();
+    void setNameSecure(String nameInsecure) throws IllegalStateException;
+
     String getNameInsecure();
     void setNameInsecure(String nameInsecure) throws IllegalStateException;
 

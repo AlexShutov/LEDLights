@@ -49,10 +49,10 @@ public class BluetoothChatService {
 
 
     // Member fields
-    private String uuidSecure;
-    private String uuidInsecure;
-    private String nameSecure;
-    private String nameInsecure;
+    private String uuidSecure = "";
+    private String uuidInsecure = "";
+    private String nameSecure = NAME_SECURE;
+    private String nameInsecure = NAME_INSECURE;
 
     private final BluetoothAdapter mAdapter;
     private final Handler mHandler;
@@ -364,12 +364,12 @@ public class BluetoothChatService {
                 if (secure) {
                     /** use secure uuid */
                     uuid = UUID.fromString(uuidSecure);
-                    tmp = mAdapter.listenUsingRfcommWithServiceRecord(NAME_SECURE,
+                    tmp = mAdapter.listenUsingRfcommWithServiceRecord(getNameSecure(),
                             uuid);
                 } else {
                     uuid = UUID.fromString(uuidInsecure);
                     tmp = mAdapter.listenUsingInsecureRfcommWithServiceRecord(
-                            NAME_INSECURE, uuid);
+                            getNameInsecure(), uuid);
                 }
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Socket Type: " + mSocketType + "listen() failed", e);

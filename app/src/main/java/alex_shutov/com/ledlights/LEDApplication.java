@@ -1,33 +1,48 @@
 package alex_shutov.com.ledlights;
 
 import android.app.Application;
+import android.util.Log;
+import android.widget.Toast;
 
 import java.util.UUID;
 
 import alex_shutov.com.ledlights.Bluetooth.BTConnector;
 import alex_shutov.com.ledlights.Bluetooth.BTDeviceScanner;
+import alex_shutov.com.ledlights.Bluetooth.BtDevice;
+import alex_shutov.com.ledlights.Bluetooth.hex.BtAdapter;
+import alex_shutov.com.ledlights.Bluetooth.hex.BtPort;
+import alex_shutov.com.ledlights.Bluetooth.hex.BtPortListener;
 
 /**
  * Created by lodoss on 30/06/16.
  */
 public class LEDApplication extends Application{
-
     // Unique UUID for this application
-    private static final UUID MY_UUID_SECURE =
+    public static final UUID MY_UUID_SECURE =
             UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
-    private static final UUID MY_UUID_INSECURE =
+    public static final UUID MY_UUID_INSECURE =
             UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
 
+    BtAdapter btAdapter;
+    BtPort btPort;
     BTDeviceScanner btScanner;
-    BTConnector btConnector;
+
+    private LogListener btPortListener;
 
     @Override
     public void onCreate() {
         super.onCreate();
-
         btScanner = new BTDeviceScanner(this);
-        btConnector = new BTConnector(this, getString(R.string.uuid_secure),
-                getString(R.string.uuid_insecure));
+
+        btPortListener = new LogListener(this);
+        // hex
+        btAdapter = new BtAdapter(this);
+        btAdapter.setPortListener(btPortListener);
+        btAdapter.initialize();
+        /** adapter is a port */
+        btPort = btAdapter;
+
+
     }
 
     @Override
@@ -39,13 +54,13 @@ public class LEDApplication extends Application{
         return btScanner;
     }
 
-    public BTConnector getBtConnector(){
-        return btConnector;
-    }
-
 
     private UUID uuidFromResource(int resId){
         String id = getResources().getString(resId);
         return UUID.fromString(id);
+    }
+
+    public BtPort getBtPort() {
+        return btPort;
     }
 }

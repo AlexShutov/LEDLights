@@ -11,14 +11,14 @@ package alex_shutov.com.ledlights.Bluetooth;
  */
 public class BtDevice {
 
-    private String deviceName;
-    private String deviceAddress;
-    private String deviceUuId;
-    private String deviceDescription;
+    private String deviceName = "";
+    private String deviceAddress = "";
+    private String deviceUuId = "";
+    private String deviceDescription = "";
     /** Optional*/
-    private Boolean isPaired;
+    private Boolean isPaired = false;
     /** whether to use secure or insecure connection */
-    private Boolean isSecureOperation;
+    private Boolean isSecureOperation = false;
 
     public String getDeviceName() {
         return deviceName;
@@ -60,7 +60,7 @@ public class BtDevice {
         isPaired = paired;
     }
 
-    public Boolean getSecureOperation() {
+    public Boolean isSecureOperation() {
         return isSecureOperation;
     }
 

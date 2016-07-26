@@ -12,6 +12,8 @@ import java.util.Set;
 
 import alex_shutov.com.ledlights.Bluetooth.BTConnector;
 import alex_shutov.com.ledlights.Bluetooth.BTDeviceScanner;
+import alex_shutov.com.ledlights.Bluetooth.BtDevice;
+import alex_shutov.com.ledlights.Bluetooth.hex.BtPort;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -27,9 +29,10 @@ public class MainActivity extends AppCompatActivity {
     private static final String ADDRESS_PHONE = "A0:86:C6:8F:73:1A";
     // test hc05 adapter address
     private static final String HC_05 = "98:D3:31:20:A0:08";
-
     private BTDeviceScanner btScanner;
-    private BTConnector btConnector;
+    LEDApplication app;
+
+    private BtPort btPort;
 
     Subscription subscriptionPaired;
 
@@ -41,10 +44,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        LEDApplication app = (LEDApplication) getApplication();
-
+        app = (LEDApplication) getApplication();
+        btPort = app.getBtPort();
         btScanner = app.getDeviceScanner();
-        btConnector = app.getBtConnector();
 
         Observable<Set<BluetoothDevice>> pairedDevicesSrc = btScanner.getPairedDevicesSource();
         subscriptionPaired = pairedDevicesSrc
@@ -63,12 +65,12 @@ public class MainActivity extends AppCompatActivity {
         // setup 'accept insecure' for connector
         btn = (Button) findViewById(R.id.btn_bt_accept);
         btn.setOnClickListener(v -> {
-
+            btPort.startListening();
         });
         // setup 'stop accept insecure' button
         btn = (Button) findViewById(R.id.btn_bt_stop_accepting);
         btn.setOnClickListener(v -> {
-
+            btPort.close();
         });
 
 
@@ -90,15 +92,11 @@ public class MainActivity extends AppCompatActivity {
 
 
         });
-
-
-
     }
 
     void scanDevices(){
 
         //btScanner.getPairedevices();
-
         btScanner.getPairedDevices()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(sd -> {
@@ -123,13 +121,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void connectToDevice(boolean isSecure){
-        BluetoothDevice device = null;
-        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-        try {
-            device = adapter.getRemoteDevice(ADDRESS_NEXUS);
-        } catch (IllegalArgumentException e){
-        }
-        Toast.makeText(this, "Device exist", Toast.LENGTH_SHORT).show();
+        BtDevice device = new BtDevice();
+        device.setDeviceName("Nexus");
+        device.setDeviceAddress(ADDRESS_NEXUS);
+        String uuid = isSecure ? LEDApplication.MY_UUID_SECURE.toString() :
+                LEDApplication.MY_UUID_INSECURE.toString();
+        device.setDeviceUuId(uuid);
+        device.setDeviceDescription("Galaxy nexus - test device");
+
+        btPort.connect(device);
     }
 
     @Override

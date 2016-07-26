@@ -1,5 +1,7 @@
 package alex_shutov.com.ledlights.Bluetooth.hex;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -35,6 +37,10 @@ public class BtAdapter extends Adapter implements BtPort {
      * managing Bluetooth connections as well as sending and receiving data.
      */
     private BluetoothChatService btService;
+    /**
+     * BluetoothChatService work with BluetoothDevice, so we need BluetoothAdapter to create one
+     */
+    private BluetoothAdapter btAdapter;
 
     /**
      * BluetoothChatService use Android's Handler class to send message to the rest of a
@@ -48,20 +54,26 @@ public class BtAdapter extends Adapter implements BtPort {
     private HandlerThread dispatcherThread;
     private DispatcherHandler dispatcherHandler;
 
-
-    public BtAdapter(Context context) {
+    public BtAdapter(Context context){
         super();
         this.context = context;
         initialize();
     }
 
-    private void initialize(){
+    /**
+     * Setup BluetooothChatService, dispatcher thread and DispatcherHandler.
+     * Notice, we don't call 'startListening()' method here, because it need further
+     * initialization - UUIDs for secure and insecure modes
+     */
+    public void initialize(){
         /** it will be initialized within Dispatcher thread (when Looper is ready)  */
         dispatcherHandler = null;
         dispatcherThread = new HandlerThread(DISPATCHER_THREAD_NAME);
+        dispatcherThread.start();
         /** use Looper instance from dispatcher thread */
         dispatcherHandler = new DispatcherHandler(dispatcherThread.getLooper());
         btService = new BluetoothChatService(context, dispatcherHandler);
+        btAdapter = BluetoothAdapter.getDefaultAdapter();
         /**
          * Inform listener that port is ready
          */
@@ -69,6 +81,9 @@ public class BtAdapter extends Adapter implements BtPort {
         if (null != listener){
             listener.onPortReady();
         } else {
+            /** this is not 'critical failure - port will remain silent until we set
+             * listener
+             */
             Log.e(LOG_TAG, "Port listener reference is null during BtAdapter creation");
         }
     }
@@ -81,52 +96,92 @@ public class BtAdapter extends Adapter implements BtPort {
 
     @Override
     public String getUuidSecure() {
-        return null;
+        String uuidSecure = btService.getUuidSecure();
+        return uuidSecure;
     }
+
+    /**
+     * Method for checking if Bluetooth is busy right now. It is used in accessors for
+     * BluetoothChatService - we cannot change device name or uuid if discovery (conection) is
+     * active. If it is - it throw an exception. In that case stop service first before
+     * using those accessors
+     * @throws IllegalStateException
+     */
 
     @Override
     public void setUuidSecure(String uuidSecure) throws IllegalStateException {
-
+        btService.setUuidSecure(uuidSecure);
     }
 
     @Override
     public String getUuidInsecure() {
-        return null;
+        String uuidInsecure = btService.getUuidInsecure();
+        return uuidInsecure;
     }
 
     @Override
     public void setUuidInsecure(String uuidInsecure) throws IllegalStateException {
-
+        btService.setUuidInsecure(uuidInsecure);
     }
 
     @Override
     public String getNameInsecure() {
-        return null;
+        String nameInsecure = btService.getNameInsecure();
+        return nameInsecure;
     }
 
     @Override
     public void setNameInsecure(String nameInsecure) throws IllegalStateException {
+        btService.setNameInsecure(nameInsecure);
+    }
 
+    @Override
+    public String getNameSecure() {
+        String nameSecure = btService.getNameSecure();
+        return nameSecure;
+    }
+
+    @Override
+    public void setNameSecure(String nameInsecure) throws IllegalStateException {
+        btService.setNameSecure(nameInsecure);
     }
 
     @Override
     public void startListening() {
-
+        btService.start();
     }
 
     @Override
     public void close() {
-
+        Log.i(LOG_TAG, "Stopping Bluetooth service");
+        btService.stop();
     }
 
     @Override
     public void connect(BtDevice device) {
+        String address = device.getDeviceAddress();
+        if (null == address || address.equals("")){
+            Log.e(LOG_TAG, "Address for device: " + device.getDeviceName() + " is not set");
+        }
+        BluetoothDevice androidBT = btAdapter.getRemoteDevice(device.getDeviceAddress());
+        if (null == androidBT){
+            Log.e(LOG_TAG, "Error while getting bt device: " + device.getDeviceName());
+        }
+        boolean isSecure = device.isSecureOperation();
 
     }
 
     @Override
     public void writeBytes(byte[] out) {
 
+    }
+
+    /**
+     * Verify that all bt device's
+     * @return
+     */
+    private boolean checkDeviceParameters(){
+        return true;
     }
 
     private class DispatcherHandler extends Handler{
