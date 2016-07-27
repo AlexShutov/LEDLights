@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package alex_shutov.com.ledlights.Bluetooth;
+package alex_shutov.com.ledlights.Bluetooth.BtConnector;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -29,7 +29,6 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.StringTokenizer;
 import java.util.UUID;
 
 import alex_shutov.com.ledlights.LEDApplication;

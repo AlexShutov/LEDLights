@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package alex_shutov.com.ledlights.Bluetooth;
+package alex_shutov.com.ledlights.Bluetooth.BtConnector;
+
+import alex_shutov.com.ledlights.Bluetooth.BtConnector.BluetoothChatService;
 
 /**
  * Defines several constants used between {@link BluetoothChatService} and the UI.

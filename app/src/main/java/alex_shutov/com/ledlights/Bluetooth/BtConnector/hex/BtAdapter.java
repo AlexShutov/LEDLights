@@ -1,4 +1,4 @@
-package alex_shutov.com.ledlights.Bluetooth.hex;
+package alex_shutov.com.ledlights.Bluetooth.BtConnector.hex;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -10,9 +10,9 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
-import alex_shutov.com.ledlights.Bluetooth.BluetoothChatService;
+import alex_shutov.com.ledlights.Bluetooth.BtConnector.BluetoothChatService;
 import alex_shutov.com.ledlights.Bluetooth.BtDevice;
-import alex_shutov.com.ledlights.Bluetooth.Constants;
+import alex_shutov.com.ledlights.Bluetooth.BtConnector.Constants;
 import alex_shutov.com.ledlights.HexGeneral.Adapter;
 import alex_shutov.com.ledlights.HexGeneral.PortInfo;
 import alex_shutov.com.ledlights.HexGeneral.PortListener;

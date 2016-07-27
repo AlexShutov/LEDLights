@@ -1,11 +1,11 @@
-package alex_shutov.com.ledlights;
+package alex_shutov.com.ledlights.Bluetooth.BtConnector;
 
 import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
 import alex_shutov.com.ledlights.Bluetooth.BtDevice;
-import alex_shutov.com.ledlights.Bluetooth.hex.BtPortListener;
+import alex_shutov.com.ledlights.Bluetooth.BtConnector.hex.BtPortListener;
 
 /**
  * Created by lodoss on 26/07/16.

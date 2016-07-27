@@ -1,17 +1,13 @@
 package alex_shutov.com.ledlights;
 
 import android.app.Application;
-import android.util.Log;
-import android.widget.Toast;
 
 import java.util.UUID;
 
-import alex_shutov.com.ledlights.Bluetooth.BTConnector;
 import alex_shutov.com.ledlights.Bluetooth.BTDeviceScanner;
-import alex_shutov.com.ledlights.Bluetooth.BtDevice;
-import alex_shutov.com.ledlights.Bluetooth.hex.BtAdapter;
-import alex_shutov.com.ledlights.Bluetooth.hex.BtPort;
-import alex_shutov.com.ledlights.Bluetooth.hex.BtPortListener;
+import alex_shutov.com.ledlights.Bluetooth.BtConnector.LogListener;
+import alex_shutov.com.ledlights.Bluetooth.BtConnector.hex.BtAdapter;
+import alex_shutov.com.ledlights.Bluetooth.BtConnector.hex.BtPort;
 
 /**
  * Created by lodoss on 30/06/16.

@@ -1,4 +1,4 @@
-package alex_shutov.com.ledlights.Bluetooth.hex;
+package alex_shutov.com.ledlights.Bluetooth.BtConnector.hex;
 
 import alex_shutov.com.ledlights.Bluetooth.BtDevice;
 import alex_shutov.com.ledlights.HexGeneral.PortListener;
