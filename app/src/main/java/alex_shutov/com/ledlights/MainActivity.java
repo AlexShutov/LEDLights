@@ -212,10 +212,9 @@ public class MainActivity extends AppCompatActivity {
         device.setDeviceName(deviceName);
         device.setDeviceAddress(deviceAddress);
         // use UUID for application
-        String uuid = isSecure ? deviceUuidSecure.toString() :
-                deviceUuidInsecure.toString();
 
-        device.setDeviceUuId(uuid);
+        device.setDeviceUuIdSecure(deviceUuidSecure);
+        device.setDeviceUuIdInsecure(deviceUuidInsecure);
         device.setSecureOperation(isSecure);
         device.setDeviceDescription("device to connect");
 

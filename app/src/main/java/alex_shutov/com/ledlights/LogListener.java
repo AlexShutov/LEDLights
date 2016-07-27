@@ -80,8 +80,10 @@ public class LogListener implements BtPortListener {
 
     @Override
     public void onDeviceConnected(BtDevice btDevice) {
+        String uuid = btDevice.isSecureOperation() ? btDevice.getDeviceUuIdSecure() :
+                btDevice.getDeviceUuIdInsecure();
         String m = "device connected: " +btDevice.getDeviceName() + " " + btDevice.getDeviceAddress() +
-                " " + btDevice.getDeviceUuId() + " " + btDevice.getDeviceDescription();
+                " " + uuid + " " + btDevice.getDeviceDescription();
         Log.i(LOG_TAG, m);
         showMessage(m);
     }

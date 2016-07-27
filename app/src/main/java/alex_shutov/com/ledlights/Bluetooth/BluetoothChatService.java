@@ -32,6 +32,8 @@ import java.io.OutputStream;
 import java.util.StringTokenizer;
 import java.util.UUID;
 
+import alex_shutov.com.ledlights.LEDApplication;
+
 /**
  * This class does all the work for setting up and managing Bluetooth
  * connections with other devices. It has a thread that listens for
@@ -254,6 +256,7 @@ public class BluetoothChatService {
 
         // Start the thread to manage the connection and perform transmissions
         mConnectedThread = new ConnectedThread(socket, socketType);
+        setState(STATE_CONNECTED);
         mConnectedThread.start();
 
         // Send the name of the connected device back to the UI Activity
@@ -263,7 +266,7 @@ public class BluetoothChatService {
         msg.setData(bundle);
         mHandler.sendMessage(msg);
 
-        setState(STATE_CONNECTED);
+
     }
 
     /**
@@ -361,6 +364,13 @@ public class BluetoothChatService {
             BluetoothServerSocket tmp = null;
             mSocketType = secure ? "Secure" : "Insecure";
             setName("Accept thread " + mSocketType);
+            /** use default value if uuid not set */
+            if (uuidSecure.equals("")) {
+                uuidSecure = LEDApplication.MY_UUID_SECURE.toString();
+            }
+            if (uuidInsecure.equals("")){
+                uuidInsecure = LEDApplication.MY_UUID_INSECURE.toString();
+            }
             // Create a new listening server socket
             try {
                 UUID uuid;
@@ -553,7 +563,9 @@ public class BluetoothChatService {
 
                 } catch (IOException e) {
                     Log.e(LOG_TAG, "disconnected", e);
-                    connectionLost();
+                    synchronized (this) {
+                        connectionLost();
+                    }
                     // Start the service over to restart listening mode
                     BluetoothChatService.this.start();
                     break;

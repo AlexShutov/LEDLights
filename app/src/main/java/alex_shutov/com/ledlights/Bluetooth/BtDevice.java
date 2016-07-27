@@ -13,7 +13,8 @@ public class BtDevice {
 
     private String deviceName = "";
     private String deviceAddress = "";
-    private String deviceUuId = "";
+    private String deviceUuIdSecure = "";
+    private String deviceUuIdInsecure = "";
     private String deviceDescription = "";
     /** Optional*/
     private Boolean isPaired = false;
@@ -36,12 +37,20 @@ public class BtDevice {
         this.deviceAddress = deviceAddress;
     }
 
-    public String getDeviceUuId() {
-        return deviceUuId;
+    public String getDeviceUuIdSecure() {
+        return deviceUuIdSecure;
     }
 
-    public void setDeviceUuId(String deviceUuId) {
-        this.deviceUuId = deviceUuId;
+    public void setDeviceUuIdSecure(String deviceUuIdSecure) {
+        this.deviceUuIdSecure = deviceUuIdSecure;
+    }
+
+    public String getDeviceUuIdInsecure() {
+        return deviceUuIdInsecure;
+    }
+
+    public void setDeviceUuIdInsecure(String deviceUuIdInsecure) {
+        this.deviceUuIdInsecure = deviceUuIdInsecure;
     }
 
     public String getDeviceDescription() {

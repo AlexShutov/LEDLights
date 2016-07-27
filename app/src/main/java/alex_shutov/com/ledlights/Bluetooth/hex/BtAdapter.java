@@ -221,14 +221,11 @@ public class BtAdapter extends Adapter implements BtPort {
 
     private void setDeviceAttributes(BtDevice device){
         boolean isSecure = device.isSecureOperation();
-        String uuid = device.getDeviceUuId();
-        if (isSecure){
-            setNameSecure(device.getDeviceName());
-            setUuidSecure(uuid);
-        } else {
-            setNameInsecure(device.getDeviceName());
-            setUuidInsecure(uuid);
-        }
+
+        setNameSecure(device.getDeviceName());
+        setNameInsecure(device.getDeviceName());
+        setUuidSecure(device.getDeviceUuIdSecure());
+        setUuidInsecure(device.getDeviceUuIdInsecure());
     }
 
     private class DispatcherHandler extends Handler{
