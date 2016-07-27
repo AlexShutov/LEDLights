@@ -1,4 +1,4 @@
-package alex_shutov.com.ledlights.Bluetooth.BtConnector.hex;
+package alex_shutov.com.ledlights.Bluetooth.BtConnectorPort.hex;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -10,9 +10,9 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
-import alex_shutov.com.ledlights.Bluetooth.BtConnector.BluetoothChatService;
+import alex_shutov.com.ledlights.Bluetooth.BtConnectorPort.BluetoothChatService;
 import alex_shutov.com.ledlights.Bluetooth.BtDevice;
-import alex_shutov.com.ledlights.Bluetooth.BtConnector.Constants;
+import alex_shutov.com.ledlights.Bluetooth.BtConnectorPort.Constants;
 import alex_shutov.com.ledlights.HexGeneral.Adapter;
 import alex_shutov.com.ledlights.HexGeneral.PortInfo;
 import alex_shutov.com.ledlights.HexGeneral.PortListener;
@@ -20,17 +20,20 @@ import alex_shutov.com.ledlights.HexGeneral.PortListener;
 /**
  * Created by Alex on 7/25/2016.
  */
-public class BtAdapter extends Adapter implements BtPort {
-    private static final String LOG_TAG = BtAdapter.class.getSimpleName();
+public class BtConnAdapter extends Adapter implements BtConnPort {
+    private static final String LOG_TAG = BtConnAdapter.class.getSimpleName();
     private static final String DISPATCHER_THREAD_NAME = "bluetooth_comm_dispatch_thread";
-    /** priority of a thread, dispatching messages */
+    /** PortInfo instance used by logic for checking port compatibility */
     private static final PortInfo portInfo;
     static {
         portInfo = new PortInfo();
-        portInfo.setPortCode(PortInfo.PORT_BLUETOOTH_RAW);
+        portInfo.setPortCode(PortInfo.PORT_BLUETOOTH_CONNECTOR);
         portInfo.setPortDescription("Port for communicating with bluetooth devices");
     }
 
+    /**
+     * Bluetooth is platform dependent
+     */
     private Context context;
     /**
      * little modifier=d class from 'BluetoothChat' google sample,
@@ -54,7 +57,7 @@ public class BtAdapter extends Adapter implements BtPort {
     private HandlerThread dispatcherThread;
     private DispatcherHandler dispatcherHandler;
 
-    public BtAdapter(Context context){
+    public BtConnAdapter(Context context){
         super();
         this.context = context;
     }
@@ -83,7 +86,7 @@ public class BtAdapter extends Adapter implements BtPort {
             /** this is not 'critical failure - port will remain silent until we set
              * listener
              */
-            Log.e(LOG_TAG, "Port listener reference is null during BtAdapter creation");
+            Log.e(LOG_TAG, "Port listener reference is null during BtConnAdapter creation");
         }
     }
 
@@ -237,7 +240,7 @@ public class BtAdapter extends Adapter implements BtPort {
         @Override
         public void handleMessage(Message msg) {
             /** Assume everything is OK - no cast checking */
-            BtPortListener feedback = (BtPortListener) getPortListener();
+            BtConnPortListener feedback = (BtConnPortListener) getPortListener();
             if (null == feedback){
                 Log.e(LOG_TAG, "Feedback interface is null, ignoring message");
                 return;

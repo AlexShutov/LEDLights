@@ -1,4 +1,4 @@
-package alex_shutov.com.ledlights.Bluetooth.BtConnector.hex;
+package alex_shutov.com.ledlights.Bluetooth.BtConnectorPort.hex;
 
 import alex_shutov.com.ledlights.Bluetooth.BtDevice;
 import alex_shutov.com.ledlights.HexGeneral.Port;
@@ -12,7 +12,7 @@ import alex_shutov.com.ledlights.HexGeneral.Port;
  * communication with device ( input side) is moved from custom 'Handler' into
  * 'PortListener'
  */
-public interface BtPort extends Port {
+public interface BtConnPort extends Port {
 
     public String getUuidSecure();
     void setUuidSecure(String uuidSecure) throws IllegalStateException;
@@ -62,7 +62,7 @@ public interface BtPort extends Port {
 
     /**
      * send some data via Bluetooth device (receiving side is
-     * handled in BtPortListener)
+     * handled in BtConnPortListener)
      * @param out
      */
     void writeBytes(byte[] out);

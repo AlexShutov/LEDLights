@@ -4,10 +4,10 @@ import android.app.Application;
 
 import java.util.UUID;
 
-import alex_shutov.com.ledlights.Bluetooth.BTDeviceScanner;
-import alex_shutov.com.ledlights.Bluetooth.BtConnector.LogListener;
-import alex_shutov.com.ledlights.Bluetooth.BtConnector.hex.BtAdapter;
-import alex_shutov.com.ledlights.Bluetooth.BtConnector.hex.BtPort;
+import alex_shutov.com.ledlights.Bluetooth.BtConnectorPort.hex.BtConnAdapter;
+import alex_shutov.com.ledlights.Bluetooth.BtScannerPort.BTDeviceScanner;
+import alex_shutov.com.ledlights.Bluetooth.BtConnectorPort.LogListener;
+import alex_shutov.com.ledlights.Bluetooth.BtConnectorPort.hex.BtConnPort;
 
 /**
  * Created by lodoss on 30/06/16.
@@ -23,8 +23,8 @@ public class LEDApplication extends Application{
     public static final UUID HC_05_UUID =
             UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
-    BtAdapter btAdapter;
-    BtPort btPort;
+    BtConnAdapter btAdapter;
+    BtConnPort btPort;
     BTDeviceScanner btScanner;
 
     private LogListener btPortListener;
@@ -36,7 +36,7 @@ public class LEDApplication extends Application{
 
         btPortListener = new LogListener(this);
         // hex
-        btAdapter = new BtAdapter(this);
+        btAdapter = new BtConnAdapter(this);
         btAdapter.setPortListener(btPortListener);
         btAdapter.initialize();
         /** adapter is a port */
@@ -59,7 +59,7 @@ public class LEDApplication extends Application{
         return UUID.fromString(id);
     }
 
-    public BtPort getBtPort() {
+    public BtConnPort getBtPort() {
         return btPort;
     }
 }

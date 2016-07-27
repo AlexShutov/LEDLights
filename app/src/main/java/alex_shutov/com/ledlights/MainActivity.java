@@ -9,9 +9,9 @@ import android.widget.Toast;
 
 import java.util.Set;
 
-import alex_shutov.com.ledlights.Bluetooth.BTDeviceScanner;
+import alex_shutov.com.ledlights.Bluetooth.BtScannerPort.BTDeviceScanner;
 import alex_shutov.com.ledlights.Bluetooth.BtDevice;
-import alex_shutov.com.ledlights.Bluetooth.BtConnector.hex.BtPort;
+import alex_shutov.com.ledlights.Bluetooth.BtConnectorPort.hex.BtConnPort;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private BTDeviceScanner btScanner;
     LEDApplication app;
 
-    private BtPort btPort;
+    private BtConnPort btPort;
     Subscription subscriptionPaired;
 
     private String deviceName = "";

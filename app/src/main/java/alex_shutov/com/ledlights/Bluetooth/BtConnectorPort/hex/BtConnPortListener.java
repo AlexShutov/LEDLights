@@ -1,4 +1,4 @@
-package alex_shutov.com.ledlights.Bluetooth.BtConnector.hex;
+package alex_shutov.com.ledlights.Bluetooth.BtConnectorPort.hex;
 
 import alex_shutov.com.ledlights.Bluetooth.BtDevice;
 import alex_shutov.com.ledlights.HexGeneral.PortListener;
@@ -6,7 +6,7 @@ import alex_shutov.com.ledlights.HexGeneral.PortListener;
 /**
  * Created by Alex on 7/25/2016.
  */
-public interface BtPortListener extends PortListener {
+public interface BtConnPortListener extends PortListener {
 
     /**
      * Is called whenever BT service's state changes - methods below represent parsed state in

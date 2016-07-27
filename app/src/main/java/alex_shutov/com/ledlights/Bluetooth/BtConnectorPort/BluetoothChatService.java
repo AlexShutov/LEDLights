@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package alex_shutov.com.ledlights.Bluetooth.BtConnector;
+package alex_shutov.com.ledlights.Bluetooth.BtConnectorPort;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;

@@ -5,7 +5,8 @@ package alex_shutov.com.ledlights.HexGeneral;
  */
 public class PortInfo {
 
-    public static final int PORT_BLUETOOTH_RAW = 1;
+    public static final int PORT_BLUETOOTH_CONNECTOR = 1;
+    public static final int PORT_BLUETOOTH_SCANNER = 2;
 
     /**
      * we may want to assign numbers to ports
