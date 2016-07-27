@@ -23,6 +23,10 @@ public class LEDApplication extends Application{
     public static final UUID MY_UUID_INSECURE =
             UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
 
+    // HC-05 UUID  "00001101-0000-1000-8000-00805F9B34FB"
+    public static final UUID HC_05_UUID =
+            UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+
     BtAdapter btAdapter;
     BtPort btPort;
     BTDeviceScanner btScanner;
@@ -41,7 +45,6 @@ public class LEDApplication extends Application{
         btAdapter.initialize();
         /** adapter is a port */
         btPort = btAdapter;
-
 
     }
 

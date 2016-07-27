@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
             scanDevices();
         });
 
-        // setup 'accept insecure' for connector
+
         btn = (Button) findViewById(R.id.btn_bt_accept);
         btn.setOnClickListener(v -> {
             btPort.startListening();
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         // setup 'stop accept insecure' button
         btn = (Button) findViewById(R.id.btn_bt_stop_accepting);
         btn.setOnClickListener(v -> {
-            btPort.close();
+            btPort.stopListening();
         });
 
 
@@ -86,16 +86,20 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        // setup 'stop connect insecure' button
-        btn = (Button) findViewById(R.id.btn_bt_stop_conn_insecure);
+        // setup 'stop connect' button
+        btn = (Button) findViewById(R.id.btn_bt_stop_connecting);
         btn.setOnClickListener(v -> {
+            btPort.stopConnecting();
+        });
 
-
+        // setup 'Close port' button
+        btn = (Button) findViewById(R.id.btn_bt_close_BT_port);
+        btn.setOnClickListener(v -> {
+            btPort.close();
         });
     }
 
     void scanDevices(){
-
         //btScanner.getPairedevices();
         btScanner.getPairedDevices()
                 .observeOn(AndroidSchedulers.mainThread())
@@ -122,11 +126,11 @@ public class MainActivity extends AppCompatActivity {
 
     void connectToDevice(boolean isSecure){
         BtDevice device = new BtDevice();
-        device.setDeviceName("Nexus");
-        device.setDeviceAddress(ADDRESS_NEXUS);
-        String uuid = isSecure ? LEDApplication.MY_UUID_SECURE.toString() :
-                LEDApplication.MY_UUID_INSECURE.toString();
+        device.setDeviceName("HC-05");
+        device.setDeviceAddress(HC_05);
+        String uuid = LEDApplication.HC_05_UUID.toString();
         device.setDeviceUuId(uuid);
+        device.setSecureOperation(isSecure);
         device.setDeviceDescription("Galaxy nexus - test device");
 
         btPort.connect(device);

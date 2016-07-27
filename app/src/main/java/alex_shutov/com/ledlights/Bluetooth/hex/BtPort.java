@@ -36,6 +36,11 @@ public interface BtPort extends Port {
     void startListening();
 
     /**
+     * Stop accepting incoming connections
+     */
+    void stopListening();
+
+    /**
      * Work as 'stop()' method from BluetoothChatService - cancel all
      * connection ( and inform
      */
@@ -49,6 +54,12 @@ public interface BtPort extends Port {
      * @param device
      */
     void connect(BtDevice device);
+
+    /**
+     * Connection may take too long by some reason - in this case we should cancel that
+     * connection
+     */
+    void stopConnecting();
 
     /**
      * send some data via Bluetooth device (receiving side is

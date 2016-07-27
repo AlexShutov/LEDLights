@@ -65,9 +65,9 @@ public class LogListener implements BtPortListener {
 
     @Override
     public void onMessageRead(byte[] message, int messageSize) {
-        String m = "Received " + messageSize + " bytes ";
+        String msg = new String(message,0,  messageSize);
+        String m = "Received " + messageSize + " bytes: " + msg;
         showMessage(m);
-        m += ": " + String.valueOf(message);
         Log.i(LOG_TAG, m);
     }
 

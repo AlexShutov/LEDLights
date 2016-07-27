@@ -52,8 +52,8 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Stop conn Insecure"
-        android:id="@+id/btn_bt_stop_conn_insecure"
+        android:text="Stop connecting"
+        android:id="@+id/btn_bt_stop_connecting"
         android:layout_alignTop="@+id/btn_bt_connect_insecure"
         android:layout_alignRight="@+id/btn_bt_stop_accepting"
         android:layout_alignEnd="@+id/btn_bt_stop_accepting" />
@@ -68,4 +68,13 @@
         android:layout_alignEnd="@+id/btn_bt_connect_insecure"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Close port"
+        android:id="@+id/btn_bt_close_BT_port"
+        android:layout_alignBottom="@+id/btn_bt_scan"
+        android:layout_alignLeft="@+id/btn_bt_stop_accepting"
+        android:layout_alignStart="@+id/btn_bt_stop_accepting" />
 </RelativeLayout>

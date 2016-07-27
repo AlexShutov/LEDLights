@@ -57,7 +57,6 @@ public class BtAdapter extends Adapter implements BtPort {
     public BtAdapter(Context context){
         super();
         this.context = context;
-        initialize();
     }
 
     /**
@@ -152,6 +151,12 @@ public class BtAdapter extends Adapter implements BtPort {
     }
 
     @Override
+    public void stopListening() {
+        Log.i(LOG_TAG, "Stopping accepting incoming connections");
+        btService.stopAccepting();
+    }
+
+    @Override
     public void close() {
         Log.i(LOG_TAG, "Stopping Bluetooth service");
         btService.stop();
@@ -166,14 +171,44 @@ public class BtAdapter extends Adapter implements BtPort {
         BluetoothDevice androidBT = btAdapter.getRemoteDevice(device.getDeviceAddress());
         if (null == androidBT){
             Log.e(LOG_TAG, "Error while getting bt device: " + device.getDeviceName());
+            return;
         }
-        boolean isSecure = device.isSecureOperation();
+        /**
+         * We use BtDevice to set device name and UUID first and then BluetoothDevice
+         * to trigger connection in BluetoothChatService
+         */
+        try {
+            setDeviceAttributes(device);
+        } catch (IllegalStateException e){
+            Log.w(LOG_TAG, "Trying to initiate connection while bt adapter is busy. " +
+                    "Aborting all current tasks");
+            btService.stop();
+            try {
+                setDeviceAttributes(device);
+            } catch (IllegalStateException e2){
+                Log.e(LOG_TAG, "Failed to abort current tasks - bt adapter is still busy");
+                return;
+            }
+        }
+        btService.connect(androidBT, device.isSecureOperation());
+    }
 
+    @Override
+    public void stopConnecting() {
+        if (btService.getState() != BluetoothChatService.STATE_CONNECTING){
+            Log.w(LOG_TAG, "can't cancel connection because device isn't connecting");
+            return;
+        }
+        /**
+         * Here we can just suspend all activity and start accepting again
+         */
+        close();
+        startListening();
     }
 
     @Override
     public void writeBytes(byte[] out) {
-
+        btService.write(out);
     }
 
     /**
@@ -182,6 +217,18 @@ public class BtAdapter extends Adapter implements BtPort {
      */
     private boolean checkDeviceParameters(){
         return true;
+    }
+
+    private void setDeviceAttributes(BtDevice device){
+        boolean isSecure = device.isSecureOperation();
+        String uuid = device.getDeviceUuId();
+        if (isSecure){
+            setNameSecure(device.getDeviceName());
+            setUuidSecure(uuid);
+        } else {
+            setNameInsecure(device.getDeviceName());
+            setUuidInsecure(uuid);
+        }
     }
 
     private class DispatcherHandler extends Handler{

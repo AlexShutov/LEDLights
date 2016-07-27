@@ -29,6 +29,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.StringTokenizer;
 import java.util.UUID;
 
 /**
@@ -291,6 +292,23 @@ public class BluetoothChatService {
         setState(STATE_NONE);
     }
 
+    public void stopAccepting(){
+        if (getState() != STATE_LISTEN) {
+            Log.w(LOG_TAG, "stopAccepting(): We're not listening for connection anyways ");
+            return;
+        }
+        if (mSecureAcceptThread != null) {
+            mSecureAcceptThread.cancel();
+            mSecureAcceptThread = null;
+        }
+
+        if (mInsecureAcceptThread != null) {
+            mInsecureAcceptThread.cancel();
+            mInsecureAcceptThread = null;
+        }
+        setState(STATE_NONE);
+    }
+
     /**
      * Write to the ConnectedThread in an unsynchronized manner
      *
@@ -341,7 +359,6 @@ public class BluetoothChatService {
         msg = mHandler.obtainMessage(Constants.MESSAGE_CONNECTION_LOST);
         mHandler.sendMessage(msg);
         // Start the service over to restart listening mode
-        BluetoothChatService.this.start();
     }
 
     /**
@@ -546,10 +563,13 @@ public class BluetoothChatService {
                 try {
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);
-
                     // Send the obtained bytes to the UI Activity
                     mHandler.obtainMessage(Constants.MESSAGE_READ, bytes, -1, buffer)
                             .sendToTarget();
+                    bytes = 0;
+                    for (int i = 0; i < 1024; ++i){
+                        buffer[i] = 0;
+                    }
                 } catch (IOException e) {
                     Log.e(LOG_TAG, "disconnected", e);
                     connectionLost();
