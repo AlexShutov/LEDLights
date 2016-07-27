@@ -36,15 +36,16 @@ public interface BtPort extends Port {
     void startListening();
 
     /**
-     * Stop accepting incoming connections
-     */
-    void stopListening();
-
-    /**
      * Work as 'stop()' method from BluetoothChatService - cancel all
      * connection ( and inform
      */
     void close();
+
+    /**
+     * Check if port has device connected to it
+     * @return
+     */
+    boolean isBtConnected();
 
     /**
      * try connecting to Bluetooth device.

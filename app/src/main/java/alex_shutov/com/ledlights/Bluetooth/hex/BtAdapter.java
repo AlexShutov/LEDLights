@@ -150,16 +150,16 @@ public class BtAdapter extends Adapter implements BtPort {
         btService.start();
     }
 
-    @Override
-    public void stopListening() {
-        Log.i(LOG_TAG, "Stopping accepting incoming connections");
-        btService.stopAccepting();
-    }
 
     @Override
     public void close() {
         Log.i(LOG_TAG, "Stopping Bluetooth service");
         btService.stop();
+    }
+
+    @Override
+    public boolean isBtConnected() {
+         return btService.getState() == BluetoothChatService.STATE_CONNECTED;
     }
 
     @Override
