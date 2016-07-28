@@ -35,11 +35,10 @@ public class MainActivity extends AppCompatActivity {
 
     // test hc05 adapter address
     private static final String ADDRESS_HC_05 = "98:D3:31:20:A0:08";
-    private BTDeviceScanner btScanner;
+
     LEDApplication app;
 
     private BtConnPort btPort;
-    Subscription subscriptionPaired;
 
     private String deviceName = "";
     private String deviceAddress = "";
@@ -85,17 +84,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         app = (LEDApplication) getApplication();
         btPort = app.getBtPort();
-        btScanner = app.getDeviceScanner();
+
 
         chooseNexus();
 
-        Observable<Set<BluetoothDevice>> pairedDevicesSrc = btScanner.getPairedDevicesSource();
-        subscriptionPaired = pairedDevicesSrc
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(devices -> {
-            Toast.makeText(MainActivity.this, "There are " + devices.size() + " devices", Toast.LENGTH_SHORT).show();
-
-        });
 
         // setup scanner 'test'
         Button btn = (Button) findViewById(R.id.btn_bt_scan);
@@ -180,6 +172,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void scanDevices(){
+        app.getBtScanPort().getPairedDevices();
+        /**
         //btScanner.getPairedevices();
         btScanner.getPairedDevices()
                 .observeOn(AndroidSchedulers.mainThread())
@@ -202,6 +196,7 @@ public class MainActivity extends AppCompatActivity {
                 }, e -> {}, () -> {
                     Toast.makeText(MainActivity.this, "Completed", Toast.LENGTH_SHORT).show();
                 });
+         */
     }
 
     void connectToDevice(boolean isSecure){
@@ -220,9 +215,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        /**
         if (null != subscriptionPaired && !subscriptionPaired.isUnsubscribed()){
             subscriptionPaired.unsubscribe();
         }
+         */
         super.onDestroy();
     }
 }

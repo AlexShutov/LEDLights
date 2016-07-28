@@ -1,10 +1,21 @@
 package alex_shutov.com.ledlights.Bluetooth.BtScannerPort.hex;
 
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.util.Log;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import alex_shutov.com.ledlights.Bluetooth.BtDevice;
+import alex_shutov.com.ledlights.Bluetooth.BtDeviceConverter;
+import alex_shutov.com.ledlights.Bluetooth.BtScannerPort.BTDeviceScanner;
 import alex_shutov.com.ledlights.HexGeneral.Adapter;
 import alex_shutov.com.ledlights.HexGeneral.PortInfo;
+import rx.Observable;
+import rx.Subscription;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by lodoss on 27/07/16.
@@ -27,6 +38,18 @@ public class BtScanAdapter extends Adapter implements BtScanPort {
      */
     private BluetoothAdapter btAdapter;
 
+    /** Entity, doing actual work */
+    BTDeviceScanner btScanner;
+    /** This subscripton is active between requesting paired devices and
+     * getting respoonse. Subscription is cancelled when results arrive
+     */
+    Subscription pairedDevicesSubscription;
+    /**
+     * Connects BTDeviceScanner and BtScanAdapter during scan process. It is cancelled on
+     * scan completion.
+     */
+    Subscription discoverySubscription;
+
     public BtScanAdapter(Context context){
         super();
         this.context = context;
@@ -35,11 +58,104 @@ public class BtScanAdapter extends Adapter implements BtScanPort {
     @Override
     public void initialize() {
         btAdapter = BluetoothAdapter.getDefaultAdapter();
-
+        btScanner = new BTDeviceScanner(context);
     }
 
     @Override
     public PortInfo getPortInfo() {
         return portInfo;
+    }
+
+
+    /**
+     * All results arrive to BtScanPortListener on background thread
+     */
+    private void subscribeToPairedDevicesSource(
+            Observable<Set<BluetoothDevice>> pairedDevicesSource){
+        if (null != discoverySubscription && ! discoverySubscription.isUnsubscribed()){
+            Log.w(LOG_TAG, "Paired devices is already requested, resetting previous request");
+            discoverySubscription.unsubscribe();
+            discoverySubscription = null;
+        }
+        BtScanPortListener listener = (BtScanPortListener) getPortListener();
+        discoverySubscription =
+                pairedDevicesSource
+                .subscribe(devices -> {
+                    if (devices.isEmpty()){
+                        Log.i(LOG_TAG, "There is no paired devices");
+                    } else {
+                        Log.i(LOG_TAG, "Got " + devices.size() + " paired devices");
+                    }
+                    Set<BtDevice> btDevices = new HashSet<BtDevice>();
+                    for (BluetoothDevice d : devices){
+                        BtDevice converted = BtDeviceConverter.fromAndroidBluetoothDevice(d);
+                        /** mark converted value as paired device */
+                        converted.setPaired(true);
+                        btDevices.add(converted);
+                    }
+                    listener.onPairedDevicesReceived(btDevices);
+                    /** We passed result to listener, unsubscribe from result pipe */
+                    discoverySubscription.unsubscribe();
+                    discoverySubscription = null;
+                }, error -> {
+                    Log.e(LOG_TAG, "Error getting paired devices");
+                }, () -> {
+                });
+    }
+
+    /**  Inherited from BtScanPort */
+
+    @Override
+    public boolean isBluetoothEnabled() {
+        boolean isEnabled = btScanner.isBluetoothEnabled();
+        Log.w(LOG_TAG, "isBluetooth enabled? " + isEnabled);
+        return isEnabled;
+    }
+
+    @Override
+    public void turnOnBluetooth() throws IllegalStateException {
+        try {
+            btScanner.turnOnBluetooth();
+        } catch (IllegalStateException e){
+            Log.w(LOG_TAG, "Bluetooth is already ON");
+            throw e;
+        }
+        Log.i(LOG_TAG, "Bluetooth turned ON");
+    }
+
+    @Override
+    public void turnOffBluetooth() throws IllegalStateException {
+        try {
+            btScanner.turnOffBluetooth();
+        } catch (IllegalStateException e){
+            Log.w(LOG_TAG, "Bluetooth is already OFF");
+            throw e;
+        }
+        Log.i(LOG_TAG, "Bluetooth turned OFF");
+    }
+
+    @Override
+    public void makeDeviceDiscoverable() {
+        Log.i(LOG_TAG, "requesting user to make device discoverable");
+        btScanner.makeDiscoverable();
+    }
+
+    @Override
+    public void getPairedDevices() {
+        Log.i(LOG_TAG, "Trying to get paired Bluetooth devices");
+        Observable<Set<BluetoothDevice>> src = btScanner.getPairedDevices();
+        subscribeToPairedDevicesSource(src);
+    }
+
+    @Override
+    public void startDiscovery() {
+        Log.i(LOG_TAG, "Starting scanning for bluetooth devices");
+        btScanner.startDiscovery();
+    }
+
+    @Override
+    public void stopDiscovery() {
+        Log.i(LOG_TAG, "Cancelling bluetooth scanning");
+        btScanner.stopDiscovery();
     }
 }

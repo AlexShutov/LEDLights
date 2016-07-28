@@ -8,6 +8,9 @@ import alex_shutov.com.ledlights.Bluetooth.BtConnectorPort.hex.BtConnAdapter;
 import alex_shutov.com.ledlights.Bluetooth.BtScannerPort.BTDeviceScanner;
 import alex_shutov.com.ledlights.Bluetooth.BtConnectorPort.LogListener;
 import alex_shutov.com.ledlights.Bluetooth.BtConnectorPort.hex.BtConnPort;
+import alex_shutov.com.ledlights.Bluetooth.BtScannerPort.LogScannerListener;
+import alex_shutov.com.ledlights.Bluetooth.BtScannerPort.hex.BtScanAdapter;
+import alex_shutov.com.ledlights.Bluetooth.BtScannerPort.hex.BtScanPort;
 
 /**
  * Created by lodoss on 30/06/16.
@@ -23,24 +26,33 @@ public class LEDApplication extends Application{
     public static final UUID HC_05_UUID =
             UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
+    /** Connector port */
     BtConnAdapter btAdapter;
     BtConnPort btPort;
-    BTDeviceScanner btScanner;
-
     private LogListener btPortListener;
+
+    /** Scanner port */
+    BtScanAdapter scanAdapter;
+    LogScannerListener scannerListener;
+    BtScanPort scanPort;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        btScanner = new BTDeviceScanner(this);
-
+        // init ConnectorPort
         btPortListener = new LogListener(this);
-        // hex
         btAdapter = new BtConnAdapter(this);
         btAdapter.setPortListener(btPortListener);
         btAdapter.initialize();
         /** adapter is a port */
         btPort = btAdapter;
+
+        /** init ScannerPort */
+        scannerListener = new LogScannerListener(this);
+        scanAdapter = new BtScanAdapter(this);
+        scanAdapter.setPortListener(scannerListener);
+        scanAdapter.initialize();
+        scanPort = scanAdapter;
 
     }
 
@@ -49,9 +61,6 @@ public class LEDApplication extends Application{
         super.onTerminate();
     }
 
-    public BTDeviceScanner getDeviceScanner(){
-        return btScanner;
-    }
 
 
     private UUID uuidFromResource(int resId){
@@ -61,5 +70,9 @@ public class LEDApplication extends Application{
 
     public BtConnPort getBtPort() {
         return btPort;
+    }
+
+    public BtScanPort getBtScanPort(){
+        return scanPort;
     }
 }
