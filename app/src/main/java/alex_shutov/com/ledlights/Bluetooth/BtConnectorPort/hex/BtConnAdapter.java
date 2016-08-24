@@ -193,6 +193,11 @@ public class BtConnAdapter extends Adapter implements BtConnPort {
                 return;
             }
         }
+        if (device.isSecureOperation()){
+            btService.setUuidSecure(device.getDeviceUuIdSecure());
+        } else {
+            btService.setUuidInsecure(device.getDeviceUuIdInsecure());
+        }
         btService.connect(androidBT, device.isSecureOperation());
     }
 

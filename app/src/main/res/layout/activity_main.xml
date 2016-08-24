@@ -112,4 +112,13 @@
         android:layout_below="@+id/btn_hc05"
         android:layout_toRightOf="@+id/btn_phone_nexus"
         android:layout_toEndOf="@+id/btn_phone_nexus" />
+
+    <Button
+        android:text="Send data 2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_bt_send_data2"
+        android:layout_below="@+id/btn_bt_connect_insecure"
+        android:layout_toRightOf="@+id/btn_bt_connect_secure"
+        android:layout_toEndOf="@+id/btn_bt_connect_secure" />
 </RelativeLayout>

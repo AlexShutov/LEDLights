@@ -143,7 +143,16 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
             String msg = "Hello";
-            byte[] bytes = msg.getBytes();
+           // byte[] bytes = msg.getBytes();
+            byte[] bytes = new byte[100];
+            bytes[0] = '!';
+            bytes[1] = 0;
+            bytes[2] = 3;
+            bytes[3] = '\n';
+            bytes[4] = (byte)255;
+            bytes[5] = (byte) 0;
+            bytes[6] = (byte) 255;
+
             Observable.defer(() -> Observable.just(bytes))
                     .subscribeOn(Schedulers.io())
                     .subscribe( d -> {
@@ -151,6 +160,33 @@ public class MainActivity extends AppCompatActivity {
                     });
             //btPort.writeBytes(bytes);
         });
+
+        // setup 'Send data' button
+        btn = (Button) findViewById(R.id.btn_bt_send_data2);
+        btn.setOnClickListener(v -> {
+            if (!btPort.isBtConnected()){
+                showToast("Bluetooth device not connected");
+                return;
+            }
+            String msg = "Hello";
+            // byte[] bytes = msg.getBytes();
+            byte[] bytes = new byte[100];
+            bytes[0] = '!';
+            bytes[1] = 0;
+            bytes[2] = 3;
+            bytes[3] = '\n';
+            bytes[4] = (byte) 30;
+            bytes[5] = (byte) 150;
+            bytes[6] = (byte) 200;
+
+            Observable.defer(() -> Observable.just(bytes))
+                    .subscribeOn(Schedulers.io())
+                    .subscribe( d -> {
+                        btPort.writeBytes(d);
+                    });
+            //btPort.writeBytes(bytes);
+        });
+
 
         Button btnPhone = (Button) findViewById(R.id.btn_phone_nexus);
         btnPhone.setOnClickListener(v -> {
