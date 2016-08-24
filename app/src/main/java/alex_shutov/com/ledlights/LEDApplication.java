@@ -2,18 +2,24 @@ package alex_shutov.com.ledlights;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.UUID;
 
+import alex_shutov.com.ledlights.Bluetooth.BtCellDeployer;
 import alex_shutov.com.ledlights.Bluetooth.BtConnectorPort.hex.BtConnAdapter;
+import alex_shutov.com.ledlights.Bluetooth.BtLogicCell;
+import alex_shutov.com.ledlights.Bluetooth.BtPortAdapterCreator;
 import alex_shutov.com.ledlights.Bluetooth.BtScannerPort.BTDeviceScanner;
 import alex_shutov.com.ledlights.Bluetooth.BtConnectorPort.LogListener;
 import alex_shutov.com.ledlights.Bluetooth.BtConnectorPort.hex.BtConnPort;
 import alex_shutov.com.ledlights.Bluetooth.BtScannerPort.LogScannerListener;
 import alex_shutov.com.ledlights.Bluetooth.BtScannerPort.hex.BtScanAdapter;
 import alex_shutov.com.ledlights.Bluetooth.BtScannerPort.hex.BtScanPort;
-import alex_shutov.com.ledlights.HexGeneral.DaggerPortAdapterCreator;
+import alex_shutov.com.ledlights.Bluetooth.DaggerBtPortAdapterCreator;
+import alex_shutov.com.ledlights.HexGeneral.CellDeployer;
 import alex_shutov.com.ledlights.HexGeneral.LogicCell;
 import alex_shutov.com.ledlights.HexGeneral.PortAdapterCreator;
 import alex_shutov.com.ledlights.HexGeneral.di.SystemModule;
@@ -44,19 +50,20 @@ public class LEDApplication extends Application{
     LogScannerListener scannerListener;
     BtScanPort scanPort;
 
-    SystemModule systemModule;
-    PortAdapterCreator creator;
+    CellDeployer btCellDeployer;
     LogicCell cell;
 
     void initCell(){
-        systemModule = new SystemModule(this);
-        creator = DaggerPortAdapterCreator.builder()
-                .systemModule(systemModule).build();
+        // create cell deployer
+        btCellDeployer = new BtCellDeployer(this);
+        // create new logic cell
+        cell = new BtLogicCell();
+        // deploy this cell- create and init ports, connect ports to the cell
+        btCellDeployer.deploy(cell);
 
-        cell = new LogicCell();
-        cell.init(creator);
-        Context c = cell.getContext();
-        Log.i(LOG_TAG, c == null ? "Context is null" : "Context is not null");
+        Context context = cell.getContext();
+        String msg = context == null ? "Context is null" : "Context is not null, DI work";
+        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
     }
 
     @Override
