@@ -5,6 +5,17 @@ package alex_shutov.com.ledlights.HexGeneral;
  */
 
 public interface PortListener {
-    void onPortReady();
-    void onCriticalFailure(Exception e);
+    /**
+     * @param portID  Logic cell implement callbacks from all ports so we
+     * need to distinguish which port event come from - it is done by portID
+     */
+    void onPortReady(int portID);
+
+    /**
+     *
+     * @param portID  Logic cell implement callbacks from all ports so we
+     * need to distinguish which port event come from - it is done by portID
+     * @param e
+     */
+    void onCriticalFailure(int portID, Exception e);
 }
