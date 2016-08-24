@@ -1,6 +1,8 @@
 package alex_shutov.com.ledlights;
 
 import android.app.Application;
+import android.content.Context;
+import android.util.Log;
 
 import java.util.UUID;
 
@@ -11,11 +13,17 @@ import alex_shutov.com.ledlights.Bluetooth.BtConnectorPort.hex.BtConnPort;
 import alex_shutov.com.ledlights.Bluetooth.BtScannerPort.LogScannerListener;
 import alex_shutov.com.ledlights.Bluetooth.BtScannerPort.hex.BtScanAdapter;
 import alex_shutov.com.ledlights.Bluetooth.BtScannerPort.hex.BtScanPort;
+import alex_shutov.com.ledlights.HexGeneral.DaggerPortAdapterCreator;
+import alex_shutov.com.ledlights.HexGeneral.LogicCell;
+import alex_shutov.com.ledlights.HexGeneral.PortAdapterCreator;
+import alex_shutov.com.ledlights.HexGeneral.di.SystemModule;
 
 /**
  * Created by lodoss on 30/06/16.
  */
 public class LEDApplication extends Application{
+    private static final String LOG_TAG = LEDApplication.class.getSimpleName();
+
     // Unique UUID for this application
     public static final UUID MY_UUID_SECURE =
             UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
@@ -36,6 +44,21 @@ public class LEDApplication extends Application{
     LogScannerListener scannerListener;
     BtScanPort scanPort;
 
+    SystemModule systemModule;
+    PortAdapterCreator creator;
+    LogicCell cell;
+
+    void initCell(){
+        systemModule = new SystemModule(this);
+        creator = DaggerPortAdapterCreator.builder()
+                .systemModule(systemModule).build();
+
+        cell = new LogicCell();
+        cell.init(creator);
+        Context c = cell.getContext();
+        Log.i(LOG_TAG, c == null ? "Context is null" : "Context is not null");
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -54,6 +77,7 @@ public class LEDApplication extends Application{
         scanAdapter.initialize();
         scanPort = scanAdapter;
 
+        initCell();
     }
 
     @Override
