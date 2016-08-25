@@ -33,9 +33,11 @@ public abstract class CellDeployer {
         portsCreator = createPortCreator();
         // create and set all instances in LogicCell by
         // using creator we just initialized
-        cell.init(portsCreator);
-        createPorts();
-        connectPorts();
+        cell.createObjects(portsCreator);
+        // create ports, referenced by derived class
+        portsCreator.injectCellDeployer(this);
+        // connect ports we just created to logic cell
+        connectPorts(cell);
     }
 
     /**
@@ -46,19 +48,15 @@ public abstract class CellDeployer {
     public abstract PortAdapterCreator createPortCreator();
 
     /**
-     * Deployer create cell's ports by using its
-     * 'PortAdapterCreator' instance. Override this method to
-     * do so
-     */
-    public abstract void createPorts();
-
-    /**
      * Connect all ports to 'LogicCell'
      */
-    public abstract void connectPorts();
+    public abstract void connectPorts(LogicCell logicCell);
 
     public SystemModule getSystemModule(){
         return systemModule;
     }
 
+    public PortAdapterCreator getPortsCreator() {
+        return portsCreator;
+    }
 }

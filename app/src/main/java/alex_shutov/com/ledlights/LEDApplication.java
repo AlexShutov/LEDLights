@@ -18,7 +18,6 @@ import alex_shutov.com.ledlights.Bluetooth.BtConnectorPort.hex.BtConnPort;
 import alex_shutov.com.ledlights.Bluetooth.BtScannerPort.LogScannerListener;
 import alex_shutov.com.ledlights.Bluetooth.BtScannerPort.hex.BtScanAdapter;
 import alex_shutov.com.ledlights.Bluetooth.BtScannerPort.hex.BtScanPort;
-import alex_shutov.com.ledlights.Bluetooth.DaggerBtPortAdapterCreator;
 import alex_shutov.com.ledlights.HexGeneral.CellDeployer;
 import alex_shutov.com.ledlights.HexGeneral.LogicCell;
 import alex_shutov.com.ledlights.HexGeneral.PortAdapterCreator;
@@ -58,7 +57,7 @@ public class LEDApplication extends Application{
         btCellDeployer = new BtCellDeployer(this);
         // create new logic cell
         cell = new BtLogicCell();
-        // deploy this cell- create and init ports, connect ports to the cell
+        // deploy this cell- create and createObjects ports, connect ports to the cell
         btCellDeployer.deploy(cell);
 
         Context context = cell.getContext();
@@ -69,7 +68,7 @@ public class LEDApplication extends Application{
     @Override
     public void onCreate() {
         super.onCreate();
-        // init ConnectorPort
+        // createObjects ConnectorPort
         btPortListener = new LogListener(this);
         btAdapter = new BtConnAdapter(this);
         btAdapter.setPortListener(btPortListener);
@@ -77,7 +76,7 @@ public class LEDApplication extends Application{
         /** adapter is a port */
         btPort = btAdapter;
 
-        /** init ScannerPort */
+        /** createObjects ScannerPort */
         scannerListener = new LogScannerListener(this);
         scanAdapter = new BtScanAdapter(this);
         scanAdapter.setPortListener(scannerListener);

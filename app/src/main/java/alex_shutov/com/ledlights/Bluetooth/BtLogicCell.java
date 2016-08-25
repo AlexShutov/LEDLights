@@ -1,5 +1,7 @@
 package alex_shutov.com.ledlights.Bluetooth;
 
+import android.util.Log;
+
 import java.util.Set;
 
 import alex_shutov.com.ledlights.Bluetooth.BtConnectorPort.hex.BtConnPort;
@@ -19,10 +21,20 @@ import alex_shutov.com.ledlights.HexGeneral.LogicCell;
  */
 public class BtLogicCell extends LogicCell implements
         BtScanPortListener, BtConnPortListener {
-
+    private static final String LOG_TAG = LogicCell.class.getSimpleName();
+    /** references to ports connectoed to this LogicCell */
     private BtScanPort btScanPort;
     private BtConnPort btConnPort;
 
+    /**
+     *  Initialize all internal dependencies here
+     *  do nothing for now, all BT pairing, data transfer algorithims
+     *  has to be initialized here.
+     */
+    @Override
+    public void init() {
+        Log.i(LOG_TAG, "BtLogicCell.init()");
+    }
 
     /**
      *  Accessors
@@ -42,6 +54,9 @@ public class BtLogicCell extends LogicCell implements
     public void setBtScanPort(BtScanPort btScanPort) {
         this.btScanPort = btScanPort;
     }
+
+
+
 
     /**
      *      Inherited from BtScanPortListener

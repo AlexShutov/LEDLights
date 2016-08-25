@@ -81,7 +81,7 @@ public class BtConnAdapter extends Adapter implements BtConnPort {
          */
         PortListener listener = getPortListener();
         if (null != listener){
-            listener.onPortReady();
+            listener.onPortReady(getPortInfo().getPortCode());
         } else {
             /** this is not 'critical failure - port will remain silent until we set
              * listener

@@ -10,23 +10,40 @@ import javax.inject.Inject;
 
 /**
  * LogicCell is a base class for business logic fo this cell
- * Instance creation is done by di (Dagger2) - method init()
+ * Instance creation is done by di (Dagger2) - method createObjects()
  * PortAdapterCreator - di component, providing instances of
  * all entities needed for this LogicCell.
  * CellDeployer creates PortAdapterCreator and passes it in
- * 'init()' method.
+ * 'createObjects()' method.
  */
-public class LogicCell {
+public abstract class LogicCell {
 
     private PortAdapterCreator adaperCreator;
 
     @Inject
     Context context;
 
-    public void init(PortAdapterCreator creator){
+    /**
+     * Called by deployer right after deployer initialized its
+     * PortAdapterCreator (DI component). this component can create
+     * all stuff, this logic cell need
+     * @param creator
+     */
+    public void createObjects(PortAdapterCreator creator){
         adaperCreator = creator;
         creator.injectLogicCell(this);
     }
+
+    /**
+     * Deployment process is as following:
+     * Deployer creates creator and then passes it to this logic cell
+     * Logic cell uses that creator to instantiate all entities it need.
+     * after that deployer calls its other methods, such as 'createPorts()',
+     * and, finally, when every entity in logic cell is set, it call
+     * this 'init' method.
+     * Intialize all internal dependencies here
+     */
+    public abstract void init();
 
     public Context getContext(){
         return context;

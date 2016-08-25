@@ -52,12 +52,12 @@ public class LogScannerListener implements BtScanPortListener {
     }
 
     @Override
-    public void onPortReady() {
+    public void onCriticalFailure(int portID, Exception e) {
 
     }
 
     @Override
-    public void onCriticalFailure(Exception e) {
+    public void onPortReady(int portID) {
 
     }
 }

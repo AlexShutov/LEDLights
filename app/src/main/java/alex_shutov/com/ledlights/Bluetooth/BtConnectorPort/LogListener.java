@@ -96,15 +96,15 @@ public class LogListener implements BtConnPortListener {
     }
 
     @Override
-    public void onPortReady() {
-        String m = "Port is ready";
+    public void onPortReady(int portID) {
+        String m = "Port is ready: " + portID;
         Log.i(LOG_TAG, m);
         showMessage(m);
     }
 
     @Override
-    public void onCriticalFailure(Exception e) {
-        String m = "Critical failure has occured";
+    public void onCriticalFailure(int portID, Exception e) {
+        String m = "Critical failure has occured on port: " + portID ;
         Log.i(LOG_TAG, m);
         showMessage(m);
     }

@@ -2,6 +2,7 @@ package alex_shutov.com.ledlights.Bluetooth;
 
 import javax.inject.Singleton;
 
+import alex_shutov.com.ledlights.Bluetooth.di.BtPortModule;
 import alex_shutov.com.ledlights.HexGeneral.PortAdapterCreator;
 import alex_shutov.com.ledlights.HexGeneral.di.SystemModule;
 import dagger.Component;
@@ -11,7 +12,7 @@ import dagger.Component;
  */
 
 @Singleton
-@Component(modules = {SystemModule.class})
+@Component(modules = {SystemModule.class, BtPortModule.class})
 public interface BtPortAdapterCreator extends PortAdapterCreator {
 
 }
