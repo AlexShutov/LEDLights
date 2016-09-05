@@ -1,4 +1,4 @@
-package alex_shutov.com.ledlights.Bluetooth;
+package alex_shutov.com.ledlights.bluetooth;
 
 /**
  * Created by Alex on 7/25/2016.

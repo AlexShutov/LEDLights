@@ -1,9 +1,9 @@
-package alex_shutov.com.ledlights.Bluetooth.BtScannerPort.hex;
+package alex_shutov.com.ledlights.bluetooth.BtScannerPort.hex;
 
 import java.util.Set;
 
-import alex_shutov.com.ledlights.Bluetooth.BtDevice;
-import alex_shutov.com.ledlights.HexGeneral.PortListener;
+import alex_shutov.com.ledlights.bluetooth.BtDevice;
+import alex_shutov.com.ledlights.hex_general.PortListener;
 
 /**
  * Created by lodoss on 27/07/16.

@@ -1,7 +1,7 @@
-package alex_shutov.com.ledlights.Bluetooth.BtConnectorPort.hex;
+package alex_shutov.com.ledlights.bluetooth.BtConnectorPort.hex;
 
-import alex_shutov.com.ledlights.Bluetooth.BtDevice;
-import alex_shutov.com.ledlights.HexGeneral.PortListener;
+import alex_shutov.com.ledlights.bluetooth.BtDevice;
+import alex_shutov.com.ledlights.hex_general.PortListener;
 
 /**
  * Created by Alex on 7/25/2016.

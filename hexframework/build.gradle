@@ -1,4 +1,4 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'me.tatarka.retrolambda'
 
@@ -7,7 +7,6 @@ android {
     buildToolsVersion "23.0.2"
 
     defaultConfig {
-        applicationId "alex_shutov.com.ledlights"
         minSdkVersion 14
         targetSdkVersion 22
         versionCode 1
@@ -20,6 +19,7 @@ android {
         }
     }
 }
+
 
 repositories {
     flatDir {
@@ -34,25 +34,16 @@ android {
     }
 }
 
-
 dependencies {
-
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.0.1'
     compile 'com.android.support:design:23.1.1'
     compile 'com.android.support:support-v4:23.0.1'
 
-    // Multidex support, because we project has more than one modules
-    compile 'com.android.support:multidex:1.0.0'
-
-    compile project (':hexframework')
-
     compile ('com.android.support:recyclerview-v7:23.0.1'){
         exclude group: 'com.android.support', module: 'support-v4'
     }
-    // Multidex support, because we project has more than one modules
-    compile 'com.android.support:multidex:1.0.0'
 
     //Reactive / event-based programing
     compile 'io.reactivex:rxjava:1.0.13'
@@ -70,5 +61,4 @@ dependencies {
     compile 'com.squareup.retrofit2:retrofit:2.0.2'
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'
     compile 'com.squareup.retrofit2:adapter-rxjava:2.0.2'
-
 }

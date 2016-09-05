@@ -1,20 +1,14 @@
 package alex_shutov.com.ledlights;
 
-import android.bluetooth.BluetoothDevice;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
-import java.util.Set;
-
-import alex_shutov.com.ledlights.Bluetooth.BtScannerPort.BTDeviceScanner;
-import alex_shutov.com.ledlights.Bluetooth.BtDevice;
-import alex_shutov.com.ledlights.Bluetooth.BtConnectorPort.hex.BtConnPort;
+import alex_shutov.com.ledlights.bluetooth.BtDevice;
+import alex_shutov.com.ledlights.bluetooth.BtConnectorPort.hex.BtConnPort;
 import rx.Observable;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {

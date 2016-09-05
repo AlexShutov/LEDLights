@@ -1,4 +1,4 @@
-package alex_shutov.com.ledlights.HexGeneral;
+package alex_shutov.com.ledlights.hex_general;
 
 /**
  * Created by lodoss on 22/07/16.

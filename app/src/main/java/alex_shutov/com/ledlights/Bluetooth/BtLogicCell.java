@@ -1,14 +1,14 @@
-package alex_shutov.com.ledlights.Bluetooth;
+package alex_shutov.com.ledlights.bluetooth;
 
 import android.util.Log;
 
 import java.util.Set;
 
-import alex_shutov.com.ledlights.Bluetooth.BtConnectorPort.hex.BtConnPort;
-import alex_shutov.com.ledlights.Bluetooth.BtConnectorPort.hex.BtConnPortListener;
-import alex_shutov.com.ledlights.Bluetooth.BtScannerPort.hex.BtScanPort;
-import alex_shutov.com.ledlights.Bluetooth.BtScannerPort.hex.BtScanPortListener;
-import alex_shutov.com.ledlights.HexGeneral.LogicCell;
+import alex_shutov.com.ledlights.bluetooth.BtConnectorPort.hex.BtConnPort;
+import alex_shutov.com.ledlights.bluetooth.BtConnectorPort.hex.BtConnPortListener;
+import alex_shutov.com.ledlights.bluetooth.BtScannerPort.hex.BtScanPort;
+import alex_shutov.com.ledlights.bluetooth.BtScannerPort.hex.BtScanPortListener;
+import alex_shutov.com.ledlights.hex_general.LogicCell;
 
 /**
  * Created by lodoss on 24/08/16.

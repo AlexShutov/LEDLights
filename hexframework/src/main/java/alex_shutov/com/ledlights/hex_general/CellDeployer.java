@@ -1,4 +1,4 @@
-package alex_shutov.com.ledlights.HexGeneral;
+package alex_shutov.com.ledlights.hex_general;
 
 /**
  * Created by lodoss on 24/08/16.
@@ -6,7 +6,7 @@ package alex_shutov.com.ledlights.HexGeneral;
 
 import android.content.Context;
 
-import alex_shutov.com.ledlights.HexGeneral.di.SystemModule;
+import alex_shutov.com.ledlights.hex_general.di.SystemModule;
 
 /**
  * Creates and keep instance of 'PortAdapterCreator'

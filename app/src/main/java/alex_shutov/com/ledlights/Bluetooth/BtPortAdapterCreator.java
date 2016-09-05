@@ -1,10 +1,10 @@
-package alex_shutov.com.ledlights.Bluetooth;
+package alex_shutov.com.ledlights.bluetooth;
 
 import javax.inject.Singleton;
 
-import alex_shutov.com.ledlights.Bluetooth.di.BtPortModule;
-import alex_shutov.com.ledlights.HexGeneral.PortAdapterCreator;
-import alex_shutov.com.ledlights.HexGeneral.di.SystemModule;
+import alex_shutov.com.ledlights.bluetooth.di.BtPortModule;
+import alex_shutov.com.ledlights.hex_general.PortAdapterCreator;
+import alex_shutov.com.ledlights.hex_general.di.SystemModule;
 import dagger.Component;
 
 /**

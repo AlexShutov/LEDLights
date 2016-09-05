@@ -2,31 +2,26 @@ package alex_shutov.com.ledlights;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
+import android.support.multidex.MultiDexApplication;
 import android.widget.Toast;
 
 import java.util.UUID;
 
-import alex_shutov.com.ledlights.Bluetooth.BtCellDeployer;
-import alex_shutov.com.ledlights.Bluetooth.BtConnectorPort.hex.BtConnAdapter;
-import alex_shutov.com.ledlights.Bluetooth.BtLogicCell;
-import alex_shutov.com.ledlights.Bluetooth.BtPortAdapterCreator;
-import alex_shutov.com.ledlights.Bluetooth.BtScannerPort.BTDeviceScanner;
-import alex_shutov.com.ledlights.Bluetooth.BtConnectorPort.LogListener;
-import alex_shutov.com.ledlights.Bluetooth.BtConnectorPort.hex.BtConnPort;
-import alex_shutov.com.ledlights.Bluetooth.BtScannerPort.LogScannerListener;
-import alex_shutov.com.ledlights.Bluetooth.BtScannerPort.hex.BtScanAdapter;
-import alex_shutov.com.ledlights.Bluetooth.BtScannerPort.hex.BtScanPort;
-import alex_shutov.com.ledlights.HexGeneral.CellDeployer;
-import alex_shutov.com.ledlights.HexGeneral.LogicCell;
-import alex_shutov.com.ledlights.HexGeneral.PortAdapterCreator;
-import alex_shutov.com.ledlights.HexGeneral.di.SystemModule;
+import alex_shutov.com.ledlights.bluetooth.BtCellDeployer;
+import alex_shutov.com.ledlights.bluetooth.BtConnectorPort.hex.BtConnAdapter;
+import alex_shutov.com.ledlights.bluetooth.BtLogicCell;
+import alex_shutov.com.ledlights.bluetooth.BtConnectorPort.LogListener;
+import alex_shutov.com.ledlights.bluetooth.BtConnectorPort.hex.BtConnPort;
+import alex_shutov.com.ledlights.bluetooth.BtScannerPort.LogScannerListener;
+import alex_shutov.com.ledlights.bluetooth.BtScannerPort.hex.BtScanAdapter;
+import alex_shutov.com.ledlights.bluetooth.BtScannerPort.hex.BtScanPort;
+import alex_shutov.com.ledlights.hex_general.CellDeployer;
+import alex_shutov.com.ledlights.hex_general.LogicCell;
 
 /**
  * Created by lodoss on 30/06/16.
  */
-public class LEDApplication extends Application{
+public class LEDApplication extends MultiDexApplication{
     private static final String LOG_TAG = LEDApplication.class.getSimpleName();
 
     // Unique UUID for this application

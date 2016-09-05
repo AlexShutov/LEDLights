@@ -1,4 +1,4 @@
-package alex_shutov.com.ledlights.Bluetooth.BtScannerPort;
+package alex_shutov.com.ledlights.bluetooth.BtScannerPort;
 
 import android.content.Context;
 import android.os.Handler;
@@ -7,9 +7,8 @@ import android.widget.Toast;
 
 import java.util.Set;
 
-import alex_shutov.com.ledlights.Bluetooth.BtDevice;
-import alex_shutov.com.ledlights.Bluetooth.BtScannerPort.hex.BtScanPortListener;
-import rx.Observable;
+import alex_shutov.com.ledlights.bluetooth.BtDevice;
+import alex_shutov.com.ledlights.bluetooth.BtScannerPort.hex.BtScanPortListener;
 
 /**
  * Created by Alex on 7/28/2016.

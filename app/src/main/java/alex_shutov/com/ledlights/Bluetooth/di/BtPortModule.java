@@ -1,13 +1,13 @@
-package alex_shutov.com.ledlights.Bluetooth.di;
+package alex_shutov.com.ledlights.bluetooth.di;
 
 import android.content.Context;
 
 import javax.inject.Singleton;
 
-import alex_shutov.com.ledlights.Bluetooth.BtConnectorPort.hex.BtConnAdapter;
-import alex_shutov.com.ledlights.Bluetooth.BtConnectorPort.hex.BtConnPort;
-import alex_shutov.com.ledlights.Bluetooth.BtScannerPort.hex.BtScanAdapter;
-import alex_shutov.com.ledlights.Bluetooth.BtScannerPort.hex.BtScanPort;
+import alex_shutov.com.ledlights.bluetooth.BtConnectorPort.hex.BtConnAdapter;
+import alex_shutov.com.ledlights.bluetooth.BtConnectorPort.hex.BtConnPort;
+import alex_shutov.com.ledlights.bluetooth.BtScannerPort.hex.BtScanAdapter;
+import alex_shutov.com.ledlights.bluetooth.BtScannerPort.hex.BtScanPort;
 import dagger.Module;
 import dagger.Provides;
 

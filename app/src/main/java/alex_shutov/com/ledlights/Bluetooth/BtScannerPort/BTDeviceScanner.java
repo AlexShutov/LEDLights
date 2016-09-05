@@ -1,4 +1,4 @@
-package alex_shutov.com.ledlights.Bluetooth.BtScannerPort;
+package alex_shutov.com.ledlights.bluetooth.BtScannerPort;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;

@@ -1,4 +1,4 @@
-package alex_shutov.com.ledlights.Bluetooth;
+package alex_shutov.com.ledlights.bluetooth;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;

@@ -1,4 +1,4 @@
-package alex_shutov.com.ledlights.HexGeneral.di;
+package alex_shutov.com.ledlights.hex_general.di;
 
 import android.content.Context;
 
