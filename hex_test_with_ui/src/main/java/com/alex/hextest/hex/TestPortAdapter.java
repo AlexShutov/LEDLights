@@ -25,7 +25,7 @@ public class TestPortAdapter extends Adapter  implements TestPort {
      */
     @Override
     public void initialize() {
-
+        Log.i(LOG_TAG, "Initializing test port adapter");
     }
 
     @Override
@@ -54,9 +54,6 @@ public class TestPortAdapter extends Adapter  implements TestPort {
     public void sendMessage(String str) {
         Log.i(LOG_TAG, "Message sent: " + str);
     }
-
-
-
 
     public Context getContext() {
         return context;

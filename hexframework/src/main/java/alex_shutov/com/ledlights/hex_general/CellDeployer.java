@@ -4,9 +4,7 @@ package alex_shutov.com.ledlights.hex_general;
  * Created by lodoss on 24/08/16.
  */
 
-import android.content.Context;
-
-import alex_shutov.com.ledlights.hex_general.di.SystemModule;
+import android.util.Log;
 
 /**
  * Creates and keep instance of 'PortAdapterCreator'
@@ -32,8 +30,8 @@ public abstract class CellDeployer {
         // create and set all instances in LogicCell by
         // using creator we just initialized
         cell.createObjects(portsCreator);
-        // create ports, referenced by derived class
-        portsCreator.injectCellDeployer(this);
+        // create objects in this
+        injectCellDeployer(portsCreator);
         // connect ports we just created to logic cell
         connectPorts(cell);
     }
@@ -49,9 +47,15 @@ public abstract class CellDeployer {
     protected abstract PortAdapterCreator createPortCreator();
 
     /**
-     * Connect all ports to 'LogicCell'
+     * Connect and initialize all ports to 'LogicCell'.
+     * The point is that CellDeployer incapsulates entie deployment process, including
+     * initialization of ports inside a cell.
+     * Port know how to initialize and bind its internal dependencies, but CellDeployer
+     * know when to call that method and what arguments to use
      */
     public abstract void connectPorts(LogicCell logicCell);
 
+
+    protected abstract void injectCellDeployer(PortAdapterCreator injector);
 
 }

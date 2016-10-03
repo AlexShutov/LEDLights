@@ -1,6 +1,10 @@
 package com.alex.hextest.hex;
 import android.util.Log;
 
+import com.alex.hextest.hex.di.TestPortCreator;
+import com.alex.hextest.hex.test_logic.TestObjectA;
+import com.alex.hextest.hex.test_logic.TestObjectBSingleton;
+
 import javax.inject.Inject;
 import javax.xml.transform.stream.StreamResult;
 
@@ -16,6 +20,12 @@ public class TestLogicCell extends LogicCell {
 
     @Inject
     public TestPortAdapter testPortAdapter;
+    @Inject
+    public TestObjectA testObjectA;
+    @Inject
+    public TestObjectBSingleton testObjectBSingleton;
+
+
 
 
     public TestPort getTestPort(){
@@ -28,6 +38,14 @@ public class TestLogicCell extends LogicCell {
     public void init() {
         Log.i(LOG_TAG, "init() method is called");
 
+
     }
 
+
+    @Override
+    protected void injectThisCell() {
+        Log.i(LOG_TAG, "Injecting logi cell TestLogicCell ");
+        TestPortCreator portCreator = (TestPortCreator) getAdaperCreator();
+        portCreator.injectTestLogicCell(this);
+    }
 }

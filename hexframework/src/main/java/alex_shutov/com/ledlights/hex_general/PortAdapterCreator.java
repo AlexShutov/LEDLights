@@ -19,10 +19,5 @@ public interface PortAdapterCreator {
      */
     void injectLogicCell(LogicCell cell);
 
-    /**
-     * Instantiate ports for logic cell (called by CellDeployer)
-     * @param cellDeployer
-     */
-    void injectCellDeployer(CellDeployer cellDeployer);
 
 }

@@ -30,11 +30,14 @@ public class TestApplication extends Application {
     }
 
     public void createObjects(){
+        Log.i(LOG_TAG, "Creating objects in TestLogicCell");
 
         testLogicCell = new TestLogicCell();
         testCellDeployer = new TestCellDeployer(this);
 
-        
+        testCellDeployer.deploy(testLogicCell);
+        // logic cell is deployed now (all objects is initialized, we can call init() method
+        testLogicCell.init();
 
     }
 

@@ -62,4 +62,10 @@ public class BtCellDeployer extends CellDeployer{
         btCell.init();
 
     }
+
+    @Override
+    protected void injectCellDeployer(PortAdapterCreator injector) {
+        BtPortAdapterCreator btPortAdapterCreator = (BtPortAdapterCreator) injector;
+        btPortAdapterCreator.injectBtCellDeployer(this);
+    }
 }

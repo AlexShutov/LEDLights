@@ -2,6 +2,8 @@ package alex_shutov.com.ledlights.hex_general;
 
 import android.content.Context;
 
+import java.util.Map;
+
 import javax.inject.Inject;
 
 /**
@@ -23,6 +25,7 @@ public abstract class LogicCell {
     @Inject
     Context context;
 
+
     /**
      * Called by deployer right after deployer initialized its
      * PortAdapterCreator (DI component). this component can create
@@ -31,7 +34,7 @@ public abstract class LogicCell {
      */
     public void createObjects(PortAdapterCreator creator){
         adaperCreator = creator;
-        creator.injectLogicCell(this);
+        injectThisCell();
     }
 
     /**
@@ -44,6 +47,9 @@ public abstract class LogicCell {
      * Intialize all internal dependencies here
      */
     public abstract void init();
+
+
+    protected abstract void injectThisCell();
 
     public Context getContext(){
         return context;

@@ -36,6 +36,11 @@ public class BtLogicCell extends LogicCell implements
         Log.i(LOG_TAG, "BtLogicCell.init()");
     }
 
+    @Override
+    protected void injectThisCell() {
+
+    }
+
     /**
      *  Accessors
      */

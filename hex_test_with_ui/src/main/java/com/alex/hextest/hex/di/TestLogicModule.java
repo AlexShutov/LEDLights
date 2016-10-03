@@ -2,6 +2,7 @@ package com.alex.hextest.hex.di;
 
 import android.content.Context;
 
+import com.alex.hextest.hex.TestPortAdapter;
 import com.alex.hextest.hex.test_logic.TestObjectA;
 import com.alex.hextest.hex.test_logic.TestObjectBSingleton;
 
@@ -39,6 +40,16 @@ public class TestLogicModule {
         TestObjectBSingleton testObjectBSingleton = new TestObjectBSingleton(context);
         return testObjectBSingleton;
     }
+
+    @Provides
+    @Inject
+    @Singleton
+    public TestPortAdapter provideTestPortAdapter(Context context){
+        TestPortAdapter testPortAdapter = new TestPortAdapter(context);
+        return testPortAdapter;
+    }
+
+
 
 
 }
