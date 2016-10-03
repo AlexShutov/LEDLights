@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/LEDLights.iml" filepath="$PROJECT_DIR$/LEDLights.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/hex_test_with_ui/hex_test_with_ui.iml" filepath="$PROJECT_DIR$/hex_test_with_ui/hex_test_with_ui.iml" />
       <module fileurl="file://$PROJECT_DIR$/hexframework/hexframework.iml" filepath="$PROJECT_DIR$/hexframework/hexframework.iml" />
     </modules>
   </component>
