@@ -15,18 +15,16 @@ import alex_shutov.com.ledlights.hex_general.di.SystemModule;
  * system features (context, etc), nor single module.
  * It is neccessary, because logic cell is supposed to be
  * running in Service, cells connect to each other by
- * binding those services
+ * binding those services.
+ * Initial version of this class have had 'System module', responsible for
+ * injecting (di) Context instance and all Android- specific systems. But,
+ * apparently, it was not very good solution, because this class is a part of hexagonal
+ * architecture and should be used in unit tests, that is why it MUST be independent of
+ * Android framework (Context). Now SystemModule has to be defined in derived class.
  */
 public abstract class CellDeployer {
 
-    /** provides basic system features  */
-    private SystemModule systemModule;
-
     PortAdapterCreator portsCreator;
-
-    public CellDeployer(Context context){
-        systemModule = new SystemModule(context);
-    }
 
     /** override for deploying concrete cell type */
     public void deploy(LogicCell cell){
@@ -42,21 +40,18 @@ public abstract class CellDeployer {
 
     /**
      * Fabric method creating PortAdapterCreator (DI component),
-     * override it
+     * override it.
+     * This method is protected, because it is called just once by CellDeployed during
+     * deploying logic cell. PortAdapter creater contains DI modules, which should be
+     * created once.
      * @return created instance
      */
-    public abstract PortAdapterCreator createPortCreator();
+    protected abstract PortAdapterCreator createPortCreator();
 
     /**
      * Connect all ports to 'LogicCell'
      */
     public abstract void connectPorts(LogicCell logicCell);
 
-    public SystemModule getSystemModule(){
-        return systemModule;
-    }
 
-    public PortAdapterCreator getPortsCreator() {
-        return portsCreator;
-    }
 }

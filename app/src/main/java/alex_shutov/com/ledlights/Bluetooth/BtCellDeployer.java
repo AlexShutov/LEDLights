@@ -11,13 +11,16 @@ import alex_shutov.com.ledlights.bluetooth.di.BtPortModule;
 import alex_shutov.com.ledlights.hex_general.CellDeployer;
 import alex_shutov.com.ledlights.hex_general.LogicCell;
 import alex_shutov.com.ledlights.hex_general.PortAdapterCreator;
+import alex_shutov.com.ledlights.hex_general.di.SystemModule;
 
 /**
  * Created by lodoss on 24/08/16.
  */
 
 public class BtCellDeployer extends CellDeployer{
+
     private static final String LOG_TAG = CellDeployer.class.getSimpleName();
+    private Context context;
 
     // Dagger can only inject public fields
     @Inject
@@ -26,14 +29,15 @@ public class BtCellDeployer extends CellDeployer{
     public BtConnPort btConnPort;
 
     public BtCellDeployer(Context context){
-        super(context);
+        this.context = context;
     }
 
     @Override
     public PortAdapterCreator createPortCreator() {
         BtPortModule portModule = new BtPortModule();
+        SystemModule systemModule = new SystemModule(context);
         PortAdapterCreator creator = DaggerBtPortAdapterCreator.builder()
-                .systemModule(getSystemModule())
+                .systemModule(systemModule)
                 .btPortModule(portModule)
                 .build();
         return creator;
@@ -56,7 +60,6 @@ public class BtCellDeployer extends CellDeployer{
         /* all ports is set, call 'init method from logi cell so
          * it can finish initialization */
         btCell.init();
-
 
     }
 }
