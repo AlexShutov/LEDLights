@@ -19,13 +19,9 @@ import alex_shutov.com.ledlights.hex_general.di.SystemModule;
  */
 public abstract class CellDeployer {
 
-    /** provides basic system features  */
-    private SystemModule systemModule;
-
     PortAdapterCreator portsCreator;
 
-    public CellDeployer(Context context){
-        systemModule = new SystemModule(context);
+    public CellDeployer(){
     }
 
     /** override for deploying concrete cell type */
@@ -52,11 +48,5 @@ public abstract class CellDeployer {
      */
     public abstract void connectPorts(LogicCell logicCell);
 
-    public SystemModule getSystemModule(){
-        return systemModule;
-    }
 
-    public PortAdapterCreator getPortsCreator() {
-        return portsCreator;
-    }
 }
