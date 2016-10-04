@@ -11,7 +11,7 @@ public interface Port {
      * only then initialize that port. If initialization finish successfully, Port will
      * notify its PortListener by calling onPortReady() callback method. On the other hand,
      * if case of error which cannot be fixed port will call 'onCriticalFailure()' callback
-     * method
+     * method.
      */
     void initialize();
 

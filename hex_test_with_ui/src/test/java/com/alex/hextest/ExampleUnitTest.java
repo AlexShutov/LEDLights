@@ -1,4 +1,4 @@
-package alex_shutov.com.ledlights.hex_general;
+package com.alex.hextest;
 
 import org.junit.Test;
 

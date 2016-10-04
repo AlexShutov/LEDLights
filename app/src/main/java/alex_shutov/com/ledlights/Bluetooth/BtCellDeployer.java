@@ -18,6 +18,7 @@ import alex_shutov.com.ledlights.hex_general.di.SystemModule;
  */
 
 public class BtCellDeployer extends CellDeployer{
+
     private static final String LOG_TAG = CellDeployer.class.getSimpleName();
     private Context context;
 
@@ -60,7 +61,12 @@ public class BtCellDeployer extends CellDeployer{
          * it can finish initialization */
         btCell.init();
 
+    }
 
+    @Override
+    protected void injectCellDeployer(PortAdapterCreator injector) {
+        BtPortAdapterCreator btPortAdapterCreator = (BtPortAdapterCreator) injector;
+        btPortAdapterCreator.injectBtCellDeployer(this);
     }
 
 

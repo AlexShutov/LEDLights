@@ -4,9 +4,7 @@ package alex_shutov.com.ledlights.hex_general;
  * Created by lodoss on 24/08/16.
  */
 
-import android.content.Context;
-
-import alex_shutov.com.ledlights.hex_general.di.SystemModule;
+import android.util.Log;
 
 /**
  * Creates and keep instance of 'PortAdapterCreator'
@@ -15,7 +13,12 @@ import alex_shutov.com.ledlights.hex_general.di.SystemModule;
  * system features (context, etc), nor single module.
  * It is neccessary, because logic cell is supposed to be
  * running in Service, cells connect to each other by
- * binding those services
+ * binding those services.
+ * Initial version of this class have had 'System module', responsible for
+ * injecting (di) Context instance and all Android- specific systems. But,
+ * apparently, it was not very good solution, because this class is a part of hexagonal
+ * architecture and should be used in unit tests, that is why it MUST be independent of
+ * Android framework (Context). Now SystemModule has to be defined in derived class.
  */
 public abstract class CellDeployer {
 
@@ -30,23 +33,32 @@ public abstract class CellDeployer {
         // create and set all instances in LogicCell by
         // using creator we just initialized
         cell.createObjects(portsCreator);
-        // create ports, referenced by derived class
-        portsCreator.injectCellDeployer(this);
+        // create objects in this
+        injectCellDeployer(portsCreator);
         // connect ports we just created to logic cell
         connectPorts(cell);
     }
 
     /**
      * Fabric method creating PortAdapterCreator (DI component),
-     * override it
+     * override it.
+     * This method is protected, because it is called just once by CellDeployed during
+     * deploying logic cell. PortAdapter creater contains DI modules, which should be
+     * created once.
      * @return created instance
      */
-    public abstract PortAdapterCreator createPortCreator();
+    protected abstract PortAdapterCreator createPortCreator();
 
     /**
-     * Connect all ports to 'LogicCell'
+     * Connect and initialize all ports to 'LogicCell'.
+     * The point is that CellDeployer incapsulates entie deployment process, including
+     * initialization of ports inside a cell.
+     * Port know how to initialize and bind its internal dependencies, but CellDeployer
+     * know when to call that method and what arguments to use
      */
     public abstract void connectPorts(LogicCell logicCell);
 
+
+    protected abstract void injectCellDeployer(PortAdapterCreator injector);
 
 }

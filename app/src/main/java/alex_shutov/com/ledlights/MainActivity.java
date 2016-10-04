@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
             bytes[3] = '\n';
             bytes[4] = (byte)255;
             bytes[5] = (byte) 0;
-            bytes[6] = (byte) 255;
+            bytes[6] = (byte) 0;
 
             Observable.defer(() -> Observable.just(bytes))
                     .subscribeOn(Schedulers.io())

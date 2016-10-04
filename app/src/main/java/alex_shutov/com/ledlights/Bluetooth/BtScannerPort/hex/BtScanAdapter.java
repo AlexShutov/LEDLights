@@ -12,6 +12,8 @@ import alex_shutov.com.ledlights.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetooth.BtDeviceConverter;
 import alex_shutov.com.ledlights.bluetooth.BtScannerPort.BTDeviceScanner;
 import alex_shutov.com.ledlights.hex_general.Adapter;
+import alex_shutov.com.ledlights.hex_general.CellDeployer;
+import alex_shutov.com.ledlights.hex_general.PortAdapterCreator;
 import alex_shutov.com.ledlights.hex_general.PortInfo;
 import rx.Observable;
 import rx.Subscription;
@@ -54,8 +56,12 @@ public class BtScanAdapter extends Adapter implements BtScanPort {
         this.context = context;
     }
 
+    /**
+     * TODO:
+     * @param cellDeployer
+     */
     @Override
-    public void initialize() {
+    public void initialize(CellDeployer cellDeployer) {
         btAdapter = BluetoothAdapter.getDefaultAdapter();
         btScanner = new BTDeviceScanner(context);
     }
