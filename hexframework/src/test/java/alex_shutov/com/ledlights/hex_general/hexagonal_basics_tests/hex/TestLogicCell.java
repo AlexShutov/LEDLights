@@ -27,23 +27,31 @@ public class TestLogicCell extends LogicCell {
 
 
     public TestPort getTestPort(){
-        Log.i(LOG_TAG, "getTestPort()");
+        System.out.println(LOG_TAG + "getTestPort()");
         return testPortAdapter;
     }
 
 
     @Override
     public void init() {
-        Log.i(LOG_TAG, "init() method is called");
-
+        System.out.println(LOG_TAG +  " init() method is called");
+        // initializing ports;
+        testPortAdapter.initialize();
 
     }
 
-
     @Override
     protected void injectThisCell() {
-        Log.i(LOG_TAG, "Injecting logi cell TestLogicCell ");
+        System.out.println(LOG_TAG + " Injecting logi cell TestLogicCell ");
         TestPortCreator portCreator = (TestPortCreator) getAdaperCreator();
         portCreator.injectTestLogicCell(this);
+    }
+
+    public TestObjectA getTestObjectA() {
+        return testObjectA;
+    }
+
+    public TestObjectBSingleton getTestObjectBSingleton() {
+        return testObjectBSingleton;
     }
 }

@@ -14,6 +14,8 @@ import alex_shutov.com.ledlights.bluetooth.BtConnectorPort.BluetoothChatService;
 import alex_shutov.com.ledlights.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetooth.BtConnectorPort.Constants;
 import alex_shutov.com.ledlights.hex_general.Adapter;
+import alex_shutov.com.ledlights.hex_general.CellDeployer;
+import alex_shutov.com.ledlights.hex_general.PortAdapterCreator;
 import alex_shutov.com.ledlights.hex_general.PortInfo;
 import alex_shutov.com.ledlights.hex_general.PortListener;
 
@@ -66,8 +68,11 @@ public class BtConnAdapter extends Adapter implements BtConnPort {
      * Setup BluetooothChatService, dispatcher thread and DispatcherHandler.
      * Notice, we don't call 'startListening()' method here, because it need further
      * initialization - UUIDs for secure and insecure modes
+     * @param cellDeployer
+     * We don't use DI in with this port so there is no use for
      */
-    public void initialize(){
+    @Override
+    public void initialize(CellDeployer cellDeployer){
         /** it will be initialized within Dispatcher thread (when Looper is ready)  */
         dispatcherHandler = null;
         dispatcherThread = new HandlerThread(DISPATCHER_THREAD_NAME);

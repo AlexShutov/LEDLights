@@ -1,5 +1,4 @@
 package alex_shutov.com.ledlights.hex_general.hexagonal_basics_tests.hex;
-
 import alex_shutov.com.ledlights.hex_general.Port;
 
 /**

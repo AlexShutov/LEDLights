@@ -21,10 +21,7 @@ import alex_shutov.com.ledlights.hex_general.hexagonal_basics_tests.hex.test_log
 public class TestCellDeployer extends CellDeployer {
     private static final String LOG_TAG = TestCellDeployer.class.getSimpleName();
 
-    // We need context, because CellDeployer creates di component, responsible for
-    // injecting context
-    private Context context;
-    
+
     @Inject
     TestObjectA objA;
 
@@ -34,8 +31,7 @@ public class TestCellDeployer extends CellDeployer {
 
     private TestLogicModule testLogicModule;
 
-    public TestCellDeployer(Context context){
-        this.context = context;
+    public TestCellDeployer(){
     }
 
     /**
@@ -63,16 +59,16 @@ public class TestCellDeployer extends CellDeployer {
      */
     @Override
     public void connectPorts(LogicCell logicCell) {
-        Log.i(LOG_TAG, "connecting ports in connectPorts()");
+        System.out.println(LOG_TAG + " connecting ports in connectPorts()");
         TestLogicCell testLogicCell = (TestLogicCell) logicCell;
         // initialize 'testPort' and other ports inside a cell
         TestPort testPort =  testLogicCell.getTestPort();
 
         if (objA != null && objB != null){
-            Log.i(LOG_TAG, "Injected context is not null, objects inside TestCellDeployer were" +
+            System.out.println(LOG_TAG + " Injected context is not null, objects inside TestCellDeployer were" +
                     "created during deployment process");
         } else {
-            Log.e(LOG_TAG, "Objects were not injected during deployment, something is broken");
+            System.err.println(LOG_TAG + " Objects were not injected during deployment, something is broken");
         }
     }
 
@@ -80,5 +76,13 @@ public class TestCellDeployer extends CellDeployer {
     protected void injectCellDeployer(PortAdapterCreator injector) {
         TestPortCreator testPortCreator = (TestPortCreator) injector;
         testPortCreator.injectTestCellDeployed(this);
+    }
+
+    public TestObjectA getObjA() {
+        return objA;
+    }
+
+    public TestObjectBSingleton getObjB() {
+        return objB;
     }
 }

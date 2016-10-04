@@ -4,8 +4,13 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import alex_shutov.com.ledlights.hex_general.Adapter;
 import alex_shutov.com.ledlights.hex_general.PortInfo;
+import alex_shutov.com.ledlights.hex_general.hexagonal_basics_tests.hex.test_logic.TestObjectA;
+import alex_shutov.com.ledlights.hex_general.hexagonal_basics_tests.hex.test_logic.TestObjectBSingleton;
 
 /**
  * Created by Alex on 10/1/2016.
@@ -13,6 +18,13 @@ import alex_shutov.com.ledlights.hex_general.PortInfo;
 public class TestPortAdapter extends Adapter  implements TestPort {
     private static final String LOG_TAG = TestPortAdapter.class.getSimpleName();
     private static final int TEST_PORT = 3;
+
+    @Inject
+    TestObjectA objA;
+    @Inject
+    @Singleton
+    TestObjectBSingleton objB;
+
 
     public TestPortAdapter(){
     }
@@ -22,7 +34,7 @@ public class TestPortAdapter extends Adapter  implements TestPort {
      */
     @Override
     public void initialize() {
-        Log.i(LOG_TAG, "Initializing test port adapter");
+        System.out.println(LOG_TAG + " Initializing test port adapter");
     }
 
     @Override
@@ -39,17 +51,17 @@ public class TestPortAdapter extends Adapter  implements TestPort {
 
     @Override
     public void showMessage(String str) {
-        Log.i(LOG_TAG, "Displaying message: " + str);
+        System.out.println(LOG_TAG + " Displaying message: " + str);
     }
 
     @Override
     public void logMessage(String str) {
-        Log.i(LOG_TAG, str);
+        System.out.println(LOG_TAG +  str);
     }
 
     @Override
     public void sendMessage(String str) {
-        Log.i(LOG_TAG, "Message sent: " + str);
+        System.out.println(LOG_TAG + " Message sent: " + str);
     }
 
 }

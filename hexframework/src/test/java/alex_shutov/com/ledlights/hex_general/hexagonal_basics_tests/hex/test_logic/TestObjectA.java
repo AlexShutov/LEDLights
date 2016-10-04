@@ -14,7 +14,7 @@ public class TestObjectA {
     private Long someLong;
 
     public TestObjectA(){
-        Log.i(LOG_TAG, "Object created");
+        System.out.println(LOG_TAG + " Object created");
     }
 
     public String getSomeString() {

@@ -15,7 +15,7 @@ public class TestObjectBSingleton {
 
 
     public TestObjectBSingleton(){
-        Log.i(LOG_TAG, "object created");
+        System.out.println(LOG_TAG + " object created");
     }
 
     public String getSomeString() {
