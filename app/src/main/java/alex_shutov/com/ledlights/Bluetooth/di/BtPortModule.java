@@ -28,7 +28,7 @@ public class BtPortModule {
     @Singleton
     BtScanPort provideScanPort(Context context){
         BtScanPort scanPort = new BtScanAdapter(context);
-        return null;
+        return scanPort;
     }
 
 }

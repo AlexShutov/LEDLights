@@ -60,7 +60,6 @@ public class BtCellDeployer extends CellDeployer{
         /* all ports is set, call 'init method from logic cell so
          * it can finish initialization */
         btCell.init();
-
     }
 
     @Override

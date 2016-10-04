@@ -44,7 +44,8 @@ public class BtLogicCell extends LogicCell implements
 
     @Override
     protected void injectThisCell() {
-
+        BtPortAdapterCreator creator = (BtPortAdapterCreator) getAdaperCreator();
+        creator.injectBtLogicCell(this);
     }
 
     /**

@@ -1,7 +1,7 @@
 package alex_shutov.com.ledlights;
 
-import android.app.Application;
 import android.content.Context;
+import android.support.annotation.IntegerRes;
 import android.support.multidex.MultiDexApplication;
 import android.widget.Toast;
 
@@ -58,6 +58,7 @@ public class LEDApplication extends MultiDexApplication{
         Context context = ((BtLogicCell) cell).getContext();
         String msg = context == null ? "Context is null" : "Context is not null, DI work";
         Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+
     }
 
     @Override

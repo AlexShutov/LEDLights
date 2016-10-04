@@ -15,4 +15,5 @@ import dagger.Component;
 @Component(modules = {SystemModule.class, BtPortModule.class})
 public interface BtPortAdapterCreator extends PortAdapterCreator {
     void injectBtCellDeployer(BtCellDeployer cellDeployer);
+    void injectBtLogicCell(BtLogicCell logicCell);
 }

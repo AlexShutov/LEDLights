@@ -1,1 +1,1 @@
-include ':app', ':hexframework', ':hex_test_with_ui'
+include ':app', ':hexframework'

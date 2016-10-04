@@ -58,10 +58,9 @@ public class BtScanAdapter extends Adapter implements BtScanPort {
 
     /**
      * TODO:
-     * @param cellDeployer
      */
     @Override
-    public void initialize(CellDeployer cellDeployer) {
+    public void initialize() {
         btAdapter = BluetoothAdapter.getDefaultAdapter();
         btScanner = new BTDeviceScanner(context);
     }
