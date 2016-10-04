@@ -1,6 +1,5 @@
 package alex_shutov.com.ledlights.hex_general.hexagonal_basics_tests.hex.test_logic;
 
-import android.content.Context;
 import android.util.Log;
 
 /**
@@ -13,11 +12,9 @@ public class TestObjectA {
     private String someString;
     private Integer someInt;
     private Long someLong;
-    private Context deviceContext;
 
-    public TestObjectA(Context context){
+    public TestObjectA(){
         Log.i(LOG_TAG, "Object created");
-        this.deviceContext = context;
     }
 
     public String getSomeString() {
@@ -44,7 +41,4 @@ public class TestObjectA {
         this.someLong = someLong;
     }
 
-    public Context getDeviceContext() {
-        return deviceContext;
-    }
 }

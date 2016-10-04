@@ -1,8 +1,11 @@
 package alex_shutov.com.ledlights.bluetooth;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.util.Set;
+
+import javax.inject.Inject;
 
 import alex_shutov.com.ledlights.bluetooth.BtConnectorPort.hex.BtConnPort;
 import alex_shutov.com.ledlights.bluetooth.BtConnectorPort.hex.BtConnPortListener;
@@ -25,6 +28,9 @@ public class BtLogicCell extends LogicCell implements
     /** references to ports connectoed to this LogicCell */
     private BtScanPort btScanPort;
     private BtConnPort btConnPort;
+
+    @Inject
+    public Context context;
 
     /**
      *  Initialize all internal dependencies here
@@ -60,8 +66,9 @@ public class BtLogicCell extends LogicCell implements
         this.btScanPort = btScanPort;
     }
 
-
-
+    public Context getContext() {
+        return context;
+    }
 
     /**
      *      Inherited from BtScanPortListener

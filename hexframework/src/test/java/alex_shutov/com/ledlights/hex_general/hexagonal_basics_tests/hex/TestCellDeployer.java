@@ -9,6 +9,7 @@ import javax.inject.Singleton;
 import alex_shutov.com.ledlights.hex_general.CellDeployer;
 import alex_shutov.com.ledlights.hex_general.LogicCell;
 import alex_shutov.com.ledlights.hex_general.PortAdapterCreator;
+import alex_shutov.com.ledlights.hex_general.hexagonal_basics_tests.hex.di.DaggerTestPortCreator;
 import alex_shutov.com.ledlights.hex_general.hexagonal_basics_tests.hex.di.TestLogicModule;
 import alex_shutov.com.ledlights.hex_general.hexagonal_basics_tests.hex.di.TestPortCreator;
 import alex_shutov.com.ledlights.hex_general.hexagonal_basics_tests.hex.test_logic.TestObjectA;
@@ -23,10 +24,7 @@ public class TestCellDeployer extends CellDeployer {
     // We need context, because CellDeployer creates di component, responsible for
     // injecting context
     private Context context;
-
-    @Inject
-    public Context injectedContext;
-
+    
     @Inject
     TestObjectA objA;
 
@@ -70,7 +68,7 @@ public class TestCellDeployer extends CellDeployer {
         // initialize 'testPort' and other ports inside a cell
         TestPort testPort =  testLogicCell.getTestPort();
 
-        if (null != injectedContext && objA != null && objB != null){
+        if (objA != null && objB != null){
             Log.i(LOG_TAG, "Injected context is not null, objects inside TestCellDeployer were" +
                     "created during deployment process");
         } else {

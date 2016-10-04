@@ -22,9 +22,6 @@ public abstract class LogicCell {
 
     private PortAdapterCreator adaperCreator;
 
-    @Inject
-    Context context;
-
 
     /**
      * Called by deployer right after deployer initialized its
@@ -50,10 +47,6 @@ public abstract class LogicCell {
 
 
     protected abstract void injectThisCell();
-
-    public Context getContext(){
-        return context;
-    }
 
     protected PortAdapterCreator getAdaperCreator(){
         return adaperCreator;

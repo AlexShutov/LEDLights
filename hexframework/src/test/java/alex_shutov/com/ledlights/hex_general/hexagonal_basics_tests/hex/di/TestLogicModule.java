@@ -1,6 +1,5 @@
 package alex_shutov.com.ledlights.hex_general.hexagonal_basics_tests.hex.di;
 
-import android.content.Context;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -27,15 +26,15 @@ public class TestLogicModule {
 
     @Provides
     @Inject
-    public TestObjectA provideTestObjectA(Context context){
-        TestObjectA ret = new TestObjectA(context);
+    public TestObjectA provideTestObjectA(){
+        TestObjectA ret = new TestObjectA();
         return ret;
     }
 
     @Provides
     @Inject
     @Singleton
-    public TestObjectBSingleton provideTestObjectB(Context context){
+    public TestObjectBSingleton provideTestObjectB(){
         TestObjectBSingleton testObjectBSingleton = new TestObjectBSingleton();
         return testObjectBSingleton;
     }
@@ -43,8 +42,8 @@ public class TestLogicModule {
     @Provides
     @Inject
     @Singleton
-    public TestPortAdapter provideTestPortAdapter(Context context){
-        TestPortAdapter testPortAdapter = new TestPortAdapter(context);
+    public TestPortAdapter provideTestPortAdapter(){
+        TestPortAdapter testPortAdapter = new TestPortAdapter();
         return testPortAdapter;
     }
 

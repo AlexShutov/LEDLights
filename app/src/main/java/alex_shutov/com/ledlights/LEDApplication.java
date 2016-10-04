@@ -55,7 +55,7 @@ public class LEDApplication extends MultiDexApplication{
         // deploy this cell- create and createObjects ports, connect ports to the cell
         btCellDeployer.deploy(cell);
 
-        Context context = cell.getContext();
+        Context context = ((BtLogicCell) cell).getContext();
         String msg = context == null ? "Context is null" : "Context is not null, DI work";
         Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
     }

@@ -14,10 +14,7 @@ public class TestPortAdapter extends Adapter  implements TestPort {
     private static final String LOG_TAG = TestPortAdapter.class.getSimpleName();
     private static final int TEST_PORT = 3;
 
-    private Context context;
-
-    public TestPortAdapter(Context context){
-        this.context = context;
+    public TestPortAdapter(){
     }
 
     /**
@@ -42,7 +39,7 @@ public class TestPortAdapter extends Adapter  implements TestPort {
 
     @Override
     public void showMessage(String str) {
-        Toast.makeText(getContext(), str, Toast.LENGTH_SHORT).show();
+        Log.i(LOG_TAG, "Displaying message: " + str);
     }
 
     @Override
@@ -55,11 +52,4 @@ public class TestPortAdapter extends Adapter  implements TestPort {
         Log.i(LOG_TAG, "Message sent: " + str);
     }
 
-    public Context getContext() {
-        return context;
-    }
-
-    public void setContext(Context context) {
-        this.context = context;
-    }
 }
