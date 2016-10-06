@@ -11,6 +11,8 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.esb.B
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnAdapter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.LogScannerListener;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.esb.BtScanListenerEsbReceiveMapper;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.esb.BtScanListenerEsbSendMapper;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanAdapter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanPort;
 import alex_shutov.com.ledlights.hex_general.LogicCell;
@@ -51,7 +53,11 @@ public class BtLogicCell extends LogicCell {
     BtConnListenerEsbSendMapper connListenerSendMapper;
     @Inject
     BtConnListenerEsbReceiveMapper connListenerEsbReceiveMapper;
-
+    // BtScanner event mappers (maps listener)
+    @Inject
+    BtScanListenerEsbSendMapper scanListenerSendMapper;
+    @Inject
+    BtScanListenerEsbReceiveMapper scanListenerReceiveMapper;
 
     /**
      *  Initialize all internal dependencies here
@@ -61,9 +67,7 @@ public class BtLogicCell extends LogicCell {
     @Override
     public void init() {
         Log.i(LOG_TAG, "BtLogicCell.init()");
-        btConnAdapter.setPortListener(logConnectorListener);
         btConnAdapter.initialize();
-        btScanAdapter.setPortListener(logScannerListener);
         btScanAdapter.initialize();
         initializeEsbMappers();
     }
@@ -105,12 +109,18 @@ public class BtLogicCell extends LogicCell {
      * Subscribe mappers to EventBus and register those mappers with adapters
      */
     private void initializeEsbMappers(){
+        // initialize bluetoooth connector mappers
         connListenerSendMapper.register();
+        connListenerEsbReceiveMapper.register();
         // register logger as wrapped callback in receive mapper
         connListenerEsbReceiveMapper.setListener(logConnectorListener);
-        connListenerEsbReceiveMapper.register();
-
         btConnAdapter.setPortListener(connListenerSendMapper);
+        // initialize bluetooth scanner mapper
+        scanListenerSendMapper.register();
+        scanListenerReceiveMapper.register();
+        btScanAdapter.setPortListener(scanListenerSendMapper);
+        scanListenerReceiveMapper.setListener(logScannerListener);
+        //btScanAdapter.setPortListener(scanListenerSendMapper);
     }
 
     /**
@@ -120,6 +130,8 @@ public class BtLogicCell extends LogicCell {
         connListenerEsbReceiveMapper.unregister();
         connListenerSendMapper.unregister();
         btConnAdapter.setPortListener(null);
+        scanListenerSendMapper.unregister();
+        scanListenerReceiveMapper.unregister();
     }
 
 
