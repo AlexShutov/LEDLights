@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         app = (LEDApplication) getApplication();
-        btPort = app.getBtPort();
+        btPort = app.getBtConnPort();
 
 
         chooseNexus();
@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
         // setup 'stop connect' button
         btn = (Button) findViewById(R.id.btn_bt_stop_connecting);
         btn.setOnClickListener(v -> {
-            btPort.stopConnecting();
+            connPort.stopConnecting();
         });
 */
 
@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
                     .subscribe( d -> {
                         btPort.writeBytes(d);
                     });
-            //btPort.writeBytes(bytes);
+            //connPort.writeBytes(bytes);
         });
 
         // setup 'Send data' button
@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
                     .subscribe( d -> {
                         btPort.writeBytes(d);
                     });
-            //btPort.writeBytes(bytes);
+            //connPort.writeBytes(bytes);
         });
 
 

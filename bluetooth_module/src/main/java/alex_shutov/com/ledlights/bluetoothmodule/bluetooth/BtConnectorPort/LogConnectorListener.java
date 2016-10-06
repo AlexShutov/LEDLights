@@ -11,12 +11,12 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 /**
  * Created by lodoss on 26/07/16.
  */
-public class LogListener implements BtConnPortListener {
-    private final static String LOG_TAG = LogListener.class.getSimpleName();
+public class LogConnectorListener implements BtConnPortListener {
+    private final static String LOG_TAG = LogConnectorListener.class.getSimpleName();
 
     private Context context;
 
-    public LogListener(Context context){
+    public LogConnectorListener(Context context){
         this.context = context;
     }
 

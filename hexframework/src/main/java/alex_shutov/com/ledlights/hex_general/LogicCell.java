@@ -35,7 +35,7 @@ public abstract class LogicCell {
     }
 
     /**
-     * Deployment process is as following:
+     * Deployment process is following:
      * Deployer creates creator and then passes it to this logic cell
      * Logic cell uses that creator to instantiate all entities it need.
      * after that deployer calls its other methods, such as 'createPorts()',

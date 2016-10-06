@@ -5,8 +5,8 @@ import android.util.Log;
 
 import javax.inject.Inject;
 
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnPort;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanPort;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnAdapter;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanAdapter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtPortModule;
 import alex_shutov.com.ledlights.hex_general.CellDeployer;
 import alex_shutov.com.ledlights.hex_general.LogicCell;
@@ -17,21 +17,24 @@ import alex_shutov.com.ledlights.hex_general.di.SystemModule;
  * Created by lodoss on 24/08/16.
  */
 
-public class BtCellDeployer extends CellDeployer{
+public class BtCellDeployer extends CellDeployer {
 
     private static final String LOG_TAG = CellDeployer.class.getSimpleName();
     private Context context;
-
     // Dagger can only inject public fields
     @Inject
-    public BtScanPort btScanPort;
+    public BtScanAdapter btScanAdapter;
     @Inject
-    public BtConnPort btConnPort;
+    public BtConnAdapter btConnAdapter;
 
     public BtCellDeployer(Context context){
         this.context = context;
     }
 
+    /**
+     * Build DI component, which will create all ports and other objects.
+     * @return
+     */
     @Override
     public PortAdapterCreator createPortCreator() {
         BtPortModule portModule = new BtPortModule();
@@ -45,7 +48,7 @@ public class BtCellDeployer extends CellDeployer{
 
     @Override
     public void connectPorts(LogicCell logicCell) {
-        if (null != btScanPort){
+        if (null == btScanAdapter){
             Log.e(LOG_TAG, "DI did not work , something is broken");
             return;
         }
@@ -53,8 +56,8 @@ public class BtCellDeployer extends CellDeployer{
         /** set port instance, we didn't do that by DI, because logic cell
          * must not know about its ports
          */
-        btCell.setBtScanPort(btScanPort);
-        btCell.setBtConnPort(btConnPort);
+        btCell.setBtScanAdapter(btScanAdapter);
+        btCell.setBtConnAdapter(btConnAdapter);
         // TODO: add the rest of ports here
 
         /* all ports is set, call 'init method from logic cell so

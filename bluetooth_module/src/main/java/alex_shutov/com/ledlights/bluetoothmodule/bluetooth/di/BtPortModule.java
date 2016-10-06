@@ -4,10 +4,10 @@ import android.content.Context;
 
 import javax.inject.Singleton;
 
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.LogConnectorListener;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnAdapter;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnPort;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.LogScannerListener;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanAdapter;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanPort;
 import dagger.Module;
 import dagger.Provides;
 
@@ -17,18 +17,47 @@ import dagger.Provides;
 @Module
 public class BtPortModule {
 
+    /**
+     * Return Bluetooth connectivity port
+     * @param context
+     * @return
+     */
     @Provides
     @Singleton
-    BtConnPort provideBtConnPort(Context context){
+    BtConnAdapter provideBtConnPort(Context context){
         BtConnAdapter connAdapter = new BtConnAdapter(context);
         return connAdapter;
     }
 
+    /**
+     * Return Bluetoot scanning port
+     * @param context
+     * @return
+     */
     @Provides
     @Singleton
-    BtScanPort provideScanPort(Context context){
-        BtScanPort scanPort = new BtScanAdapter(context);
-        return scanPort;
+    BtScanAdapter provideScanPort(Context context){
+        BtScanAdapter scanAdapter = new BtScanAdapter(context);
+        return scanAdapter;
+    }
+
+    /**
+     *
+     * @param context
+     * @return
+     */
+    @Provides
+    @Singleton
+    LogConnectorListener provideLogConnectorListener(Context context){
+        LogConnectorListener listener = new LogConnectorListener(context);
+        return listener;
+    }
+
+    @Provides
+    @Singleton
+    LogScannerListener provideLogScannerListener(Context context){
+        LogScannerListener listener = new LogScannerListener(context);
+        return listener;
     }
 
 }

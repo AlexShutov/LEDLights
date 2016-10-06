@@ -3,14 +3,14 @@ package alex_shutov.com.ledlights.bluetoothmodule.bluetooth;
 import android.content.Context;
 import android.util.Log;
 
-import java.util.Set;
-
 import javax.inject.Inject;
 
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.LogConnectorListener;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnAdapter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnPort;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnPortListener;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.LogScannerListener;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanAdapter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanPort;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanPortListener;
 import alex_shutov.com.ledlights.hex_general.LogicCell;
 
 /**
@@ -22,12 +22,20 @@ import alex_shutov.com.ledlights.hex_general.LogicCell;
  * For two- way communication with ports it implement listener interfaces from
  * every port :BtScanPortListener,  BtConnPortListener,
  */
-public class BtLogicCell extends LogicCell implements
-        BtScanPortListener, BtConnPortListener {
+public class BtLogicCell extends LogicCell {
     private static final String LOG_TAG = LogicCell.class.getSimpleName();
-    /** references to ports connectoed to this LogicCell */
-    private BtScanPort btScanPort;
-    private BtConnPort btConnPort;
+    /** references to ports connectoed to this LogicCell
+     * Those intances should be created by DI - we can configure port types by
+     * changing modules during creation of DI component (.createPortAdapterCreator()) method.
+     * Adapters are set by CellDeployer, but other
+     */
+    private BtScanAdapter btScanAdapter;
+    private BtConnAdapter btConnAdapter;
+
+    @Inject
+    public LogScannerListener logScannerListener;
+    @Inject
+    public LogConnectorListener logConnectorListener;
 
     @Inject
     public Context context;
@@ -40,6 +48,11 @@ public class BtLogicCell extends LogicCell implements
     @Override
     public void init() {
         Log.i(LOG_TAG, "BtLogicCell.init()");
+
+        btConnAdapter.setPortListener(logConnectorListener);
+        btConnAdapter.initialize();
+        btScanAdapter.setPortListener(logScannerListener);
+        btScanAdapter.initialize();
     }
 
     @Override
@@ -52,107 +65,22 @@ public class BtLogicCell extends LogicCell implements
      *  Accessors
      */
     public BtConnPort getBtConnPort() {
-        return btConnPort;
+        return btConnAdapter;
     }
-
-    public void setBtConnPort(BtConnPort btConnPort) {
-        this.btConnPort = btConnPort;
-    }
-
     public BtScanPort getBtScanPort() {
-        return btScanPort;
+        return btScanAdapter;
     }
 
-    public void setBtScanPort(BtScanPort btScanPort) {
-        this.btScanPort = btScanPort;
+    public void setBtScanAdapter(BtScanAdapter btScanAdapter) {
+        this.btScanAdapter = btScanAdapter;
+    }
+
+    public void setBtConnAdapter(BtConnAdapter btConnAdapter) {
+        this.btConnAdapter = btConnAdapter;
     }
 
     public Context getContext() {
         return context;
     }
-
-    /**
-     *      Inherited from BtScanPortListener
-     */
-
-    @Override
-    public void onDeviceFound(BtDevice device) {
-
-    }
-
-    @Override
-    public void onPairedDevicesReceived(Set<BtDevice> devices) {
-
-    }
-
-    @Override
-    public void onScanCompleted() {
-
-    }
-
-    @Override
-    public void onCriticalFailure(int portID, Exception e) {
-
-    }
-
-    @Override
-    public void onPortReady(int portID) {
-
-    }
-
-    /**
-     *      Inherited from BtConnPortListener
-     */
-
-    @Override
-    public void onConnectioinFailed() {
-
-    }
-
-    @Override
-    public void onStateChanged(int state) {
-
-    }
-
-    @Override
-    public void onStateConnected() {
-
-    }
-
-    @Override
-    public void onStateConnecting() {
-
-    }
-
-    @Override
-    public void onStateListening() {
-
-    }
-
-    @Override
-    public void onStateIdle() {
-
-    }
-
-    @Override
-    public void onMessageRead(byte[] message, int messageSize) {
-
-    }
-
-    @Override
-    public void onMessageSent() {
-
-    }
-
-    @Override
-    public void onDeviceConnected(BtDevice btDevice) {
-
-    }
-
-    @Override
-    public void onConnectionLost() {
-
-    }
-
 
 }
