@@ -1,1 +1,1 @@
-include ':app', ':hexframework'
+include ':app', ':hexframework', ':bluetooth_module'
