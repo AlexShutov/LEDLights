@@ -41,6 +41,11 @@ public class TestLogicCell extends LogicCell {
     }
 
     @Override
+    public void suspend() {
+
+    }
+
+    @Override
     protected void injectThisCell() {
         System.out.println(LOG_TAG + " Injecting logi cell TestLogicCell ");
         TestPortCreator portCreator = (TestPortCreator) getAdaperCreator();

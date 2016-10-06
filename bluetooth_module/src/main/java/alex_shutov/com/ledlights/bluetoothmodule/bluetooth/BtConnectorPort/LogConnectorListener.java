@@ -27,7 +27,7 @@ public class LogConnectorListener implements BtConnPortListener {
     /** Inherited from BtConnPortListener */
 
     @Override
-    public void onConnectioinFailed() {
+    public void onConnectionFailed() {
         showMessage("Connection failed");
         Log.i(LOG_TAG, "Connection failed");
     }

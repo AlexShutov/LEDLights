@@ -6,6 +6,8 @@ import android.util.Log;
 import javax.inject.Inject;
 
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.LogConnectorListener;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.esb.BtConnListenerEsbReceiveMapper;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.esb.BtConnListenerEsbSendMapper;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnAdapter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.LogScannerListener;
@@ -32,13 +34,24 @@ public class BtLogicCell extends LogicCell {
     private BtScanAdapter btScanAdapter;
     private BtConnAdapter btConnAdapter;
 
+
+    @Inject
+    public Context context;
+
+    // loggers
     @Inject
     public LogScannerListener logScannerListener;
     @Inject
     public LogConnectorListener logConnectorListener;
 
+    // ESB mappers
+    // maps bt connection listener's method to event bus events (send mapper ) and
+    // listens for event bus events and notifies registered receiver
     @Inject
-    public Context context;
+    BtConnListenerEsbSendMapper connListenerSendMapper;
+    @Inject
+    BtConnListenerEsbReceiveMapper connListenerEsbReceiveMapper;
+
 
     /**
      *  Initialize all internal dependencies here
@@ -48,11 +61,16 @@ public class BtLogicCell extends LogicCell {
     @Override
     public void init() {
         Log.i(LOG_TAG, "BtLogicCell.init()");
-
         btConnAdapter.setPortListener(logConnectorListener);
         btConnAdapter.initialize();
         btScanAdapter.setPortListener(logScannerListener);
         btScanAdapter.initialize();
+        initializeEsbMappers();
+    }
+
+    @Override
+    public void suspend() {
+        suspendEsbMappers();
     }
 
     @Override
@@ -82,5 +100,27 @@ public class BtLogicCell extends LogicCell {
     public Context getContext() {
         return context;
     }
+
+    /**
+     * Subscribe mappers to EventBus and register those mappers with adapters
+     */
+    private void initializeEsbMappers(){
+        connListenerSendMapper.register();
+        // register logger as wrapped callback in receive mapper
+        connListenerEsbReceiveMapper.setListener(logConnectorListener);
+        connListenerEsbReceiveMapper.register();
+
+        btConnAdapter.setPortListener(connListenerSendMapper);
+    }
+
+    /**
+     * Unregister mappers from adapters and unsubscribe mappers from EventBus
+     */
+    private void suspendEsbMappers(){
+        connListenerEsbReceiveMapper.unregister();
+        connListenerSendMapper.unregister();
+        btConnAdapter.setPortListener(null);
+    }
+
 
 }

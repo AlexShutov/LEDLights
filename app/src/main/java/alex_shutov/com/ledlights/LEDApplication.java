@@ -51,6 +51,7 @@ public class LEDApplication extends MultiDexApplication{
 
     @Override
     public void onTerminate() {
+        cell.suspend();
         super.onTerminate();
     }
 

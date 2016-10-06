@@ -42,7 +42,7 @@ public interface BtConnPortListener extends PortListener {
      *  Notify program - it should decide what to do next. This is
      *  slightly modified version of 'MESSAGE_TOAST' command.
      */
-    void onConnectioinFailed();
+    void onConnectionFailed();
 
     /**
      *  Notify program that connection were lost

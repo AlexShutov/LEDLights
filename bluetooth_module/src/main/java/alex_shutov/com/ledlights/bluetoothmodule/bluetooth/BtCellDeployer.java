@@ -7,7 +7,9 @@ import javax.inject.Inject;
 
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnAdapter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanAdapter;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtPortModule;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtCellModule;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtConnectorModule;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtScannerModule;
 import alex_shutov.com.ledlights.hex_general.CellDeployer;
 import alex_shutov.com.ledlights.hex_general.LogicCell;
 import alex_shutov.com.ledlights.hex_general.PortAdapterCreator;
@@ -37,11 +39,17 @@ public class BtCellDeployer extends CellDeployer {
      */
     @Override
     public PortAdapterCreator createPortCreator() {
-        BtPortModule portModule = new BtPortModule();
+        // create di modules
+        BtConnectorModule connectorModule = new BtConnectorModule();
+        BtScannerModule scannerModule = new BtScannerModule();
+        BtCellModule cellModule = new BtCellModule();
         SystemModule systemModule = new SystemModule(context);
+
         PortAdapterCreator creator = DaggerBtPortAdapterCreator.builder()
                 .systemModule(systemModule)
-                .btPortModule(portModule)
+                .btCellModule(cellModule)
+                .btConnectorModule(connectorModule)
+                .btScannerModule(scannerModule)
                 .build();
         return creator;
     }

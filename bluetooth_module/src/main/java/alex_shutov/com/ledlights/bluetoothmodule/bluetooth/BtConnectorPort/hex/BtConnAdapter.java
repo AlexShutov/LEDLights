@@ -303,7 +303,7 @@ public class BtConnAdapter extends Adapter implements BtConnPort {
                     break;
                 case Constants.MESSAGE_CONNECTION_FAILED:
                     Log.i(LOG_TAG, "Connectioin failed");
-                    feedback.onConnectioinFailed();
+                    feedback.onConnectionFailed();
                     break;
                 case Constants.MESSAGE_CONNECTION_LOST:
                     Log.i(LOG_TAG, "Connection lost");

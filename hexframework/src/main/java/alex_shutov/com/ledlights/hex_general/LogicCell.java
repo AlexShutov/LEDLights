@@ -45,6 +45,10 @@ public abstract class LogicCell {
      */
     public abstract void init();
 
+    /**
+     * Stop all the work and dispose of all objects
+     */
+    public abstract void suspend();
 
     protected abstract void injectThisCell();
 
