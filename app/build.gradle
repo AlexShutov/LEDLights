@@ -71,4 +71,5 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'
     compile 'com.squareup.retrofit2:adapter-rxjava:2.0.2'
 
+    compile project(path: ':bluetooth_module')
 }

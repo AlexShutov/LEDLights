@@ -6,8 +6,9 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
-import alex_shutov.com.ledlights.bluetooth.BtDevice;
-import alex_shutov.com.ledlights.bluetooth.BtConnectorPort.hex.BtConnPort;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.BluetoothChatService;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnPort;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
@@ -42,29 +43,29 @@ public class MainActivity extends AppCompatActivity {
     private void chooseNexus(){
         deviceName = "Nexus One";
         deviceAddress = ADDRESS_NEXUS;
-        deviceUuidSecure = LEDApplication.MY_UUID_SECURE.toString();
-        deviceUuidInsecure = LEDApplication.MY_UUID_INSECURE.toString();
+        deviceUuidSecure = BluetoothChatService.MY_UUID_SECURE.toString();
+        deviceUuidInsecure = BluetoothChatService.MY_UUID_INSECURE.toString();
         Log.i(LOG_TAG, deviceName + " selected");
     }
     private void chooseMI(){
         deviceName = "chenese phone";
         deviceAddress = ADDRESS_MI;
-        deviceUuidSecure = LEDApplication.MY_UUID_SECURE.toString();
-        deviceUuidInsecure = LEDApplication.MY_UUID_INSECURE.toString();
+        deviceUuidSecure = BluetoothChatService.MY_UUID_SECURE.toString();
+        deviceUuidInsecure = BluetoothChatService.MY_UUID_INSECURE.toString();
         Log.i(LOG_TAG, deviceName + " selected");
     }
     private void chooseDesireC(){
         deviceName = NAME_MY_PHONE;
         deviceAddress = ADDRESS_MY_PHONE;
-        deviceUuidSecure = LEDApplication.MY_UUID_SECURE.toString();
-        deviceUuidInsecure = LEDApplication.MY_UUID_INSECURE.toString();
+        deviceUuidSecure = BluetoothChatService.MY_UUID_SECURE.toString();
+        deviceUuidInsecure = BluetoothChatService.MY_UUID_INSECURE.toString();
         Log.i(LOG_TAG, deviceName + " selected");
     }
     private void chooseHc05(){
         deviceName = "HC-05";
         deviceAddress = ADDRESS_HC_05;
-        deviceUuidSecure = LEDApplication.HC_05_UUID.toString();
-        deviceUuidInsecure = LEDApplication.HC_05_UUID.toString();
+        deviceUuidSecure = BluetoothChatService.HC_05_UUID.toString();
+        deviceUuidInsecure = BluetoothChatService.HC_05_UUID.toString();
         Log.i(LOG_TAG, deviceName + " selected");
     }
 
@@ -93,8 +94,8 @@ public class MainActivity extends AppCompatActivity {
         btn = (Button) findViewById(R.id.btn_bt_accept);
         btn.setOnClickListener(v -> {
             btPort.close();
-            btPort.setUuidSecure(LEDApplication.MY_UUID_SECURE.toString());
-            btPort.setUuidInsecure(LEDApplication.MY_UUID_INSECURE.toString());
+            btPort.setUuidSecure(BluetoothChatService.MY_UUID_SECURE.toString());
+            btPort.setUuidInsecure(BluetoothChatService.MY_UUID_INSECURE.toString());
             btPort.startListening();
         });
         // setup 'stop accept insecure' button
