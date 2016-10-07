@@ -113,7 +113,7 @@ public class BtLogicCell extends LogicCell {
         connListenerSendMapper.register();
         connListenerEsbReceiveMapper.register();
         // register logger as wrapped callback in receive mapper
-        connListenerEsbReceiveMapper.setListener(logConnectorListener);
+       // connListenerEsbReceiveMapper.setListener(logConnectorListener);
         btConnAdapter.setPortListener(connListenerSendMapper);
         // initialize bluetooth scanner mapper
         scanListenerSendMapper.register();

@@ -6,10 +6,13 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.util.concurrent.TimeUnit;
+
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.BluetoothChatService;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import rx.Observable;
+import rx.Subscription;
 import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
@@ -73,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
     }
 
+    private Subscription sendingSubscription;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -130,56 +134,34 @@ public class MainActivity extends AppCompatActivity {
             btPort.close();
         });
 
+        sendingSubscription = null;
+
         // setup 'Send data' button
         btn = (Button) findViewById(R.id.btn_bt_send_data);
         btn.setOnClickListener(v -> {
-            if (!btPort.isBtConnected()){
-                showToast("Bluetooth device not connected");
-                return;
-            }
-            String msg = "Hello";
-           // byte[] bytes = msg.getBytes();
-            byte[] bytes = new byte[100];
-            bytes[0] = '!';
-            bytes[1] = 0;
-            bytes[2] = 3;
-            bytes[3] = '\n';
-            bytes[4] = (byte)255;
-            bytes[5] = (byte) 0;
-            bytes[6] = (byte) 0;
+            sendingSubscription =
+                    Observable.interval(200, TimeUnit.MILLISECONDS)
+                    .map(cnt -> {
+                        if (cnt % 2 == 0){
+                            sendColorToDevice(0, 0, 0);
+                        } else {
+                            sendColorToDevice(255, 255, 255);
+                        }
+                        return cnt;
+                    })
+                    .subscribe(cnt -> {
 
-            Observable.defer(() -> Observable.just(bytes))
-                    .subscribeOn(Schedulers.io())
-                    .subscribe( d -> {
-                        btPort.writeBytes(d);
+                    }, error -> {
+
                     });
-            //connPort.writeBytes(bytes);
         });
 
         // setup 'Send data' button
         btn = (Button) findViewById(R.id.btn_bt_send_data2);
         btn.setOnClickListener(v -> {
-            if (!btPort.isBtConnected()){
-                showToast("Bluetooth device not connected");
-                return;
+            if (null != sendingSubscription && !sendingSubscription.isUnsubscribed()){
+                sendingSubscription.unsubscribe();
             }
-            String msg = "Hello";
-            // byte[] bytes = msg.getBytes();
-            byte[] bytes = new byte[100];
-            bytes[0] = '!';
-            bytes[1] = 0;
-            bytes[2] = 3;
-            bytes[3] = '\n';
-            bytes[4] = (byte) 30;
-            bytes[5] = (byte) 150;
-            bytes[6] = (byte) 200;
-
-            Observable.defer(() -> Observable.just(bytes))
-                    .subscribeOn(Schedulers.io())
-                    .subscribe( d -> {
-                        btPort.writeBytes(d);
-                    });
-            //connPort.writeBytes(bytes);
         });
 
 
@@ -200,6 +182,30 @@ public class MainActivity extends AppCompatActivity {
             chooseDesireC();
         });
 
+    }
+
+    private void sendColorToDevice(int red, int green, int blue) {
+        if (!btPort.isBtConnected()) {
+            showToast("Bluetooth device not connected");
+            return;
+        }
+        Observable.defer(() -> Observable.just(""))
+                .subscribeOn(Schedulers.computation())
+                .map(t -> {
+                    byte[] bytes = new byte[7];
+                    bytes[0] = '!';
+                    bytes[1] = 0;
+                    bytes[2] = 3;
+                    bytes[3] = '\n';
+                    bytes[4] = (byte) red;
+                    bytes[5] = (byte) green;
+                    bytes[6] = (byte) blue;
+                    return bytes;
+                })
+                .observeOn(Schedulers.io())
+                .subscribe(d -> {
+                    btPort.writeBytes(d);
+                });
     }
 
     void scanDevices(){
