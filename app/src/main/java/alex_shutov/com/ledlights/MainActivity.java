@@ -140,12 +140,12 @@ public class MainActivity extends AppCompatActivity {
         btn = (Button) findViewById(R.id.btn_bt_send_data);
         btn.setOnClickListener(v -> {
             sendingSubscription =
-                    Observable.interval(200, TimeUnit.MILLISECONDS)
+                    Observable.interval(50, TimeUnit.MILLISECONDS)
                     .map(cnt -> {
                         if (cnt % 2 == 0){
-                            sendColorToDevice(0, 0, 0);
-                        } else {
                             sendColorToDevice(255, 255, 255);
+                        } else {
+                            sendColorToDevice(0, 0, 0);
                         }
                         return cnt;
                     })
