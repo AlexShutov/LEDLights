@@ -10,6 +10,7 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtS
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtCellModule;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtConnectorModule;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtScannerModule;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtStorageManagerModule;
 import alex_shutov.com.ledlights.hex_general.CellDeployer;
 import alex_shutov.com.ledlights.hex_general.LogicCell;
 import alex_shutov.com.ledlights.hex_general.PortAdapterCreator;
@@ -44,12 +45,15 @@ public class BtCellDeployer extends CellDeployer {
         BtScannerModule scannerModule = new BtScannerModule();
         BtCellModule cellModule = new BtCellModule();
         SystemModule systemModule = new SystemModule(context);
+        // create database, storing history of bluetooth devices
+        BtStorageManagerModule storageManagerModule = new BtStorageManagerModule();
 
         PortAdapterCreator creator = DaggerBtPortAdapterCreator.builder()
                 .systemModule(systemModule)
                 .btCellModule(cellModule)
                 .btConnectorModule(connectorModule)
                 .btScannerModule(scannerModule)
+                .btStorageManagerModule(storageManagerModule)
                 .build();
         return creator;
     }
