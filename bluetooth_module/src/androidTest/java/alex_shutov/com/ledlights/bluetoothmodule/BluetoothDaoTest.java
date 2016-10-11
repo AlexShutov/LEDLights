@@ -10,9 +10,7 @@ import java.util.UUID;
 
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.db.bluetooth_devices.BtDeviceStorageManager;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.db.bluetooth_devices.dao.BtDeviceDao;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.db.bluetooth_devices.dao.BtDeviceDaoImpl;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.db.bluetooth_devices.model.BluetoothDevice;
 import io.realm.Realm;
 
 /**
@@ -129,12 +127,43 @@ public class BluetoothDaoTest extends ApplicationTestCase<Application>  {
         assertNotNull(lastDevice);
         assertEquals(device.getDeviceUuIdSecure(), lastDevice.getDeviceUuIdSecure());
         assertEquals(device.getDeviceUuIdInsecure(), lastDevice.getDeviceUuIdInsecure());
-        
     }
 
+    @SmallTest
+    public void testLastConnectionStartTime(){
+        dao.clearLastConnectedDeviceInfo();
+        Long startTime = dao.getLastConnectionStartTime();
+        Long endTime = dao.getLastConnectionEndTime();
+        assertNull(startTime);
+        // add test device data
+        List<BtDevice> set1 = generateTestSet();
+        for (BtDevice device : set1){
+            dao.addMotorcycleToHistory(device);
+        }
+        BtDevice device = set1.get(0);
+        Long sTime = System.currentTimeMillis();
+        Long eTime = sTime + 1000;
 
-
-
-
-
+        // check setting time without last device info set
+        dao.clearLastConnectedDeviceInfo();
+        dao.setLastConnectionStartTime(sTime);
+        dao.setLastConnectionEndTime(eTime);
+        startTime = dao.getLastConnectionStartTime();
+        endTime = dao.getLastConnectionEndTime();
+        assertNotNull(startTime);
+        assertNotNull(endTime);
+        assertEquals(sTime, startTime);
+        assertEquals(eTime, endTime);
+        // now set last device first and then test setting time
+        dao.clearLastConnectedDeviceInfo();
+        dao.setLastConnectedMotorcycleInfo(device);
+        dao.setLastConnectionStartTime(sTime);
+        dao.setLastConnectionEndTime(eTime);
+        startTime = dao.getLastConnectionStartTime();
+        endTime = dao.getLastConnectionEndTime();
+        assertNotNull(startTime);
+        assertNotNull(endTime);
+        assertEquals(sTime, startTime);
+        assertEquals(eTime, endTime);
+    }
 }

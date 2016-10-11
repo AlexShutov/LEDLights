@@ -9,12 +9,12 @@ import java.util.List;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.db.bluetooth_devices.BtDeviceStorageManager;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.db.bluetooth_devices.model.BluetoothDevice;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.db.bluetooth_devices.model.BluetoothDeviceDataConverter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.db.bluetooth_devices.model.LastPairedDevice;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-import static alex_shutov.com.ledlights.bluetoothmodule.bluetooth.db.bluetooth_devices.model.BluetoothDeviceDataConverter.*;
+import static alex_shutov.com.ledlights.bluetoothmodule.bluetooth.db.bluetooth_devices.model
+        .BluetoothDeviceDataConverter.*;
 
 /**
  * Created by lodoss on 11/10/16.
@@ -158,27 +158,72 @@ public class BtDeviceDaoImpl implements BtDeviceDao {
             disposeOfDb();
             return null;
         }
-
-
+        LastPairedDevice lastDevice = lastInfo.first();
+        Long startTime = lastDevice.getPairingStartTime();
 
         disposeOfDb();
-        return null;
+        return startTime;
     }
 
     @NonNull
     @Override
     public Long getLastConnectionEndTime() {
-        return null;
+        allocateDb();
+        RealmResults<LastPairedDevice> lastInfo =  realm.where(LastPairedDevice.class).findAll();
+        if (lastInfo.isEmpty()){
+            // don't forget releasing database instance
+            disposeOfDb();
+            return null;
+        }
+        LastPairedDevice lastDevice = lastInfo.first();
+        Long endTime = lastDevice.getPairingEndTime();
+
+        disposeOfDb();
+        return endTime;
     }
 
     @Override
     public void setLastConnectionStartTime(long startTime) {
-
+        allocateDb();
+        RealmResults<LastPairedDevice> lastInfo =  realm.where(LastPairedDevice.class).findAll();
+        if (lastInfo.isEmpty()){
+            // last device info not specified, save empty value
+            realm.beginTransaction();
+            realm.createObject(LastPairedDevice.class);
+            realm.commitTransaction();
+        }
+        // lastInfo is active query ('window' to database), reuse it, there must be an item
+        if (lastInfo.isEmpty()){
+            disposeOfDb();
+            throw new RuntimeException("Realm is broken");
+        }
+        LastPairedDevice device = lastInfo.first();
+        realm.beginTransaction();
+        device.setPairingStartTime(startTime);
+        realm.commitTransaction();
+        disposeOfDb();
     }
 
     @Override
     public void setLastConnectionEndTime(long endTime) {
-
+        allocateDb();
+        RealmResults<LastPairedDevice> lastInfo =  realm.where(LastPairedDevice.class).findAll();
+        if (lastInfo.isEmpty()){
+            // last device info not specified, save empty value
+            realm.beginTransaction();
+            realm.createObject(LastPairedDevice.class);
+            realm.commitTransaction();
+        }
+        // lastInfo is active query ('window' to database), reuse it, there must be an item
+        if (lastInfo.isEmpty()){
+            disposeOfDb();
+            throw new RuntimeException("Realm is broken");
+        }
+        LastPairedDevice device = lastInfo.first();
+        realm.beginTransaction();
+        device.setPairingEndTime(endTime);
+        realm.commitTransaction();
+        disposeOfDb();
     }
 
 }
