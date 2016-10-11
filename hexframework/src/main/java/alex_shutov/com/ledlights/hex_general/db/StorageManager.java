@@ -37,6 +37,8 @@ public abstract class StorageManager {
     public StorageManager(Context context){
         this.context = context;
         dbFilename = "";
+        // use 'Factory method' to build database configuration
+        dbConfig = buildDbConfiguration();
     }
 
     public Realm allocateInstance(){

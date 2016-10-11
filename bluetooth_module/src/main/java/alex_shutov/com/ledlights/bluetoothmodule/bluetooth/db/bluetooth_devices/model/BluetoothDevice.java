@@ -1,6 +1,7 @@
 package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.db.bluetooth_devices.model;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.RealmModule;
 
 /**
@@ -8,16 +9,19 @@ import io.realm.annotations.RealmModule;
  */
 
 /**
- * Bluetooth device data stored in database
+ * Bluetooth device data stored in database.
+ * UUID is unique to any device so we can use it as a key (it usualy the same
+ * as UUID for insecure connection)
  */
 public class BluetoothDevice extends RealmObject {
 
-
     private String deviceName = "";
     private String deviceAddress = "";
+    @PrimaryKey
     private String deviceUuIdSecure = "";
     private String deviceUuIdInsecure = "";
     private String deviceDescription = "";
+    private long connectionTime;
 
     public String getDeviceName() {
         return deviceName;
@@ -59,4 +63,11 @@ public class BluetoothDevice extends RealmObject {
         this.deviceDescription = deviceDescription;
     }
 
+    public long getConnectionTime() {
+        return connectionTime;
+    }
+
+    public void setConnectionTime(long connectionTime) {
+        this.connectionTime = connectionTime;
+    }
 }

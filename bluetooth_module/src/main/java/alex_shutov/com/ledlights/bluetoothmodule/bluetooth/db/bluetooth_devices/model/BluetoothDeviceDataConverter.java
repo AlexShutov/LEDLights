@@ -15,9 +15,10 @@ public class BluetoothDeviceDataConverter {
         BluetoothDevice device = new BluetoothDevice();
         device.setDeviceName(src.getDeviceName());
         device.setDeviceAddress(src.getDeviceAddress());
-        device.setDeviceUuIdInsecure(src.getDeviceUuIdInsecure());
+        device.setDeviceUuIdSecure(src.getDeviceUuIdSecure());
         device.setDeviceUuIdInsecure(src.getDeviceUuIdInsecure());
         device.setDeviceDescription(src.getDeviceDescription());
+        device.setConnectionTime(0);
         return device;
     }
 

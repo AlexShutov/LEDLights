@@ -1,5 +1,7 @@
 package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.db.bluetooth_devices.model;
 
+import android.support.annotation.Nullable;
+
 import io.realm.RealmObject;
 import io.realm.annotations.RealmModule;
 
@@ -16,6 +18,7 @@ import io.realm.annotations.RealmModule;
  */
 public class LastPairedDevice extends RealmObject {
 
+    @Nullable
     private BluetoothDevice lastPairedDevice;
 
     /**
