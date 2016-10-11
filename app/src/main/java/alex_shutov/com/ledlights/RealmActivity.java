@@ -74,71 +74,18 @@ public class RealmActivity extends Activity {
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .subscribe(t -> {
-                    /*
-                    Realm realm = Realm.getDefaultInstance();
 
-                    Motorcycle motorcycle = new Motorcycle();
-                    motorcycle.setBrand("Honda");
-                    motorcycle.setEngineVolume(600);
-                    motorcycle.setModelName("CBR600F4");
-                    motorcycle.setSportBike(true);
-
-                    realm.beginTransaction();
-                    realm.copyToRealm(motorcycle);
-                    realm.commitTransaction();
-
-                    realm.close();
-                    */
-                    knownMotorcycles.clear();
-                    Motorcycle motorcycle = new Motorcycle();
-                    motorcycle.setBrand("Honda");
-                    motorcycle.setModelName("CBR600F4");
-                    motorcycle.setEngineVolume(600);
-                    motorcycle.setSportBike(true);
-                    knownMotorcycles.addAll(addKnownMotorcycleTemplate(motorcycle));
-                    motorcycle.setModelName("CBR600RR");
-                    knownMotorcycles.addAll(addKnownMotorcycleTemplate(motorcycle));
-                    motorcycle.setModelName("GL1500");
-                    motorcycle.setSportBike(false);
-                    knownMotorcycles.addAll(addKnownMotorcycleTemplate(motorcycle));
-
-                    motorcycle.setBrand("Yamaha");
-                    motorcycle.setModelName("R1");
-                    motorcycle.setSportBike(true);
-                    knownMotorcycles.addAll(addKnownMotorcycleTemplate(motorcycle));
-                    motorcycle.setModelName("R6");
-                    knownMotorcycles.addAll(addKnownMotorcycleTemplate(motorcycle));
                 });
 
     }
 
-    private List<Motorcycle> addKnownMotorcycleTemplate(Motorcycle motorcycle){
-        ArrayList<Motorcycle> motorcycles = new ArrayList<>();
-        for (int i = 0; i < 100; ++i){
-            Motorcycle t = new Motorcycle();
-            t.setBrand(motorcycle.getBrand());
-            t.setEngineVolume(motorcycle.getEngineVolume());
-            t.setSportBike(motorcycle.isSportBike());
-            t.setModelName(t.getModelName() + " " + (i + 1));
-            motorcycles.add(t);
-        }
-        return motorcycles;
-    }
 
     private void saveObjects(){
         Observable.defer(() -> Observable.just(""))
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .subscribe(t -> {
-                    // get default Realm instance
-                    Realm realm = Realm.getDefaultInstance();
-                    // begin db transaction
-                    realm.beginTransaction();
-                    realm.copyToRealm(knownMotorcycles);
-                    // Tell Realm that transaction is over and we want to save it on disc
-                    realm.commitTransaction();
-                    // Realm has limited number of instances, release the taken one
-                    realm.close();
+
                 });
     }
     private void queryObjects(){
@@ -146,23 +93,11 @@ public class RealmActivity extends Activity {
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .subscribe(t -> {
-                    Realm realm = Realm.getDefaultInstance();
-                    queryHonda(realm);
 
-
-                    realm.close();
                 });
     }
 
-    private void queryHonda(Realm realm){
-        String brandName = "Honda";
-        RealmResults<Motorcycle> hondas =
-                realm.where(Motorcycle.class)
-                .equalTo("brand", brandName)
-                .findAll();
-        int numberOfHondas = hondas.size();
-        Log.i(LOG_TAG, "Number of Honda motorcycles: " + numberOfHondas);
-    }
+
 
     private void removeObjects(){
         Observable.defer(() -> Observable.just(""))
@@ -173,7 +108,7 @@ public class RealmActivity extends Activity {
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {
-                            realm.clear(Motorcycle.class);
+
                         }
                     });
                 });
