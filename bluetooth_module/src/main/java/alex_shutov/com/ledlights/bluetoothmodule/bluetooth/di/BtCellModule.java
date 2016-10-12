@@ -4,6 +4,7 @@ import android.content.Context;
 
 import javax.inject.Singleton;
 
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommAdapter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnAdapter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.LogScannerListener;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanAdapter;
@@ -60,6 +61,17 @@ public class BtCellModule {
     BtStorageAdapter provideBtStoragePort(BtDeviceDao database){
         BtStorageAdapter btStorageAdapter = new BtStorageAdapter(database);
         return btStorageAdapter;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Provides
+    @Singleton
+    BtCommAdapter provideBtCommAdapter(){
+        BtCommAdapter commAdapter = new BtCommAdapter();
+        return commAdapter;
     }
 
 }

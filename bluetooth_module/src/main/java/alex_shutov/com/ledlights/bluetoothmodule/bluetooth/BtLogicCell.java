@@ -5,6 +5,8 @@ import android.util.Log;
 
 import javax.inject.Inject;
 
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommAdapter;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.LogConnectorListener;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.esb.BtConnListenerEsbReceiveMapper;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.esb.BtConnListenerEsbSendMapper;
@@ -38,6 +40,7 @@ public class BtLogicCell extends LogicCell {
     private BtScanAdapter btScanAdapter;
     private BtConnAdapter btConnAdapter;
     private BtStorageAdapter btStorageAdapter;
+    private BtCommAdapter btCommAdapter;
 
     @Inject
     public Context context;
@@ -72,6 +75,7 @@ public class BtLogicCell extends LogicCell {
         btConnAdapter.initialize();
         btScanAdapter.initialize();
         btStorageAdapter.initialize();
+        btCommAdapter.initialize();
         initializeEsbMappers();
     }
 
@@ -98,6 +102,9 @@ public class BtLogicCell extends LogicCell {
     public BtStoragePort getBtStoragePort(){
         return btStorageAdapter;
     }
+    public BtCommPort getBtCommPort(){
+        return btCommAdapter;
+    }
 
     public void setBtScanAdapter(BtScanAdapter btScanAdapter) {
         this.btScanAdapter = btScanAdapter;
@@ -109,6 +116,10 @@ public class BtLogicCell extends LogicCell {
 
     public void setBtStorageAdapter(BtStorageAdapter btStorageAdapter) {
         this.btStorageAdapter = btStorageAdapter;
+    }
+
+    public void setBtCommAdapter(BtCommAdapter btCommAdapter) {
+        this.btCommAdapter = btCommAdapter;
     }
 
     public Context getContext() {
