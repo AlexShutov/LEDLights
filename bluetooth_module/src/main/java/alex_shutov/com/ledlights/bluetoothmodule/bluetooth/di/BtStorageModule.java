@@ -22,8 +22,11 @@ import dagger.Provides;
 @Module
 public class BtStorageModule {
 
+    private static final String BLUETOOTH_DB_FILE_NAME = "bt_history.realm";
+
     /**
-     * Create and return storage manger, managing Bluetooth device schema (realm)
+     * Create and return storage manger, managing Bluetooth device schema (realm).
+     * We have to specify database file name explicitly or default database will be used instead.
      * @param context
      * @return
      */
@@ -31,6 +34,8 @@ public class BtStorageModule {
     @Singleton
     StorageManager provideBtDeviceStorageManager(Context context){
         BtDeviceStorageManager storageManager = new BtDeviceStorageManager(context);
+        storageManager.setDbFilename(BLUETOOTH_DB_FILE_NAME);
+        storageManager.init();
         return storageManager;
     }
 

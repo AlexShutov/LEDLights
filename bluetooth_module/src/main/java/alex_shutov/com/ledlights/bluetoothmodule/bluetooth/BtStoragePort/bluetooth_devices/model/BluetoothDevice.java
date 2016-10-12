@@ -16,8 +16,8 @@ import io.realm.annotations.RealmModule;
 public class BluetoothDevice extends RealmObject {
 
     private String deviceName = "";
-    private String deviceAddress = "";
     @PrimaryKey
+    private String deviceAddress = "";
     private String deviceUuIdSecure = "";
     private String deviceUuIdInsecure = "";
     private String deviceDescription = "";

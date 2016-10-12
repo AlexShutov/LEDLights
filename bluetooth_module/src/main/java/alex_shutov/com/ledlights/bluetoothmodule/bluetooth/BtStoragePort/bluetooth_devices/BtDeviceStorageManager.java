@@ -3,8 +3,10 @@ package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.blueto
 import android.content.Context;
 import android.util.Log;
 
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.bluetooth_devices.model.BtRealmModule;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtStorageModule;
 import alex_shutov.com.ledlights.hex_general.db.StorageManager;
+import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
 /**
@@ -27,7 +29,7 @@ public class BtDeviceStorageManager extends StorageManager {
             dbConfig = new RealmConfiguration.Builder(getContext())
                     .name(getDbFilename())
                     // specify modules here
-                    .setModules(new BtStorageModule())
+                    .setModules(new BtRealmModule())
                     .build();
         }
         return dbConfig;

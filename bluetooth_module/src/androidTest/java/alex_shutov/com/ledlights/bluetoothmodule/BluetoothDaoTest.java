@@ -31,6 +31,8 @@ public class BluetoothDaoTest extends ApplicationTestCase<Application>  {
     protected void setUp() throws Exception {
         super.setUp();
         storageManager = new BtDeviceStorageManager(getContext());
+        storageManager.setDbFilename("bluetooth_device_history.realm");
+        storageManager.init();
         dao = new BtDeviceDaoImpl(storageManager);
 
     }
@@ -59,7 +61,7 @@ public class BluetoothDaoTest extends ApplicationTestCase<Application>  {
             device.setSecureOperation(true);
             device.setPaired(true);
             device.setDeviceDescription("Some device #" + i);
-            device.setDeviceAddress("Some mac address");
+            device.setDeviceAddress("Some mac address for device #" + i);
             device.setDeviceName("Device #" + i);
             devices.add(device);
         }

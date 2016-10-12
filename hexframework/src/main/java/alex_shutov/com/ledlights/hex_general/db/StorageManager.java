@@ -32,11 +32,20 @@ public abstract class StorageManager {
      * those schemas by using Realm's modules.
      * @return
      */
-    protected abstract  RealmConfiguration buildDbConfiguration();
+    protected abstract RealmConfiguration buildDbConfiguration();
 
     public StorageManager(Context context){
         this.context = context;
         dbFilename = "";
+    }
+
+    /**
+     * Algorithm of using this class is following:
+     * - set name of database file
+     * - call 'Init' method
+     * - use 'allocate' and 'disposeOf' method for accessing database instance
+     */
+    public void init() {
         // use 'Factory method' to build database configuration
         dbConfig = buildDbConfiguration();
     }

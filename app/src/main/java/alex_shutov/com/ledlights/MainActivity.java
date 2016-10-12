@@ -6,11 +6,14 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.BluetoothChatService;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.bluetooth_devices.dao.BtDeviceDao;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.hex.BtStoragePort;
 import rx.Observable;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
@@ -182,6 +185,11 @@ public class MainActivity extends AppCompatActivity {
             chooseDesireC();
         });
 
+        btn = (Button) findViewById(R.id.btn_bt_test_db);
+        btn.setOnClickListener(v -> {
+            testDatabase();
+        });
+
     }
 
     private void sendColorToDevice(int red, int green, int blue) {
@@ -259,4 +267,44 @@ public class MainActivity extends AppCompatActivity {
          */
         super.onDestroy();
     }
+
+    private void testDatabase(){
+        BtStoragePort dbPort = app.getDbPort();
+        BtDeviceDao deviceDao = dbPort.getHistoryDatabase();
+        List<BtDevice> history = deviceDao.getDeviceHistory();
+        BtDevice device = new BtDevice();
+        chooseDesireC();
+        device.setDeviceName(deviceName);
+        device.setDeviceAddress(deviceAddress);
+        device.setDeviceUuIdSecure(deviceUuidSecure);
+        device.setDeviceUuIdInsecure(deviceUuidInsecure);
+        device.setDeviceDescription("HTC desire C");
+        deviceDao.addMotorcycleToHistory(device);
+        chooseHc05();
+        device.setDeviceName(deviceName);
+        device.setDeviceAddress(deviceAddress);
+        device.setDeviceUuIdSecure(deviceUuidSecure);
+        device.setDeviceUuIdInsecure(deviceUuidInsecure);
+        device.setDeviceDescription("Arduino HC05 Bluetooth module");
+        deviceDao.addMotorcycleToHistory(device);
+        chooseMI();
+        device.setDeviceName(deviceName);
+        device.setDeviceAddress(deviceAddress);
+        device.setDeviceUuIdSecure(deviceUuidSecure);
+        device.setDeviceUuIdInsecure(deviceUuidInsecure);
+        device.setDeviceDescription("Chinese MI phone");
+        deviceDao.addMotorcycleToHistory(device);
+        chooseNexus();
+        device.setDeviceName(deviceName);
+        device.setDeviceAddress(deviceAddress);
+        device.setDeviceUuIdSecure(deviceUuidSecure);
+        device.setDeviceUuIdInsecure(deviceUuidInsecure);
+        device.setDeviceDescription("Samsung Galaxy phone");
+        deviceDao.addMotorcycleToHistory(device);
+
+        history = deviceDao.getDeviceHistory();
+        showToast("History has " + history.size() + " devices");
+
+    }
+
 }
