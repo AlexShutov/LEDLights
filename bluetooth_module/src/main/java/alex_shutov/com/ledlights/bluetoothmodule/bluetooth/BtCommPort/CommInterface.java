@@ -33,17 +33,4 @@ public interface CommInterface  {
      */
     void sendData(byte[] data);
 
-    /**
-     *
-     * @return true if there is an active connection, false- otherwise
-     */
-    boolean hasConnection();
-
-    /**
-     * Get information about connected BLuetooth device
-     * @return Info of currently connected device or null if there is no active
-     * Bluetooth connection at hand.
-     */
-    BtDevice getDeviceInfo();
-
 }

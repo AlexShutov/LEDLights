@@ -6,6 +6,7 @@ import android.util.Log;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.CommInterface;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommAdapter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommPortListener;
@@ -22,6 +23,8 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtS
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.hex.BtStorageAdapter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.hex.BtStoragePort;
 import alex_shutov.com.ledlights.hex_general.LogicCell;
+import alex_shutov.com.ledlights.hex_general.PortInfo;
+import alex_shutov.com.ledlights.hex_general.PortListener;
 
 /**
  * Created by lodoss on 24/08/16.
@@ -60,6 +63,12 @@ public class BtLogicCell extends LogicCell {
     public LogScannerListener logScannerListener;
     @Inject
     public LogConnectorListener logConnectorListener;
+    /**
+     * Setting external port listener is up to logic cell, so this backup listener is created here.
+     */
+    @Inject
+    @Named("dummy_comm_listener")
+    BtCommPortListener dummyCommPortLogger;
 
     // ESB mappers
     // maps bt connection listener's method to event bus events (send mapper ) and
@@ -73,13 +82,6 @@ public class BtLogicCell extends LogicCell {
     BtScanListenerEsbSendMapper scanListenerSendMapper;
     @Inject
     BtScanListenerEsbReceiveMapper scanListenerReceiveMapper;
-    /**
-     * Setting external port listener is up to logic cell, so this backup listener is created here.
-     */
-    @Inject
-    @Named("dummy_comm_listener")
-    BtCommPortListener dummyLogger;
-    // BtCommPort event mappers
 
     /**
      *  Initialize all internal dependencies here
@@ -150,8 +152,8 @@ public class BtLogicCell extends LogicCell {
         if (null != btCommPortListener) {
             this.btCommPortListener = btCommPortListener;
         } else {
-            // use dummy value
-            this.btCommPortListener = dummyLogger;
+            // use dummy value instead of null
+            this.btCommPortListener = dummyCommPortLogger;
         }
     }
 
@@ -166,15 +168,16 @@ public class BtLogicCell extends LogicCell {
         // initialize bluetoooth connector mappers
         connListenerSendMapper.register();
         connListenerEsbReceiveMapper.register();
-        // register logger as wrapped callback in receive mapper
+        // register logger as wrapped callback in receiving mapper
         connListenerEsbReceiveMapper.setListener(logConnectorListener);
         btConnAdapter.setPortListener(connListenerSendMapper);
+
         // initialize bluetooth scanner mapper
         scanListenerSendMapper.register();
         scanListenerReceiveMapper.register();
         btScanAdapter.setPortListener(scanListenerSendMapper);
         scanListenerReceiveMapper.setListener(logScannerListener);
-        //btScanAdapter.setPortListener(scanListenerSendMapper);
+
     }
 
     /**
@@ -191,8 +194,18 @@ public class BtLogicCell extends LogicCell {
     private void hookUpExternalCommPort(){
         // use dummy logger by default, app will change it soon after Bluetooth cell
         // initialization.
-        setBtCommPortListener(dummyLogger);
+        setBtCommPortListener(dummyCommPortLogger);
+        btCommAdapter.setDecoree(new CommInterface() {
+            @Override
+            public void startConnection() {
 
+            }
+
+            @Override
+            public void sendData(byte[] data) {
+
+            }
+        });
     }
 
 

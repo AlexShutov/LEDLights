@@ -1,5 +1,7 @@
 package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di;
 
+import org.greenrobot.eventbus.EventBus;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -26,6 +28,7 @@ public class BtCommModule {
         BtCommPortListener listener = new BtCommPortLogListener();
         return listener;
     }
+
 
 
 }

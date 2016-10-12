@@ -1,5 +1,6 @@
 package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex;
 
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.CommInterface;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.hex_general.Adapter;
 import alex_shutov.com.ledlights.hex_general.PortInfo;
@@ -14,7 +15,7 @@ import alex_shutov.com.ledlights.hex_general.PortInfo;
 public class BtCommAdapter extends Adapter implements BtCommPort {
     private static final String LOG_TAG = BtCommAdapter.class.getSimpleName();
 
-    private BtCommPort decoree;
+    private CommInterface decoree;
 
 
 
@@ -24,12 +25,15 @@ public class BtCommAdapter extends Adapter implements BtCommPort {
 
     @Override
     public void initialize() {
-        decoree.initialize();
+        // do nothing
     }
 
     @Override
     public PortInfo getPortInfo() {
-        return decoree.getPortInfo();
+        PortInfo info = new PortInfo();
+        info.setPortCode(PortInfo.PORT_BLUETOOTH_EXTERNAL_INTERFACE);
+        info.setPortDescription("External interface port");
+        return info;
     }
 
     /**
@@ -46,25 +50,7 @@ public class BtCommAdapter extends Adapter implements BtCommPort {
         decoree.sendData(data);
     }
 
-    @Override
-    public boolean hasConnection() {
-        return decoree.hasConnection();
-    }
-
-    @Override
-    public BtDevice getDeviceInfo() {
-        return decoree.getDeviceInfo();
-    }
-
-    /**
-     * Accessors
-     */
-
-    public BtCommPort getDecoree() {
-        return decoree;
-    }
-
-    public void setDecoree(BtCommPort decoree) {
+    public void setDecoree(CommInterface decoree) {
         this.decoree = decoree;
     }
 }
