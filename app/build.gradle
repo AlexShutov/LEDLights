@@ -63,12 +63,4 @@ dependencies {
     compile 'com.google.dagger:dagger:2.0'
     apt 'com.google.dagger:dagger-compiler:2.0'
     provided 'org.glassfish:javax.annotation:10.0-b28'
-
-    compile 'com.google.code.gson:gson:2.4'
-    //retrofit and okhttp
-    compile 'com.squareup.okhttp3:okhttp:3.2.0'
-    compile 'com.squareup.retrofit2:retrofit:2.0.2'
-    compile 'com.squareup.retrofit2:converter-gson:2.0.2'
-    compile 'com.squareup.retrofit2:adapter-rxjava:2.0.2'
-
 }
