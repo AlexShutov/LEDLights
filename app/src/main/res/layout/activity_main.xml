@@ -121,4 +121,14 @@
         android:layout_below="@+id/btn_bt_connect_insecure"
         android:layout_toRightOf="@+id/btn_bt_connect_secure"
         android:layout_toEndOf="@+id/btn_bt_connect_secure" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="test database"
+        android:id="@+id/btn_bt_test_db"
+        android:layout_below="@+id/btn_phone_mi"
+        android:layout_alignLeft="@+id/btn_phone_nexus"
+        android:layout_alignStart="@+id/btn_phone_nexus"
+        android:layout_marginTop="24dp" />
 </RelativeLayout>

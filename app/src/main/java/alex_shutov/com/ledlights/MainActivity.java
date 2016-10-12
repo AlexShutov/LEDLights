@@ -6,9 +6,16 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
-import alex_shutov.com.ledlights.bluetooth.BtDevice;
-import alex_shutov.com.ledlights.bluetooth.BtConnectorPort.hex.BtConnPort;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.BluetoothChatService;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnPort;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.bluetooth_devices.dao.BtDeviceDao;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.hex.BtStoragePort;
 import rx.Observable;
+import rx.Subscription;
 import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
@@ -42,29 +49,29 @@ public class MainActivity extends AppCompatActivity {
     private void chooseNexus(){
         deviceName = "Nexus One";
         deviceAddress = ADDRESS_NEXUS;
-        deviceUuidSecure = LEDApplication.MY_UUID_SECURE.toString();
-        deviceUuidInsecure = LEDApplication.MY_UUID_INSECURE.toString();
+        deviceUuidSecure = BluetoothChatService.MY_UUID_SECURE.toString();
+        deviceUuidInsecure = BluetoothChatService.MY_UUID_INSECURE.toString();
         Log.i(LOG_TAG, deviceName + " selected");
     }
     private void chooseMI(){
         deviceName = "chenese phone";
         deviceAddress = ADDRESS_MI;
-        deviceUuidSecure = LEDApplication.MY_UUID_SECURE.toString();
-        deviceUuidInsecure = LEDApplication.MY_UUID_INSECURE.toString();
+        deviceUuidSecure = BluetoothChatService.MY_UUID_SECURE.toString();
+        deviceUuidInsecure = BluetoothChatService.MY_UUID_INSECURE.toString();
         Log.i(LOG_TAG, deviceName + " selected");
     }
     private void chooseDesireC(){
         deviceName = NAME_MY_PHONE;
         deviceAddress = ADDRESS_MY_PHONE;
-        deviceUuidSecure = LEDApplication.MY_UUID_SECURE.toString();
-        deviceUuidInsecure = LEDApplication.MY_UUID_INSECURE.toString();
+        deviceUuidSecure = BluetoothChatService.MY_UUID_SECURE.toString();
+        deviceUuidInsecure = BluetoothChatService.MY_UUID_INSECURE.toString();
         Log.i(LOG_TAG, deviceName + " selected");
     }
     private void chooseHc05(){
         deviceName = "HC-05";
         deviceAddress = ADDRESS_HC_05;
-        deviceUuidSecure = LEDApplication.HC_05_UUID.toString();
-        deviceUuidInsecure = LEDApplication.HC_05_UUID.toString();
+        deviceUuidSecure = BluetoothChatService.HC_05_UUID.toString();
+        deviceUuidInsecure = BluetoothChatService.HC_05_UUID.toString();
         Log.i(LOG_TAG, deviceName + " selected");
     }
 
@@ -72,12 +79,13 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
     }
 
+    private Subscription sendingSubscription;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         app = (LEDApplication) getApplication();
-        btPort = app.getBtPort();
+        btPort = app.getBtConnPort();
 
 
         chooseNexus();
@@ -93,8 +101,8 @@ public class MainActivity extends AppCompatActivity {
         btn = (Button) findViewById(R.id.btn_bt_accept);
         btn.setOnClickListener(v -> {
             btPort.close();
-            btPort.setUuidSecure(LEDApplication.MY_UUID_SECURE.toString());
-            btPort.setUuidInsecure(LEDApplication.MY_UUID_INSECURE.toString());
+            btPort.setUuidSecure(BluetoothChatService.MY_UUID_SECURE.toString());
+            btPort.setUuidInsecure(BluetoothChatService.MY_UUID_INSECURE.toString());
             btPort.startListening();
         });
         // setup 'stop accept insecure' button
@@ -119,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
         // setup 'stop connect' button
         btn = (Button) findViewById(R.id.btn_bt_stop_connecting);
         btn.setOnClickListener(v -> {
-            btPort.stopConnecting();
+            connPort.stopConnecting();
         });
 */
 
@@ -129,56 +137,34 @@ public class MainActivity extends AppCompatActivity {
             btPort.close();
         });
 
+        sendingSubscription = null;
+
         // setup 'Send data' button
         btn = (Button) findViewById(R.id.btn_bt_send_data);
         btn.setOnClickListener(v -> {
-            if (!btPort.isBtConnected()){
-                showToast("Bluetooth device not connected");
-                return;
-            }
-            String msg = "Hello";
-           // byte[] bytes = msg.getBytes();
-            byte[] bytes = new byte[100];
-            bytes[0] = '!';
-            bytes[1] = 0;
-            bytes[2] = 3;
-            bytes[3] = '\n';
-            bytes[4] = (byte)255;
-            bytes[5] = (byte) 0;
-            bytes[6] = (byte) 0;
+            sendingSubscription =
+                    Observable.interval(50, TimeUnit.MILLISECONDS)
+                    .map(cnt -> {
+                        if (cnt % 2 == 0){
+                            sendColorToDevice(255, 255, 255);
+                        } else {
+                            sendColorToDevice(0, 0, 0);
+                        }
+                        return cnt;
+                    })
+                    .subscribe(cnt -> {
 
-            Observable.defer(() -> Observable.just(bytes))
-                    .subscribeOn(Schedulers.io())
-                    .subscribe( d -> {
-                        btPort.writeBytes(d);
+                    }, error -> {
+
                     });
-            //btPort.writeBytes(bytes);
         });
 
         // setup 'Send data' button
         btn = (Button) findViewById(R.id.btn_bt_send_data2);
         btn.setOnClickListener(v -> {
-            if (!btPort.isBtConnected()){
-                showToast("Bluetooth device not connected");
-                return;
+            if (null != sendingSubscription && !sendingSubscription.isUnsubscribed()){
+                sendingSubscription.unsubscribe();
             }
-            String msg = "Hello";
-            // byte[] bytes = msg.getBytes();
-            byte[] bytes = new byte[100];
-            bytes[0] = '!';
-            bytes[1] = 0;
-            bytes[2] = 3;
-            bytes[3] = '\n';
-            bytes[4] = (byte) 30;
-            bytes[5] = (byte) 150;
-            bytes[6] = (byte) 200;
-
-            Observable.defer(() -> Observable.just(bytes))
-                    .subscribeOn(Schedulers.io())
-                    .subscribe( d -> {
-                        btPort.writeBytes(d);
-                    });
-            //btPort.writeBytes(bytes);
         });
 
 
@@ -199,6 +185,35 @@ public class MainActivity extends AppCompatActivity {
             chooseDesireC();
         });
 
+        btn = (Button) findViewById(R.id.btn_bt_test_db);
+        btn.setOnClickListener(v -> {
+            testDatabase();
+        });
+
+    }
+
+    private void sendColorToDevice(int red, int green, int blue) {
+        if (!btPort.isBtConnected()) {
+            showToast("Bluetooth device not connected");
+            return;
+        }
+        Observable.defer(() -> Observable.just(""))
+                .subscribeOn(Schedulers.computation())
+                .map(t -> {
+                    byte[] bytes = new byte[7];
+                    bytes[0] = '!';
+                    bytes[1] = 0;
+                    bytes[2] = 3;
+                    bytes[3] = '\n';
+                    bytes[4] = (byte) red;
+                    bytes[5] = (byte) green;
+                    bytes[6] = (byte) blue;
+                    return bytes;
+                })
+                .observeOn(Schedulers.io())
+                .subscribe(d -> {
+                    btPort.writeBytes(d);
+                });
     }
 
     void scanDevices(){
@@ -252,4 +267,44 @@ public class MainActivity extends AppCompatActivity {
          */
         super.onDestroy();
     }
+
+    private void testDatabase(){
+        BtStoragePort dbPort = app.getDbPort();
+        BtDeviceDao deviceDao = dbPort.getHistoryDatabase();
+        List<BtDevice> history = deviceDao.getDeviceHistory();
+        BtDevice device = new BtDevice();
+        chooseDesireC();
+        device.setDeviceName(deviceName);
+        device.setDeviceAddress(deviceAddress);
+        device.setDeviceUuIdSecure(deviceUuidSecure);
+        device.setDeviceUuIdInsecure(deviceUuidInsecure);
+        device.setDeviceDescription("HTC desire C");
+        deviceDao.addMotorcycleToHistory(device);
+        chooseHc05();
+        device.setDeviceName(deviceName);
+        device.setDeviceAddress(deviceAddress);
+        device.setDeviceUuIdSecure(deviceUuidSecure);
+        device.setDeviceUuIdInsecure(deviceUuidInsecure);
+        device.setDeviceDescription("Arduino HC05 Bluetooth module");
+        deviceDao.addMotorcycleToHistory(device);
+        chooseMI();
+        device.setDeviceName(deviceName);
+        device.setDeviceAddress(deviceAddress);
+        device.setDeviceUuIdSecure(deviceUuidSecure);
+        device.setDeviceUuIdInsecure(deviceUuidInsecure);
+        device.setDeviceDescription("Chinese MI phone");
+        deviceDao.addMotorcycleToHistory(device);
+        chooseNexus();
+        device.setDeviceName(deviceName);
+        device.setDeviceAddress(deviceAddress);
+        device.setDeviceUuIdSecure(deviceUuidSecure);
+        device.setDeviceUuIdInsecure(deviceUuidInsecure);
+        device.setDeviceDescription("Samsung Galaxy phone");
+        deviceDao.addMotorcycleToHistory(device);
+
+        history = deviceDao.getDeviceHistory();
+        showToast("History has " + history.size() + " devices");
+
+    }
+
 }

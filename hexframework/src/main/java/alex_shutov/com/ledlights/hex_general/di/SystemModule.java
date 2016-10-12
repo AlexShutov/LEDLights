@@ -2,6 +2,8 @@ package alex_shutov.com.ledlights.hex_general.di;
 
 import android.content.Context;
 
+import org.greenrobot.eventbus.EventBus;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -23,6 +25,13 @@ public class SystemModule {
     @Singleton
     Context provideContext(){
         return context;
+    }
+
+    @Provides
+    @Singleton
+    EventBus provideEventBus(){
+        EventBus bus = EventBus.getDefault();
+        return bus;
     }
 
 }
