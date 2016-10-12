@@ -7,6 +7,8 @@ import javax.inject.Singleton;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnAdapter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.LogScannerListener;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanAdapter;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.bluetooth_devices.dao.BtDeviceDao;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.hex.BtStorageAdapter;
 import dagger.Module;
 import dagger.Provides;
 
@@ -34,7 +36,7 @@ public class BtCellModule {
     }
 
     /**
-     * Return Bluetoot scanning port
+     * Return Bluetooth scanning port
      * @param context
      * @return
      */
@@ -46,7 +48,18 @@ public class BtCellModule {
     }
 
 
-
-
+    /**
+     * Create and return Bluetooth persistence port.
+     * @param database Database implementation, created by another module (BtStorageModule).
+     * Maybe it is not good, that this more abstract module knows about database, but doing this
+     * way prevents creating another 'di' layer inside BtStoragePort. 
+     * @return
+     */
+    @Provides
+    @Singleton
+    BtStorageAdapter provideBtStoragePort(BtDeviceDao database){
+        BtStorageAdapter btStorageAdapter = new BtStorageAdapter(database);
+        return btStorageAdapter;
+    }
 
 }

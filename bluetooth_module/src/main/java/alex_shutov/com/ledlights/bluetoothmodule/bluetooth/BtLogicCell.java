@@ -15,6 +15,8 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.esb.BtS
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.esb.BtScanListenerEsbSendMapper;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanAdapter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanPort;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.hex.BtStorageAdapter;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.hex.BtStoragePort;
 import alex_shutov.com.ledlights.hex_general.LogicCell;
 
 /**
@@ -35,7 +37,7 @@ public class BtLogicCell extends LogicCell {
      */
     private BtScanAdapter btScanAdapter;
     private BtConnAdapter btConnAdapter;
-
+    private BtStorageAdapter btStorageAdapter;
 
     @Inject
     public Context context;
@@ -69,6 +71,7 @@ public class BtLogicCell extends LogicCell {
         Log.i(LOG_TAG, "BtLogicCell.init()");
         btConnAdapter.initialize();
         btScanAdapter.initialize();
+        btStorageAdapter.initialize();
         initializeEsbMappers();
     }
 
@@ -92,6 +95,9 @@ public class BtLogicCell extends LogicCell {
     public BtScanPort getBtScanPort() {
         return btScanAdapter;
     }
+    public BtStoragePort getBtStoragePort(){
+        return btStorageAdapter;
+    }
 
     public void setBtScanAdapter(BtScanAdapter btScanAdapter) {
         this.btScanAdapter = btScanAdapter;
@@ -99,6 +105,10 @@ public class BtLogicCell extends LogicCell {
 
     public void setBtConnAdapter(BtConnAdapter btConnAdapter) {
         this.btConnAdapter = btConnAdapter;
+    }
+
+    public void setBtStorageAdapter(BtStorageAdapter btStorageAdapter) {
+        this.btStorageAdapter = btStorageAdapter;
     }
 
     public Context getContext() {
@@ -113,7 +123,7 @@ public class BtLogicCell extends LogicCell {
         connListenerSendMapper.register();
         connListenerEsbReceiveMapper.register();
         // register logger as wrapped callback in receive mapper
-       // connListenerEsbReceiveMapper.setListener(logConnectorListener);
+        connListenerEsbReceiveMapper.setListener(logConnectorListener);
         btConnAdapter.setPortListener(connListenerSendMapper);
         // initialize bluetooth scanner mapper
         scanListenerSendMapper.register();

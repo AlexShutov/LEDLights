@@ -1,4 +1,4 @@
-package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.db.bluetooth_devices.dao;
+package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.bluetooth_devices.dao;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -7,14 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.db.bluetooth_devices.BtDeviceStorageManager;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.db.bluetooth_devices.model.BluetoothDevice;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.db.bluetooth_devices.model.LastPairedDevice;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.bluetooth_devices.model.LastPairedDevice;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.bluetooth_devices.model.BluetoothDevice;
+import alex_shutov.com.ledlights.hex_general.db.StorageManager;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-import static alex_shutov.com.ledlights.bluetoothmodule.bluetooth.db.bluetooth_devices.model
-        .BluetoothDeviceDataConverter.*;
+import static alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.bluetooth_devices.model.BluetoothDeviceDataConverter.convertFromDbModel;
+import static alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.bluetooth_devices.model.BluetoothDeviceDataConverter.convertToDbModel;
 
 /**
  * Created by lodoss on 11/10/16.
@@ -25,10 +25,10 @@ import static alex_shutov.com.ledlights.bluetoothmodule.bluetooth.db.bluetooth_d
  */
 public class BtDeviceDaoImpl implements BtDeviceDao {
 
-    private BtDeviceStorageManager storageManager;
+    private StorageManager storageManager;
     private Realm realm;
 
-    public BtDeviceDaoImpl(BtDeviceStorageManager storageManager){
+    public BtDeviceDaoImpl(StorageManager storageManager){
         this.storageManager = storageManager;
         realm = null;
     }

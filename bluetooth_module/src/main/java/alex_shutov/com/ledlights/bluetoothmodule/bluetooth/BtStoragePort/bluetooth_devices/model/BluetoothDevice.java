@@ -1,4 +1,4 @@
-package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.db.bluetooth_devices.model;
+package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.bluetooth_devices.model;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;

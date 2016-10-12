@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.UUID;
 
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.db.bluetooth_devices.BtDeviceStorageManager;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.db.bluetooth_devices.dao.BtDeviceDaoImpl;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.bluetooth_devices.BtDeviceStorageManager;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.bluetooth_devices.dao.BtDeviceDaoImpl;
 import io.realm.Realm;
 
 /**

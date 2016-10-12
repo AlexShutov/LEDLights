@@ -7,10 +7,11 @@ import javax.inject.Inject;
 
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnAdapter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanAdapter;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.hex.BtStorageAdapter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtCellModule;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtConnectorModule;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtScannerModule;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtStorageManagerModule;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtStorageModule;
 import alex_shutov.com.ledlights.hex_general.CellDeployer;
 import alex_shutov.com.ledlights.hex_general.LogicCell;
 import alex_shutov.com.ledlights.hex_general.PortAdapterCreator;
@@ -29,6 +30,8 @@ public class BtCellDeployer extends CellDeployer {
     public BtScanAdapter btScanAdapter;
     @Inject
     public BtConnAdapter btConnAdapter;
+    @Inject
+    public BtStorageAdapter btStorageAdapter;
 
     public BtCellDeployer(Context context){
         this.context = context;
@@ -46,14 +49,14 @@ public class BtCellDeployer extends CellDeployer {
         BtCellModule cellModule = new BtCellModule();
         SystemModule systemModule = new SystemModule(context);
         // create database, storing history of bluetooth devices
-        BtStorageManagerModule storageManagerModule = new BtStorageManagerModule();
+        BtStorageModule storageModule = new BtStorageModule();
 
         PortAdapterCreator creator = DaggerBtPortAdapterCreator.builder()
                 .systemModule(systemModule)
                 .btCellModule(cellModule)
                 .btConnectorModule(connectorModule)
                 .btScannerModule(scannerModule)
-                .btStorageManagerModule(storageManagerModule)
+                .btStorageModule(storageModule)
                 .build();
         return creator;
     }
@@ -70,6 +73,7 @@ public class BtCellDeployer extends CellDeployer {
          */
         btCell.setBtScanAdapter(btScanAdapter);
         btCell.setBtConnAdapter(btConnAdapter);
+        btCell.setBtStorageAdapter(btStorageAdapter);
         // TODO: add the rest of ports here
 
         /* all ports is set, call 'init method from logic cell so

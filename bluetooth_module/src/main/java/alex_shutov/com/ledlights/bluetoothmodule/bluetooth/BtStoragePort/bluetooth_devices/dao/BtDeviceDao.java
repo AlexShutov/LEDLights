@@ -1,4 +1,4 @@
-package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.db.bluetooth_devices.dao;
+package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.bluetooth_devices.dao;
 
 /**
  * Created by lodoss on 11/10/16.
@@ -10,7 +10,6 @@ import android.support.annotation.Nullable;
 import java.util.List;
 
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.db.bluetooth_devices.model.BluetoothDevice;
 
 /**
  * Interface for accessing database with history of ever connected Bluetooth devices (motorcycles).
