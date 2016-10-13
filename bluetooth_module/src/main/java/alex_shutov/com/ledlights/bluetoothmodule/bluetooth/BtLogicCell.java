@@ -6,6 +6,7 @@ import android.util.Log;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.CommFeedbackInterface;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.CommInterface;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommAdapter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommPort;
@@ -206,6 +207,7 @@ public class BtLogicCell extends LogicCell {
 
             }
         });
+
     }
 
 
