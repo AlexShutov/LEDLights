@@ -49,6 +49,7 @@ public class LEDApplication extends MultiDexApplication{
         scanPort = cell.getBtScanPort();
         connPort = cell.getBtConnPort();
         dbPort = cell.getBtStoragePort();
+        
     }
 
     @Override
@@ -75,4 +76,9 @@ public class LEDApplication extends MultiDexApplication{
     public BtStoragePort getDbPort() {
         return dbPort;
     }
+
+    public BtLogicCell getCell() {
+        return cell;
+    }
+
 }

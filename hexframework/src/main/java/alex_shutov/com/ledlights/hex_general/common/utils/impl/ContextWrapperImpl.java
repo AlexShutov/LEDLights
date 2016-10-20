@@ -3,7 +3,8 @@ package alex_shutov.com.ledlights.hex_general.common.utils.impl;
 import android.content.Context;
 import android.content.res.Resources;
 
-import com.lodoss.childtracker.utils.ContextWrapper;
+import alex_shutov.com.ledlights.hex_general.common.utils.ContextWrapper;
+
 
 /**
  * Created by lodoss on 19/10/16.

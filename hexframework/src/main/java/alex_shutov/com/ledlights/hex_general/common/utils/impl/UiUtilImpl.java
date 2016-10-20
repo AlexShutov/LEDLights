@@ -17,8 +17,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 
-import com.lodoss.childtracker.utils.ContextWrapper;
-import com.lodoss.childtracker.utils.UiUtil;
+import alex_shutov.com.ledlights.hex_general.common.utils.ContextWrapper;
+import alex_shutov.com.ledlights.hex_general.common.utils.UiUtil;
+
 
 /**
  * Created by user on 08/02/16.
