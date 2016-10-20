@@ -8,6 +8,7 @@ public class PortInfo {
     public static final int PORT_BLUETOOTH_CONNECTOR = 1;
     public static final int PORT_BLUETOOTH_SCANNER = 2;
     public static final int PORT_BLUETOOTH_STORAGE = 3;
+    public static final int PORT_BLUETOOTH_EXTERNAL_INTERFACE = 4;
 
     /**
      * we may want to assign numbers to ports

@@ -5,10 +5,12 @@ import android.util.Log;
 
 import javax.inject.Inject;
 
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommAdapter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnAdapter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanAdapter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.hex.BtStorageAdapter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtCellModule;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtCommModule;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtConnectorModule;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtScannerModule;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtStorageModule;
@@ -32,6 +34,8 @@ public class BtCellDeployer extends CellDeployer {
     public BtConnAdapter btConnAdapter;
     @Inject
     public BtStorageAdapter btStorageAdapter;
+    @Inject
+    public BtCommAdapter btCommAdapter;
 
     public BtCellDeployer(Context context){
         this.context = context;
@@ -50,6 +54,7 @@ public class BtCellDeployer extends CellDeployer {
         SystemModule systemModule = new SystemModule(context);
         // create database, storing history of bluetooth devices
         BtStorageModule storageModule = new BtStorageModule();
+        BtCommModule commModule = new BtCommModule();
 
         PortAdapterCreator creator = DaggerBtPortAdapterCreator.builder()
                 .systemModule(systemModule)
@@ -57,6 +62,7 @@ public class BtCellDeployer extends CellDeployer {
                 .btConnectorModule(connectorModule)
                 .btScannerModule(scannerModule)
                 .btStorageModule(storageModule)
+                .btCommModule(commModule)
                 .build();
         return creator;
     }
@@ -74,6 +80,7 @@ public class BtCellDeployer extends CellDeployer {
         btCell.setBtScanAdapter(btScanAdapter);
         btCell.setBtConnAdapter(btConnAdapter);
         btCell.setBtStorageAdapter(btStorageAdapter);
+        btCell.setBtCommAdapter(btCommAdapter);
         // TODO: add the rest of ports here
 
         /* all ports is set, call 'init method from logic cell so
