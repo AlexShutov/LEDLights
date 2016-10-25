@@ -25,4 +25,5 @@ import dagger.Component;
 public interface BtPortAdapterCreator extends PortAdapterCreator {
     void injectBtCellDeployer(BtCellDeployer cellDeployer);
     void injectBtLogicCell(BtLogicCell logicCell);
+    void injectBtLogicCellFacade(BtLogicCellFacade facade);
 }
