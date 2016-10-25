@@ -27,6 +27,20 @@ public interface CommInterface  {
     void startConnection();
 
     /**
+     *  Disconnect from connected Bluetooth device
+     */
+    void disconnect();
+
+    /**
+     * Check if Bluetooth is now connected.
+     * There is method 'isConnected()' from hexagonal framework. It indicates if current port
+     * is connected. Don't confuse it with checking Bluetooth device readiness. This is done
+     * by this method.
+     * @return
+     */
+    boolean isDeviceConnected();
+
+    /**
      * Send some data to connected Bluetooth device. Result of this operation will be
      * delivered to output port either by onDataSent() or onDataSendFailed() methods.
      * @param data

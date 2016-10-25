@@ -206,6 +206,16 @@ public class BtLogicCell extends LogicCell {
             public void sendData(byte[] data) {
 
             }
+
+            @Override
+            public void disconnect() {
+
+            }
+
+            @Override
+            public boolean isDeviceConnected() {
+                return false;
+            }
         });
 
     }

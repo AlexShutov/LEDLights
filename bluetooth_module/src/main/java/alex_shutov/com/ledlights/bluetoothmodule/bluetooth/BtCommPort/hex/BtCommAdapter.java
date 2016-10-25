@@ -45,6 +45,17 @@ public class BtCommAdapter extends Adapter implements BtCommPort {
         decoree.startConnection();
     }
 
+
+    @Override
+    public void disconnect() {
+
+    }
+
+    @Override
+    public boolean isDeviceConnected() {
+        return false;
+    }
+
     @Override
     public void sendData(byte[] data) {
         decoree.sendData(data);
