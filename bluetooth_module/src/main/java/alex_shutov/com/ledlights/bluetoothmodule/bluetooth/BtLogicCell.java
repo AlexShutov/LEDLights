@@ -93,8 +93,9 @@ public class BtLogicCell extends LogicCell {
         // decorator.
         btCommAdapter.initialize();
         initializeEsbMappers();
-        btFacade = new BtLogicCellFacade(eventBus,
-                btStorageAdapter, btCommAdapter);
+        // take reference to DI component
+        BtPortAdapterCreator diComponent = (BtPortAdapterCreator) getAdaperCreator();
+        btFacade = new BtLogicCellFacade(diComponent);
         btCommAdapter.setDecoree(btFacade);
         btFacade.onInitialized();
     }

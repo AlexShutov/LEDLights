@@ -9,6 +9,7 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtComm
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnAdapter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanAdapter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.hex.BtStorageAdapter;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtAlgorithmicModule;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtCellModule;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtCommModule;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtConnectorModule;
@@ -55,7 +56,7 @@ public class BtCellDeployer extends CellDeployer {
         // create database, storing history of bluetooth devices
         BtStorageModule storageModule = new BtStorageModule();
         BtCommModule commModule = new BtCommModule();
-
+        BtAlgorithmicModule algorithmicModule = new BtAlgorithmicModule();
         PortAdapterCreator creator = DaggerBtPortAdapterCreator.builder()
                 .systemModule(systemModule)
                 .btCellModule(cellModule)
@@ -63,6 +64,7 @@ public class BtCellDeployer extends CellDeployer {
                 .btScannerModule(scannerModule)
                 .btStorageModule(storageModule)
                 .btCommModule(commModule)
+                .btAlgorithmicModule(algorithmicModule)
                 .build();
         return creator;
     }

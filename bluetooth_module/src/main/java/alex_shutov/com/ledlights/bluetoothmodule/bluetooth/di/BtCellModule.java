@@ -5,10 +5,14 @@ import android.content.Context;
 import javax.inject.Singleton;
 
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommAdapter;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnAdapter;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanAdapter;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.bluetooth_devices.dao.BtDeviceDao;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.hex.BtStorageAdapter;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.hex.BtStoragePort;
 import dagger.Module;
 import dagger.Provides;
 
@@ -30,9 +34,15 @@ public class BtCellModule {
      */
     @Provides
     @Singleton
-    BtConnAdapter provideBtConnPort(Context context){
+    BtConnAdapter provideBtConnAdapter(Context context){
         BtConnAdapter connAdapter = new BtConnAdapter(context);
         return connAdapter;
+    }
+
+    @Provides
+    @Singleton
+    BtConnPort provideBtConnPort(BtConnAdapter adapter){
+        return adapter;
     }
 
     /**
@@ -42,11 +52,16 @@ public class BtCellModule {
      */
     @Provides
     @Singleton
-    BtScanAdapter provideScanPort(Context context){
+    BtScanAdapter provideScanAdapter(Context context){
         BtScanAdapter scanAdapter = new BtScanAdapter(context);
         return scanAdapter;
     }
 
+    @Provides
+    @Singleton
+    BtScanPort provideScanPort(BtScanAdapter scanAdapter){
+        return scanAdapter;
+    }
 
     /**
      * Create and return Bluetooth persistence port.
@@ -57,9 +72,15 @@ public class BtCellModule {
      */
     @Provides
     @Singleton
-    BtStorageAdapter provideBtStoragePort(BtDeviceDao database){
+    BtStorageAdapter provideBtStorageAdapter(BtDeviceDao database){
         BtStorageAdapter btStorageAdapter = new BtStorageAdapter(database);
         return btStorageAdapter;
+    }
+
+    @Provides
+    @Singleton
+    BtStoragePort provideBtStoragePort(BtStorageAdapter adapter){
+        return adapter;
     }
 
     /**
@@ -70,6 +91,12 @@ public class BtCellModule {
     @Singleton
     BtCommAdapter provideBtCommAdapter(){
         BtCommAdapter commAdapter = new BtCommAdapter();
+        return commAdapter;
+    }
+
+    @Provides
+    @Singleton
+    BtCommPort provideBtCommPort(BtCommAdapter commAdapter){
         return commAdapter;
     }
 

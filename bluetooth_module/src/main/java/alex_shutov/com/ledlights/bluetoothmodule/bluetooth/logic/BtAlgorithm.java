@@ -17,7 +17,7 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtLogicCellFacade;
  * retry if connection is lost. There is a lot of stuff to do..
  * EventBus ease it a bit - we don't have to use complex Observables (a.k.a ESB pattern)
  * Despite ESB presence, all atomic algorithms will be having their own interfaces, so it
- * will be easy to unit test those algoeithms.
+ * will be easy to unit test those algorithms.
  */
 public abstract class BtAlgorithm {
 
@@ -35,10 +35,10 @@ public abstract class BtAlgorithm {
      * Every algorithm needs limited set of entities from BtLogicCellFacade.
      * Concrete algorithm need to get those entities. This method does it.
      */
-    protected abstract void getEntitiesFromFacade(BtLogicCellFacade facade);
+    protected abstract void getDependenciesFromFacade(DataProvider dataProvider);
 
-    public void init(BtLogicCellFacade facade){
-        getEntitiesFromFacade(facade);
+    public void init(DataProvider dataProvider){
+        getDependenciesFromFacade(dataProvider);
         start();
     }
 }

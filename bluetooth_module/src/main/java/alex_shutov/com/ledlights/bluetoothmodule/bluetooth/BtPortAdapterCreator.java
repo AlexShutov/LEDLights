@@ -2,6 +2,7 @@ package alex_shutov.com.ledlights.bluetoothmodule.bluetooth;
 
 import javax.inject.Singleton;
 
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtAlgorithmicModule;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtCellModule;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtCommModule;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtConnectorModule;
@@ -21,7 +22,8 @@ import dagger.Component;
         BtConnectorModule.class,
         BtScannerModule.class,
         BtStorageModule.class,
-        BtCommModule.class })
+        BtCommModule.class,
+        BtAlgorithmicModule.class })
 public interface BtPortAdapterCreator extends PortAdapterCreator {
     void injectBtCellDeployer(BtCellDeployer cellDeployer);
     void injectBtLogicCell(BtLogicCell logicCell);
