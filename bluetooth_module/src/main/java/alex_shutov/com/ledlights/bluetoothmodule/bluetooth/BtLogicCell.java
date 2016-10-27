@@ -188,6 +188,11 @@ public class BtLogicCell extends LogicCell {
         scanListenerReceiveMapper.unregister();
     }
 
-
-
+    /**
+     * For now it will be used for testing
+     * @return
+     */
+    public BtLogicCellFacade getBtFacade() {
+        return btFacade;
+    }
 }
