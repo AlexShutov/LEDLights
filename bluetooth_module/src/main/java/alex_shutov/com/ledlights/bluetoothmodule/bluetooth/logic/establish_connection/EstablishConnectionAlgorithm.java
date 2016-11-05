@@ -2,6 +2,9 @@ package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conn
 
 import org.greenrobot.eventbus.EventBus;
 
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnPort;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.bluetooth_devices.dao.BtDeviceDao;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.BtAlgorithm;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.DataProvider;
@@ -16,11 +19,23 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.DataProvider;
  *  on the other end).
  */
 public class EstablishConnectionAlgorithm extends BtAlgorithm {
-    EstablishConnectionDataProvider dataProvider;
+    private EstablishConnectionDataProvider dataProvider;
+    /**
+     * Used to notify caller about results of algorithms (success or failure)
+     */
+    private EstablishConnectionCallback callback;
+
+    /**
+     * Currently connected device - result of this algorithm
+     */
+    private BtDevice connectedDevice;
     /**
      * Access object for database, storing device connection history.
      */
-    BtDeviceDao deviceDatabase;
+    private BtDeviceDao deviceDatabase;
+    private BtConnPort connPort;
+    private BtScanPort scanPort;
+
     EventBus eventBus;
 
     @Override
@@ -39,6 +54,21 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm {
         // get connection history database
         deviceDatabase = dataProvider.provideHistoryDatabase();
         eventBus = dataProvider.provideEventBus();
+        connPort = dataProvider.provideBtConnPort();
+        scanPort = dataProvider.provideBtScanPort();
+    }
 
+    public void attemptToEstablishConnection() {
+
+    }
+
+
+
+    public void setCallback(EstablishConnectionCallback callback) {
+        this.callback = callback;
+    }
+
+    public BtDevice getConnectedDevice() {
+        return connectedDevice;
     }
 }

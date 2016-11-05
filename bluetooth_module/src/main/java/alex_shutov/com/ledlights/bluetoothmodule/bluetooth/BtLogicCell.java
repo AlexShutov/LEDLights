@@ -8,7 +8,6 @@ import org.greenrobot.eventbus.EventBus;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.CommInterface;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommAdapter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommPortListener;
@@ -86,17 +85,21 @@ public class BtLogicCell extends LogicCell {
     @Override
     public void init() {
         Log.i(LOG_TAG, "BtLogicCell.init()");
+        // take reference to DI component
+        BtPortAdapterCreator diComponent = (BtPortAdapterCreator) getAdaperCreator();
+        btFacade = new BtLogicCellFacade(diComponent);
+        btCommAdapter.setDecoree(btFacade);
+
+        initializeEsbMappers();
+
         btConnAdapter.initialize();
         btScanAdapter.initialize();
         btStorageAdapter.initialize();
         // connect external port first, then call 'initialize', because it is a
         // decorator.
         btCommAdapter.initialize();
-        initializeEsbMappers();
-        // take reference to DI component
-        BtPortAdapterCreator diComponent = (BtPortAdapterCreator) getAdaperCreator();
-        btFacade = new BtLogicCellFacade(diComponent);
-        btCommAdapter.setDecoree(btFacade);
+
+
         btFacade.onInitialized();
     }
 

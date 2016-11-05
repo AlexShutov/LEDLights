@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
 
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtLogicCell;
 import alex_shutov.com.ledlights.hex_general.LogicCell;
 
@@ -15,7 +16,7 @@ public class BtCellActivity extends Activity {
     Button btnStart;
     TextView tvPrint;
     LEDApplication app;
-
+    BtLogicCell btCell;
     private void showMessage(String msg){
         tvPrint.setText(msg);
     }
@@ -27,14 +28,15 @@ public class BtCellActivity extends Activity {
         btnStart = (Button) findViewById(R.id.abc_btn_start);
         tvPrint = (TextView) findViewById(R.id.abc_tv_print);
         app = (LEDApplication) getApplication();
-
+        btCell = app.getCell();
         btnStart.setOnClickListener(v -> {
             startPolling();
         });
     }
 
     private void startPolling(){
-        BtLogicCell cell = app.getCell();
+        BtCommPort commPort = btCell.getBtCommPort();
+        commPort.startConnection();
 
     }
 
