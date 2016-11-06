@@ -57,6 +57,8 @@ public class BtLogicCell extends LogicCell {
     public LogScannerListener logScannerListener;
     @Inject
     public LogConnectorListener logConnectorListener;
+
+    private BtCommPortListener btCommPortListener;
     /**
      * Setting external port listener is up to logic cell, so this backup listener is created here.
      */
@@ -99,8 +101,11 @@ public class BtLogicCell extends LogicCell {
         // decorator.
         btCommAdapter.initialize();
 
-
+        if (null != btCommPortListener){
+            btFacade.setCommFeedback(btCommPortListener);
+        }
         btFacade.onInitialized();
+
     }
 
     @Override
@@ -149,8 +154,9 @@ public class BtLogicCell extends LogicCell {
 
     public void setBtCommPortListener(BtCommPortListener btCommPortListener) {
         if (null != btCommPortListener) {
+            this.btCommPortListener = btCommPortListener;
             if (null != btFacade){
-                btFacade.setCommFeeback(btCommPortListener);
+                btFacade.setCommFeedback(btCommPortListener);
             }
         } else {
             // facade use dummy value by default
