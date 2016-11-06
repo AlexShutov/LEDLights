@@ -73,6 +73,10 @@ public class BtCommAdapter extends Adapter implements BtCommPort {
         }
     };
 
+    public BtCommAdapter(){
+        decoree = dummyCommInterface;
+    }
+
     private CommInterface decoree;
 
     /**
@@ -83,7 +87,7 @@ public class BtCommAdapter extends Adapter implements BtCommPort {
 
     @Override
     public void initialize() {
-        decoree = dummyCommInterface;
+
     }
 
     @Override
