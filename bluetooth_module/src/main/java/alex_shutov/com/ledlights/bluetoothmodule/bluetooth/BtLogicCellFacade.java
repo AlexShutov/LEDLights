@@ -1,5 +1,6 @@
 package alex_shutov.com.ledlights.bluetoothmodule.bluetooth;
 
+import android.bluetooth.BluetoothDevice;
 import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
@@ -13,6 +14,8 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.B
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.bluetooth_devices.dao.BtDeviceDao;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.hex.BtStoragePort;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionAlgorithm;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionCallback;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionDataProvider;
 
 /**
@@ -36,9 +39,16 @@ public class BtLogicCellFacade implements CommInterface, EstablishConnectionData
 
     private BtCommPortListener commFeedback;
 
-    
+    private BtDevice connectedDevice;
+    /**
+     * Algorithms:
+     */
+    @Inject
+    public EstablishConnectionAlgorithm connecAlgorithm;
+
     public BtLogicCellFacade(BtPortAdapterCreator diComponent){
         this.diComponent = diComponent;
+        connectedDevice = null;
     }
 
     /**
@@ -72,6 +82,23 @@ public class BtLogicCellFacade implements CommInterface, EstablishConnectionData
     public void onInitialized(){
         Log.i(LOG_TAG, "onInitialized()");
         diComponent.injectBtLogicCellFacade(this);
+
+        connecAlgorithm.setCallback(new EstablishConnectionCallback() {
+            @Override
+            public void onConnectionEstablished(BtDevice connectedDevice) {
+                Log.i(LOG_TAG, "Connection established with device: " +
+                        connectedDevice.getDeviceName());
+                BtLogicCellFacade.this.connectedDevice = connectedDevice;
+                commFeedback.onConnectionStarted(connectedDevice);
+            }
+
+            @Override
+            public void onAttemptFailed() {
+                Log.i(LOG_TAG, "onAttemptFailed" );
+                commFeedback.onConnectionFailed();
+            }
+        });
+        connecAlgorithm.init(this);
     }
 
     public void onDestroying(){
@@ -85,16 +112,18 @@ public class BtLogicCellFacade implements CommInterface, EstablishConnectionData
     @Override
     public void startConnection() {
         Log.i(LOG_TAG, "startConnection()");
+        connecAlgorithm.attemptToEstablishConnection();
     }
 
     @Override
     public void disconnect() {
         Log.i(LOG_TAG, "disconnect()");
+
     }
 
     @Override
     public boolean isDeviceConnected() {
-        return false;
+        return null != connectedDevice;
     }
 
     @Override

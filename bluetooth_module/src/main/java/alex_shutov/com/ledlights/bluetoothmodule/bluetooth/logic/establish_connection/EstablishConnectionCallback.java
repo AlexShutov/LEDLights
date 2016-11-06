@@ -18,7 +18,7 @@ public interface EstablishConnectionCallback {
      * - last device from device history, if last device is unavailable, or,
      * - new device was selected from UI and connection established with it.
      */
-    void onConnectionEstablished(BtDevice conenctedDevice);
+    void onConnectionEstablished(BtDevice connectedDevice);
 
     /**
      * Failed to connect to Bluetooth device, because none of above conditions

@@ -16,6 +16,9 @@ import rx.Subscription;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
+import static alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.esb.BtConnEsbStore.*;
+import static alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.esb.BtConnEsbStore.PortState.*;
+
 /**
  * Created by Alex on 11/5/2016.
  */
@@ -150,16 +153,25 @@ public abstract class EstablishConnectionStrategy extends BtAlgorithm
     }
 
     @Subscribe
-    public void onEvent(BtConnEsbStore.ArgumentConnectionFailedEvent failedEvent){
+    public void onEvent(ArgumentConnectionFailedEvent failedEvent){
         Log.i(LOG_TAG, "Connection port told that connectionattempt have failed");
         connResultPipe.onNext(false);
     }
 
+    /**
+     * Bluetooth adapter might reject connection by some reason. In this case it will
+     * go to 'idle' state
+     * @param event
+     */
     @Subscribe
-    public void onEvent(BtConnEsbStore.ArgumentStateChangedEvent event){
-        if (!event.isGeneralCallbackFired && event.portState == BtConnEsbStore.PortState.CONNECTED){
+    public void onEvent(ArgumentStateChangedEvent event){
+        if (!event.isGeneralCallbackFired && event.portState == CONNECTED){
             Log.i(LOG_TAG, "Device connected ");
             connResultPipe.onNext(true);
+        }
+        if (event.isGeneralCallbackFired && event.portState == IDLE){
+            Log.w(LOG_TAG, "Connection request rejected, adapter in IDLE state");
+            connResultPipe.onNext(false);
         }
     }
 

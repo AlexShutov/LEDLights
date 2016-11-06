@@ -66,14 +66,21 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm implements
         reconnect.init(dataProvider);
         reconnect.setCallback(new EstablishConnectionCallback() {
             @Override
-            public void onConnectionEstablished(BtDevice conenctedDevice) {
-                Log.i(LOG_TAG, "device reconnected(): " + conenctedDevice.getDeviceName());
-
+            public void onConnectionEstablished(BtDevice connectedDevice) {
+                Log.i(LOG_TAG, "device reconnected(): " + connectedDevice.getDeviceName());
+                EstablishConnectionAlgorithm.this.connectedDevice = connectedDevice;
+                if (null != callback){
+                    callback.onConnectionEstablished(connectedDevice);
+                }
             }
 
             @Override
             public void onAttemptFailed() {
                 Log.w(LOG_TAG, "onAttemptFailed()");
+                connectedDevice = null;
+                if (null != callback){
+                    callback.onAttemptFailed();
+                }
             }
         });
     }
