@@ -2,12 +2,11 @@ package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conn
 
 import android.util.Log;
 
-import org.greenrobot.eventbus.EventBus;
-
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.bluetooth_devices.dao.BtDeviceDao;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.DataProvider;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionCallback;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionDataProvider;
 import rx.Observable;
 import rx.Subscription;
@@ -28,9 +27,7 @@ public class ReconnectStrategy extends EstablishConnectionStrategy {
         Long lastConnectionEndTime;
     }
     // entities
-    private BtDeviceDao historyDb;
     private BtConnPort connPort;
-    private EventBus eventBus;
     // FRP - logic
 
     private Observable<LastDeviceData> getLastDeviceFromDbtask =
@@ -51,53 +48,151 @@ public class ReconnectStrategy extends EstablishConnectionStrategy {
                 info.lastConnectionStartTime = lastConnStartTime;
                 info.lastConnectionEndTime = lastConnEndTime;
                 return info;
-            });
-    private Subscription lastDeviceTaskState;
+            })
+            .take(1);
+
+    private Subscription pendingLastDeviceTask;
+    private Subscription pendingConectTask;
+
 
     public ReconnectStrategy(){
         // set empty callback by default from base class
         super();
-        lastDeviceTaskState = null;
+        pendingLastDeviceTask = null;
     }
 
+    /**
+     * Get everything this algorithm need from DataProvider.
+     * Here I suppose that all entities are the same during all lifetime of that logic cell -
+     * those are singletons and we don't need to provide data every time strategy is triggered
+     */
     @Override
-    public void init(DataProvider dataProvider) {
+    protected void getDependenciesFromFacade(DataProvider dataProvider) {
+        // it is a MUST
+        super.getDependenciesFromFacade(dataProvider);
         EstablishConnectionDataProvider provider = (EstablishConnectionDataProvider) dataProvider;
-        historyDb = provider.provideHistoryDatabase();
         connPort = provider.provideBtConnPort();
-        eventBus = provider.provideEventBus();
     }
+
+    /**
+     * Manage EventBus subscriptions here so this strategy can receive needed events (via ESB)
+     */
+
+    /**
+     * Unsubscribe this strategy from EventBus' events
+     */
+    @Override
+    public void suspend() {
+        super.suspend();
+    }
+
+    /**
+     * Register this strategy with EventBus
+     */
+    @Override
+    protected void start() {
+        super.start();
+    }
+
 
     @Override
     public void attemptToEstablishConnection() {
         Log.i(LOG_TAG, "attemptToEstablishConnection()");
-        stopLastDeviceTask();
-        lastDeviceTaskState = Observable.defer(() -> getLastDeviceFromDbtask)
+        stopTask();
+        pendingLastDeviceTask = Observable.defer(() -> getLastDeviceFromDbtask)
                 .observeOn(Schedulers.computation())
+
                 .subscribe(lastDeviceInfo -> {
-                    Log.i(LOG_TAG, "Last connected device: " + lastDeviceInfo.deviceInfo.getDeviceName());
+                    Log.i(LOG_TAG, "Last connected device: " +
+                            lastDeviceInfo.deviceInfo.getDeviceName());
+                    BtDevice device = lastDeviceInfo.deviceInfo;
+                    createPendingConnectTask(device);
+                    connectToDevice(device);
                 }, error -> {
                     Log.w(LOG_TAG, "There is no info about last connected device");
+                    notifyAboutFailure();
+                    // bring down all ungoing tasks
+                    stopTask();
                 });
     }
 
+    /**
+     * Strategy is attempting to connect only when it has active subscriptioin
+     * to 'connect' task
+     * @return
+     */
     @Override
     public boolean isAttemptingToConnect() {
-        return false;
+        return pendingConectTask != null && !pendingConectTask.isUnsubscribed();
     }
 
     @Override
     public void stopConnecting() {
-        stopLastDeviceTask();
+        stopTask();
+    }
+
+    /**
+     * This method is called by strategy when it know that database has info about
+     * last connected device and at point in time when strategy read that info in background
+     * @param device
+     */
+    private void createPendingConnectTask(BtDevice device){
+        Observable<BtDevice> trigger = formConnDevicePipe(device);
+        // release previous request is there is any
+        cancelConnectionPendingRequest();
+        pendingConectTask = trigger
+                .observeOn(Schedulers.computation())
+                .subscribe(connectedDevice -> {
+                    Log.i(LOG_TAG, "Connected to: " + connectedDevice.getDeviceName());
+                    // save device we just connected to as last connected device into history db.
+                    updateLastConnectedDeviceRecord(connectedDevice);
+                    // tell callback that connection is established
+                    EstablishConnectionCallback callback = getCallback();
+                    if (null != callback){
+                        callback.onConnectionEstablished(connectedDevice);
+                    }
+                }, error -> {
+                    Log.w(LOG_TAG, "Can't connect to device");
+                    // attempt failed, don't touch history database.
+                    EstablishConnectionCallback callback = getCallback();
+                    if (null != callback){
+                        callback.onAttemptFailed();
+                    }
+                });
+    }
+
+    private void connectToDevice(BtDevice device){
+        connPort.connect(device);
     }
 
     /**
      * Unsubscribe from that task if it is active
      */
-    private void stopLastDeviceTask(){
-        if (null != lastDeviceTaskState && !lastDeviceTaskState.isUnsubscribed()){
-            lastDeviceTaskState.unsubscribe();
-            lastDeviceTaskState = null;
+    private void stopTask(){
+        /**
+         * Stop receiving info about last connected device
+         */
+        if (null != pendingConectTask && !pendingConectTask.isUnsubscribed()){
+            pendingConectTask.unsubscribe();
+            pendingConectTask = null;
+        }
+        if (null != pendingLastDeviceTask && !pendingLastDeviceTask.isUnsubscribed()){
+            pendingLastDeviceTask.unsubscribe();
+            pendingLastDeviceTask = null;
+        }
+        cancelConnectionPendingRequest();
+        connPort.stopConnecting();
+        cancellFailureNotification();
+    }
+
+    /**
+     * Ubsubscribe from pending 'connect' task result and stop any
+     * ongoing connection.
+     */
+    private void cancelConnectionPendingRequest(){
+        if (null != pendingConectTask && !pendingConectTask.isUnsubscribed()){
+            pendingConectTask.unsubscribe();
+            pendingConectTask = null;
         }
     }
 }

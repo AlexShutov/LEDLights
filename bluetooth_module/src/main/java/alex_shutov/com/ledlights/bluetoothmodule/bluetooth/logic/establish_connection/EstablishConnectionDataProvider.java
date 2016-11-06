@@ -11,12 +11,6 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.DataProvider;
  * Created by Alex on 10/27/2016.
  */
 public interface EstablishConnectionDataProvider extends DataProvider {
-    /**
-     * Connection algorithm need database, storing history connection for attempting to
-     * connect to the last connected device
-     * @return
-     */
-    BtDeviceDao provideHistoryDatabase();
 
     /**
      * Manages connection to device, needed of coarse

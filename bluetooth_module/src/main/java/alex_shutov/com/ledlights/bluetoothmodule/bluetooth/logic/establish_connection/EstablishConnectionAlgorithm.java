@@ -22,7 +22,7 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conne
  *  on the other end).
  */
 public class EstablishConnectionAlgorithm extends BtAlgorithm implements
-        EstablishConnection{
+        EstablishConnection {
     private static final String LOG_TAG = EstablishConnectionAlgorithm.class.getSimpleName();
     private EstablishConnectionDataProvider dataProvider;
     /**
@@ -54,7 +54,7 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm implements
 
     @Override
     public void suspend() {
-
+        reconnect.suspend();
     }
 
     /**
@@ -67,7 +67,8 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm implements
         reconnect.setCallback(new EstablishConnectionCallback() {
             @Override
             public void onConnectionEstablished(BtDevice conenctedDevice) {
-                Log.i(LOG_TAG, "onConnectionEstablished(): " + conenctedDevice.getDeviceName());
+                Log.i(LOG_TAG, "device reconnected(): " + conenctedDevice.getDeviceName());
+
             }
 
             @Override
