@@ -131,7 +131,7 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm implements
         deviceDatabase.clearLastConnectedDeviceInfo();
         BtDevice hc05 = new BtDevice();
         hc05.setDeviceName("My bike");
-        String address = "98:D3:31:20:A0:08";
+        String address = "98:D3:31:20:A0:07";
         String uuid = "00001101-0000-1000-8000-00805F9B34FB";
         hc05.setDeviceAddress(address);
         hc05.setDeviceUuIdSecure(uuid);

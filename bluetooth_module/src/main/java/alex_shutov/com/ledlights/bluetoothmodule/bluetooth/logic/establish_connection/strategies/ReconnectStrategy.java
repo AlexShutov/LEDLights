@@ -52,7 +52,6 @@ public class ReconnectStrategy extends EstablishConnectionStrategy {
             .take(1);
 
     private Subscription pendingLastDeviceTask;
-    private Subscription pendingConectTask;
 
 
     public ReconnectStrategy(){
@@ -117,49 +116,39 @@ public class ReconnectStrategy extends EstablishConnectionStrategy {
     }
 
     /**
-     * Strategy is attempting to connect only when it has active subscriptioin
-     * to 'connect' task
-     * @return
+     * Methods, defining actual work need to be done when base after functionality from
+     * base class established connection or failed either.
+     */
+
+    /**
+     * Do nothing, we already informed callback.
+     * @param device
      */
     @Override
-    public boolean isAttemptingToConnect() {
-        return pendingConectTask != null && !pendingConectTask.isUnsubscribed();
+    protected void doOnConnectionSuccessful(BtDevice device) {
+        Log.i(LOG_TAG, "Connection established, performing final action in 'Reconnect' strategy");
     }
+
+    /**
+     * This is 'single shot' strategy - report of error if attempt failed. Another strategies may have
+     * different behaviour
+     */
+    @Override
+    protected void doOnConnectionAttemptFailed() {
+        Log.i(LOG_TAG, "Connection attempt failed, perfforming action from 'reconnect' strategy");
+        EstablishConnectionCallback callback = getCallback();
+        if (null != callback){
+            callback.onAttemptFailed();
+        }
+    }
+
 
     @Override
     public void stopConnecting() {
         stopTask();
     }
 
-    /**
-     * This method is called by strategy when it know that database has info about
-     * last connected device and at point in time when strategy read that info in background
-     * @param device
-     */
-    private void createPendingConnectTask(BtDevice device){
-        Observable<BtDevice> trigger = formConnDevicePipe(device);
-        // release previous request is there is any
-        cancelConnectionPendingRequest();
-        pendingConectTask = trigger
-                .observeOn(Schedulers.computation())
-                .subscribe(connectedDevice -> {
-                    Log.i(LOG_TAG, "Connected to: " + connectedDevice.getDeviceName());
-                    // save device we just connected to as last connected device into history db.
-                    updateLastConnectedDeviceRecord(connectedDevice);
-                    // tell callback that connection is established
-                    EstablishConnectionCallback callback = getCallback();
-                    if (null != callback){
-                        callback.onConnectionEstablished(connectedDevice);
-                    }
-                }, error -> {
-                    Log.w(LOG_TAG, "Can't connect to device");
-                    // attempt failed, don't touch history database.
-                    EstablishConnectionCallback callback = getCallback();
-                    if (null != callback){
-                        callback.onAttemptFailed();
-                    }
-                });
-    }
+
 
     private void connectToDevice(BtDevice device){
         connPort.connect(device);
@@ -172,10 +161,7 @@ public class ReconnectStrategy extends EstablishConnectionStrategy {
         /**
          * Stop receiving info about last connected device
          */
-        if (null != pendingConectTask && !pendingConectTask.isUnsubscribed()){
-            pendingConectTask.unsubscribe();
-            pendingConectTask = null;
-        }
+
         if (null != pendingLastDeviceTask && !pendingLastDeviceTask.isUnsubscribed()){
             pendingLastDeviceTask.unsubscribe();
             pendingLastDeviceTask = null;
@@ -185,14 +171,5 @@ public class ReconnectStrategy extends EstablishConnectionStrategy {
         cancellFailureNotification();
     }
 
-    /**
-     * Ubsubscribe from pending 'connect' task result and stop any
-     * ongoing connection.
-     */
-    private void cancelConnectionPendingRequest(){
-        if (null != pendingConectTask && !pendingConectTask.isUnsubscribed()){
-            pendingConectTask.unsubscribe();
-            pendingConectTask = null;
-        }
-    }
+
 }

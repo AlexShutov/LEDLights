@@ -53,6 +53,7 @@ public abstract class EstablishConnectionStrategy extends BtAlgorithm
     protected Subscription notifyAboutFailure;
     public EstablishConnectionStrategy(){
         setCallback(stubCallback);
+        pendingConectTask = null;
     }
 
     /**
@@ -68,6 +69,7 @@ public abstract class EstablishConnectionStrategy extends BtAlgorithm
      */
     private PublishSubject<Boolean> connResultPipe = PublishSubject.create();
 
+    private Subscription pendingConectTask;
     /**
      * Concrete strategies need convenient FRP way to be notified about completion of
      * connection request- whether it was successful and device is connected or if it failed
@@ -175,6 +177,80 @@ public abstract class EstablishConnectionStrategy extends BtAlgorithm
         }
     }
 
+    /**
+     * Here is the tricky part - all three strategy need to connect to Bluetooth device at
+     * some point and wait until this operation is complete. After that every strategy
+     * has to process result in different way. All strategy has to notify external listener
+     * of successful connection and update history of last connection. But, additional
+     * behaviour vary, as well as behaviour in case of connection error. In case of 'reconnet'
+     * strategy, when connection is established, we just have to close algorithm and do noting.
+     * But, for 'lookup from history' behavior, when ther is ap lot of pending device candidates,
+     * we have to tell concrete strategy, that job is done and we don't have to try connecting
+     * to another devices from that list. Consider 'prompt selection' strategy - UI show list of
+     * scanned devices and we have to select one to connect. If successful, show popup message and
+     * close UI, but, in case of failure, we have to stay on the same ui, notify of error and
+     * prompt to select another device.
+     * At this point we updated info of last connected device and notified callback already,
+     * just do some extra work.
+     */
+    protected abstract void doOnConnectionSuccessful(BtDevice device);
+
+    /**
+     * Connection attempt failed. We don't have to change records in device history database.
+     * Base implementation won't notify callback of error - this is up to concrete strategy
+     * to decide when it want to do so (maybe try again)
+     */
+    protected abstract void doOnConnectionAttemptFailed();
+
+    /**
+     * This method is called by strategy when it know that database has info about
+     * last connected device and at point in time when strategy read that info in background
+     * @param device
+     */
+    protected void createPendingConnectTask(BtDevice device){
+        Observable<BtDevice> trigger = formConnDevicePipe(device);
+        // release previous request is there is any
+        cancelConnectionPendingRequest();
+        pendingConectTask = trigger
+                .observeOn(Schedulers.computation())
+                .subscribe(connectedDevice -> {
+                    Log.i(LOG_TAG, "Connected to: " + connectedDevice.getDeviceName());
+                    // save device we just connected to as last connected device into history db.
+                    updateLastConnectedDeviceRecord(connectedDevice);
+                    // tell callback that connection is established
+                    EstablishConnectionCallback callback = getCallback();
+                    if (null != callback){
+                        callback.onConnectionEstablished(connectedDevice);
+                    }
+                    // call final action (abstract) - from concrete strategy
+                    doOnConnectionSuccessful(connectedDevice);
+                }, error -> {
+                    Log.w(LOG_TAG, "Can't connect to device");
+                    // attempt failed, don't touch history database.
+                    doOnConnectionAttemptFailed();
+                });
+    }
+
+    /**
+     * Strategy is attempting to connect only when it has active subscriptioin
+     * to 'connect' task
+     * @return
+     */
+    @Override
+    public boolean isAttemptingToConnect() {
+        return pendingConectTask != null && !pendingConectTask.isUnsubscribed();
+    }
+
+    /**
+     * Ubsubscribe from pending 'connect' task result and stop any
+     * ongoing connection.
+     */
+    protected void cancelConnectionPendingRequest(){
+        if (null != pendingConectTask && !pendingConectTask.isUnsubscribed()){
+            pendingConectTask.unsubscribe();
+            pendingConectTask = null;
+        }
+    }
 
 
 
