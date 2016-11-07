@@ -7,6 +7,7 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conne
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionCallbackReactive;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.EstablishConnectionStrategy;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.ReconnectStrategy;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.SelectAnotherDeviceStrategy;
 import dagger.Module;
 import dagger.Provides;
 
@@ -20,9 +21,11 @@ public class BtAlgorithmicModule {
     @Singleton
     EstablishConnectionAlgorithm provideEstablishConnectionAlgorithm(
             @Named("ReconnectStrategy") EstablishConnectionStrategy reconnect,
+            @Named("AnotherDeviceStrategy") EstablishConnectionStrategy anotherDevice,
             EstablishConnectionCallbackReactive currentStrategyWrapper){
         EstablishConnectionAlgorithm algorithm =
-                new EstablishConnectionAlgorithm(reconnect, currentStrategyWrapper);
+                new EstablishConnectionAlgorithm(reconnect, anotherDevice,
+                        currentStrategyWrapper);
         return algorithm;
     }
 
@@ -37,6 +40,15 @@ public class BtAlgorithmicModule {
         ReconnectStrategy reconnectStrategy = new ReconnectStrategy();
         return reconnectStrategy;
     }
+
+    @Provides
+    @Singleton
+    @Named("AnotherDeviceStrategy")
+    EstablishConnectionStrategy provideAnotherDeviceSelectionStrategy(){
+        SelectAnotherDeviceStrategy strategy = new SelectAnotherDeviceStrategy();
+        return strategy;
+    }
+
 
     @Provides
     EstablishConnectionCallbackReactive provideCallbackReactiveWrapper(){

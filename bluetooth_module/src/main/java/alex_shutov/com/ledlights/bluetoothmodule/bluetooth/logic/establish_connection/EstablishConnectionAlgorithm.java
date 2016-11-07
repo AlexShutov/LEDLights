@@ -3,9 +3,7 @@ package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conn
 import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.esb.BtConnEsbStore;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanPort;
@@ -14,11 +12,6 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.BtAlgorithm;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.DataProvider;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionCallbackReactive.CallbackSubscriptionManager;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.EstablishConnectionStrategy;
-import rx.Observable;
-import rx.schedulers.Schedulers;
-import rx.subjects.PublishSubject;
-
-import static alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.esb.BtConnEsbStore.*;
 
 /**
  * Created by Alex on 10/26/2016.
@@ -53,7 +46,8 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm implements
     /**
      * Strategies for establishing connection
      */
-    private EstablishConnectionStrategy reconnect;
+    private EstablishConnectionStrategy reconnectStrategy;
+    private EstablishConnectionStrategy anotherDeviceStrategy;
 
     private EstablishConnectionStrategy currentStrategy;
 
@@ -61,8 +55,10 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm implements
     private CallbackSubscriptionManager currentStrategySubscriptions;
 
     public EstablishConnectionAlgorithm(EstablishConnectionStrategy reconnectStrategy,
+                                        EstablishConnectionStrategy anotherDeviceStrategy,
                                         EstablishConnectionCallbackReactive callbackWrapper) {
-        this.reconnect = reconnectStrategy;
+        this.reconnectStrategy = reconnectStrategy;
+        this.anotherDeviceStrategy = anotherDeviceStrategy;
         currentStrategyCallbackWrapper = callbackWrapper;
         currentStrategySubscriptions = new CallbackSubscriptionManager();
     }
@@ -70,8 +66,8 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm implements
 
     @Override
     public void suspend() {
-        reconnect.setCallback(null);
-        reconnect.suspend();
+        reconnectStrategy.setCallback(null);
+        reconnectStrategy.suspend();
     }
 
     /**
@@ -81,7 +77,7 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm implements
     @Override
     protected void start() {
         connectStrategyCallbackToExternalCallback();
-        chooseStrategy(reconnect);
+        chooseStrategy(reconnectStrategy);
     }
 
     @Override
@@ -116,7 +112,7 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm implements
     @Override
     public void attemptToEstablishConnection() {
         testWriteLastDevice();
-        reconnect.attemptToEstablishConnection();
+        reconnectStrategy.attemptToEstablishConnection();
     }
 
     public void setCallback(EstablishConnectionCallback callback) {
