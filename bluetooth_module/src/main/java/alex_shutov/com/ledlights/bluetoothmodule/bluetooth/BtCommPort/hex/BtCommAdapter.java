@@ -17,24 +17,17 @@ public class BtCommAdapter extends Adapter implements BtCommPort {
     private static final String LOG_TAG = BtCommAdapter.class.getSimpleName();
     public static CommInterface dummyCommInterface = new CommInterface() {
         @Override
-        public void startConnection() {
-
-        }
-
+        public void startConnection() {}
         @Override
-        public void disconnect() {
-
-        }
-
+        public void disconnect() {}
         @Override
         public boolean isDeviceConnected() {
             return false;
         }
-
         @Override
-        public void sendData(byte[] data) {
-
-        }
+        public void sendData(byte[] data) {}
+        @Override
+        public void selectAnotherDevice() {}
     };
     public static CommFeedbackInterface dummyCommFeedback = new CommFeedbackInterface() {
         @Override
@@ -107,6 +100,10 @@ public class BtCommAdapter extends Adapter implements BtCommPort {
         decoree.startConnection();
     }
 
+    @Override
+    public void selectAnotherDevice() {
+        decoree.selectAnotherDevice();
+    }
 
     @Override
     public void disconnect() {

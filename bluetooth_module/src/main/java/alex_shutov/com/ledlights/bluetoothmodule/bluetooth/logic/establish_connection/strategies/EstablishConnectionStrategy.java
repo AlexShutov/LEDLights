@@ -27,10 +27,11 @@ public abstract class EstablishConnectionStrategy extends BtAlgorithm
     private static final String LOG_TAG = EstablishConnectionStrategy.class.getSimpleName();
     private static EstablishConnectionCallback stubCallback = new EstablishConnectionCallback() {
         @Override
-        public void onConnectionEstablished(BtDevice conenctedDevice) {        }
-
+        public void onConnectionEstablished(BtDevice conenctedDevice) {}
         @Override
-        public void onAttemptFailed() {        }
+        public void onAttemptFailed() {}
+        @Override
+        public void onUnsupportedOperation() {}
     };
     private EstablishConnectionCallback callback;
     /**
@@ -262,6 +263,9 @@ public abstract class EstablishConnectionStrategy extends BtAlgorithm
                 .subscribe(t -> {
                     if (t) {
                         Log.i(LOG_TAG, "callback notified of failure");
+                        if (null != callback){
+                            callback.onUnsupportedOperation();
+                        }
                     } else {
                         Log.w(LOG_TAG, "callback is null, can't tell it of faulure");
                     }

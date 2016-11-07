@@ -148,7 +148,8 @@ public class ReconnectStrategy extends EstablishConnectionStrategy {
         stopTask();
     }
 
-
+    @Override
+    public void selectDeviceByUi() {}
 
     private void connectToDevice(BtDevice device){
         connPort.connect(device);

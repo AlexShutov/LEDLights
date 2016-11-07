@@ -21,4 +21,6 @@ public interface EstablishConnection {
     boolean isAttemptingToConnect();
 
     void stopConnecting();
+
+    void selectDeviceByUi();
 }

@@ -25,4 +25,9 @@ public interface EstablishConnectionCallback {
      * (see comment above) is satisfied, or, if adapter is off
      */
     void onAttemptFailed();
+
+    /**
+     * called when strategy is unable to perform requested action
+     */
+    void onUnsupportedOperation();
 }

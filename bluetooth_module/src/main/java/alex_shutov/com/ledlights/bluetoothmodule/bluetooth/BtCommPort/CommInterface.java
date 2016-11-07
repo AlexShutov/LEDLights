@@ -27,6 +27,11 @@ public interface CommInterface  {
     void startConnection();
 
     /**
+     * User should be able to select another Bluetooth device by using UI
+     */
+    void selectAnotherDevice();
+
+    /**
      *  Disconnect from connected Bluetooth device
      */
     void disconnect();

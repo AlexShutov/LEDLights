@@ -3,14 +3,22 @@ package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conn
 import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.esb.BtConnEsbStore;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.bluetooth_devices.dao.BtDeviceDao;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.BtAlgorithm;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.DataProvider;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionCallbackReactive.CallbackSubscriptionManager;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.EstablishConnectionStrategy;
+import rx.Observable;
+import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
+
+import static alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.esb.BtConnEsbStore.*;
 
 /**
  * Created by Alex on 10/26/2016.
@@ -47,13 +55,22 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm implements
      */
     private EstablishConnectionStrategy reconnect;
 
+    private EstablishConnectionStrategy currentStrategy;
 
-    public EstablishConnectionAlgorithm(EstablishConnectionStrategy reconnectStrategy) {
+    private EstablishConnectionCallbackReactive currentStrategyCallbackWrapper;
+    private CallbackSubscriptionManager currentStrategySubscriptions;
+
+    public EstablishConnectionAlgorithm(EstablishConnectionStrategy reconnectStrategy,
+                                        EstablishConnectionCallbackReactive callbackWrapper) {
         this.reconnect = reconnectStrategy;
+        currentStrategyCallbackWrapper = callbackWrapper;
+        currentStrategySubscriptions = new CallbackSubscriptionManager();
     }
+
 
     @Override
     public void suspend() {
+        reconnect.setCallback(null);
         reconnect.suspend();
     }
 
@@ -63,26 +80,8 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm implements
      */
     @Override
     protected void start() {
-        reconnect.init(dataProvider);
-        reconnect.setCallback(new EstablishConnectionCallback() {
-            @Override
-            public void onConnectionEstablished(BtDevice connectedDevice) {
-                Log.i(LOG_TAG, "device reconnected(): " + connectedDevice.getDeviceName());
-                EstablishConnectionAlgorithm.this.connectedDevice = connectedDevice;
-                if (null != callback){
-                    callback.onConnectionEstablished(connectedDevice);
-                }
-            }
-
-            @Override
-            public void onAttemptFailed() {
-                Log.w(LOG_TAG, "onAttemptFailed()");
-                connectedDevice = null;
-                if (null != callback){
-                    callback.onAttemptFailed();
-                }
-            }
-        });
+        connectStrategyCallbackToExternalCallback();
+        chooseStrategy(reconnect);
     }
 
     @Override
@@ -95,6 +94,10 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm implements
         scanPort = dataProvider.provideBtScanPort();
     }
 
+    /**
+     * Inherited from EstablishConnection
+     */
+
     @Override
     public boolean isAttemptingToConnect() {
         return false;
@@ -105,11 +108,10 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm implements
 
     }
 
-    /**
-     * Inherited from EstablishConnection
-     */
+    @Override
+    public void selectDeviceByUi() {
 
-
+    }
 
     @Override
     public void attemptToEstablishConnection() {
@@ -131,7 +133,7 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm implements
         deviceDatabase.clearLastConnectedDeviceInfo();
         BtDevice hc05 = new BtDevice();
         hc05.setDeviceName("My bike");
-        String address = "98:D3:31:20:A0:07";
+        String address = "98:D3:31:20:A0:08";
         String uuid = "00001101-0000-1000-8000-00805F9B34FB";
         hc05.setDeviceAddress(address);
         hc05.setDeviceUuIdSecure(uuid);
@@ -146,4 +148,58 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm implements
         deviceDatabase.setLastConnectionStartTime(startConnectionTime);
         deviceDatabase.setLastConnectionEndTime(endConnectionTime);
     }
+
+    /**
+     * Only one strategy can be active at a time, so we have to choose it.
+     * Active strategy have to pass messages to this algorithm, so it should
+     * be connected to our callback, which tunnel those messages into rx pipeline inn this
+     * algorithm.
+     * @param strategy
+     */
+    private void chooseStrategy(EstablishConnectionStrategy strategy){
+        strategy.init(dataProvider);
+        strategy.setCallback(currentStrategyCallbackWrapper);
+        currentStrategy = strategy;
+    }
+
+    /**
+     * When some strategy cannot perform well, we need to try another one.
+     * Previous strategy need to be disconnected from callback and all activitis inside
+     * of it has top be suspended.
+     * @param strategy
+     */
+    private void releaseStrategy(EstablishConnectionStrategy strategy) {
+        strategy.setCallback(null);
+        strategy.suspend();
+        currentStrategy = null;
+    }
+
+    private void connectStrategyCallbackToExternalCallback(){
+        currentStrategySubscriptions.unsubscribe();
+        currentStrategySubscriptions.successSubscription =
+                currentStrategyCallbackWrapper.getConnectedSource()
+                        .subscribe(connectedDevice -> {
+                            Log.i(LOG_TAG, "device reconnected(): " + connectedDevice.getDeviceName());
+                            EstablishConnectionAlgorithm.this.connectedDevice = connectedDevice;
+                            if (null != callback){
+                                callback.onConnectionEstablished(connectedDevice);
+                            }
+                        });
+        currentStrategySubscriptions.failureSubscription =
+                currentStrategyCallbackWrapper.getFailureSource()
+                        .subscribe(t -> {
+                            Log.i(LOG_TAG, "device reconnected(): " + connectedDevice.getDeviceName());
+                            EstablishConnectionAlgorithm.this.connectedDevice = connectedDevice;
+                            if (null != callback){
+                                callback.onConnectionEstablished(connectedDevice);
+                            }
+                        });
+        currentStrategySubscriptions.unsupportedOperationSubscription =
+                currentStrategyCallbackWrapper.getUnsupportedOperationSource()
+                        .subscribe(t -> {
+                            Log.i(LOG_TAG, "This is an unsupported operation");
+                        });
+    }
+
+
 }

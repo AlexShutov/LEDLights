@@ -1,15 +1,18 @@
 package alex_shutov.com.ledlights.bluetoothmodule.bluetooth;
 
+import android.app.SharedElementCallback;
 import android.bluetooth.BluetoothDevice;
 import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import javax.inject.Inject;
 
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.CommInterface;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommPortListener;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.esb.BtConnEsbStore;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.bluetooth_devices.dao.BtDeviceDao;
@@ -17,6 +20,8 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.hex.BtS
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionAlgorithm;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionCallback;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionDataProvider;
+import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by Alex on 11/6/2016.
@@ -50,6 +55,21 @@ public class BtLogicCellFacade implements CommInterface, EstablishConnectionData
         this.diComponent = diComponent;
         connectedDevice = null;
     }
+
+    /**
+     * ESB event handling
+     */
+
+    /**
+     * emit event if Bluetooth connection is lost
+     */
+    private PublishSubject<Boolean> connectionLostEventSource = PublishSubject.create();
+
+    @Subscribe
+    public void onEvent(BtConnEsbStore.ArgumentConnectionLostEvent event){
+        connectionLostEventSource.onNext(true);
+    }
+
 
     /**
      * Inherited from EstablishConnectionDataProvider
@@ -97,12 +117,26 @@ public class BtLogicCellFacade implements CommInterface, EstablishConnectionData
                 Log.i(LOG_TAG, "onAttemptFailed" );
                 commFeedback.onConnectionFailed();
             }
+
+            @Override
+            public void onUnsupportedOperation() {
+
+            }
         });
         connecAlgorithm.init(this);
+        // start receiving ESB events
+        connectionLostEventSource.asObservable()
+                .observeOn(Schedulers.computation())
+                .subscribe(t -> {
+                    Log.i(LOG_TAG, "Connection lost");
+                });
+        eventBus.register(this);
     }
 
     public void onDestroying(){
         Log.i(LOG_TAG, "onDestroying()");
+        // unsubscribe from ESB events
+        eventBus.unregister(this);
     }
 
     /**
@@ -118,6 +152,15 @@ public class BtLogicCellFacade implements CommInterface, EstablishConnectionData
     @Override
     public void disconnect() {
         Log.i(LOG_TAG, "disconnect()");
+        if (isDeviceConnected()){
+            Log.i(LOG_TAG, "Device is connected: " + connectedDevice.getDeviceName() +
+                ", disconnecting");
+            connPort.close();
+        }
+    }
+
+    @Override
+    public void selectAnotherDevice() {
 
     }
 
