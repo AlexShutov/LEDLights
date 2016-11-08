@@ -106,7 +106,8 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm implements
 
     @Override
     public void selectDeviceByUi() {
-
+        chooseStrategy(anotherDeviceStrategy);
+        currentStrategy.selectDeviceByUi();
     }
 
     @Override
@@ -153,6 +154,13 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm implements
      * @param strategy
      */
     private void chooseStrategy(EstablishConnectionStrategy strategy){
+        // pic strategy if it not active yet
+        if (currentStrategy == strategy){
+            return;
+        } else if (null != currentStrategy) {
+            // suspend the current one
+            currentStrategy.suspend();
+        }
         strategy.init(dataProvider);
         strategy.setCallback(currentStrategyCallbackWrapper);
         currentStrategy = strategy;

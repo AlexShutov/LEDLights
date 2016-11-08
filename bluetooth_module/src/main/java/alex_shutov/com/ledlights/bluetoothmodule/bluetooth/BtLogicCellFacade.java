@@ -159,9 +159,13 @@ public class BtLogicCellFacade implements CommInterface, EstablishConnectionData
         }
     }
 
+    /**
+     * Disconnect from current device and tell connection algorithm
+     * to select another
+     */
     @Override
     public void selectAnotherDevice() {
-
+       connecAlgorithm.selectDeviceByUi();
     }
 
     @Override

@@ -1,5 +1,7 @@
 package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies;
 
+import android.util.Log;
+
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.DataProvider;
 
@@ -41,7 +43,7 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy {
 
     @Override
     public void attemptToEstablishConnection() {
-
+        selectDevice();
     }
 
     @Override
@@ -51,9 +53,11 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy {
 
     @Override
     public void selectDeviceByUi() {
-
+        selectDevice();
     }
 
-
+    private void selectDevice(){
+        Log.i(LOG_TAG, "Selecting another device");
+    }
 
 }
