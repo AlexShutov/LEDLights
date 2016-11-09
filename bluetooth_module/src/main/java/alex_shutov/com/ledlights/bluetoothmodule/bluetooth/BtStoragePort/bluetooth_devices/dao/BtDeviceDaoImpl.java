@@ -37,7 +37,6 @@ public class BtDeviceDaoImpl implements BtDeviceDao {
 
     private void disposeOfDb(Realm realm){
         storageManager.disposeOfInstance(realm);
-        realm = null;
     }
 
     /**
