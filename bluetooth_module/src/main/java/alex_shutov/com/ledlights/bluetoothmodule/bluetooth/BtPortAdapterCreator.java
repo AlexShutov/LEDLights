@@ -8,6 +8,7 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtCommModule;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtConnectorModule;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtScannerModule;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtStorageModule;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtUiModule;
 import alex_shutov.com.ledlights.hex_general.PortAdapterCreator;
 import alex_shutov.com.ledlights.hex_general.di.SystemModule;
 import dagger.Component;
@@ -23,9 +24,11 @@ import dagger.Component;
         BtScannerModule.class,
         BtStorageModule.class,
         BtCommModule.class,
-        BtAlgorithmicModule.class })
+        BtAlgorithmicModule.class,
+        BtUiModule.class})
 public interface BtPortAdapterCreator extends PortAdapterCreator {
     void injectBtCellDeployer(BtCellDeployer cellDeployer);
     void injectBtLogicCell(BtLogicCell logicCell);
     void injectBtLogicCellFacade(BtLogicCellFacade facade);
+
 }

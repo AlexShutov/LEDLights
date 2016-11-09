@@ -23,6 +23,8 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtS
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.hex.BtStorageAdapter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.hex.BtStoragePort;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtUiPort.BtUiPort;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtUiPort.hex.BtUiAdapter;
 import alex_shutov.com.ledlights.hex_general.LogicCell;
 
 /**
@@ -45,6 +47,7 @@ public class BtLogicCell extends LogicCell {
     private BtConnAdapter btConnAdapter;
     private BtStorageAdapter btStorageAdapter;
     private BtCommAdapter btCommAdapter;
+    private BtUiAdapter btUiAdapter;
 
     private BtLogicCellFacade btFacade;
 
@@ -100,6 +103,7 @@ public class BtLogicCell extends LogicCell {
         // connect external port first, then call 'initialize', because it is a
         // decorator.
         btCommAdapter.initialize();
+        btUiAdapter.initialize();
 
         if (null != btCommPortListener){
             btFacade.setCommFeedback(btCommPortListener);
@@ -135,6 +139,9 @@ public class BtLogicCell extends LogicCell {
     public BtCommPort getBtCommPort(){
         return btCommAdapter;
     }
+    public BtUiPort getBtUiAdapter() {
+        return btUiAdapter;
+    }
 
     public void setBtScanAdapter(BtScanAdapter btScanAdapter) {
         this.btScanAdapter = btScanAdapter;
@@ -152,6 +159,10 @@ public class BtLogicCell extends LogicCell {
         this.btCommAdapter = btCommAdapter;
     }
 
+    public void setBtUiAdapter(BtUiAdapter btUiAdapter) {
+        this.btUiAdapter = btUiAdapter;
+    }
+
     public void setBtCommPortListener(BtCommPortListener btCommPortListener) {
         if (null != btCommPortListener) {
             this.btCommPortListener = btCommPortListener;
@@ -160,9 +171,9 @@ public class BtLogicCell extends LogicCell {
             }
         } else {
             // facade use dummy value by default
-
         }
     }
+
 
     public Context getContext() {
         return context;
