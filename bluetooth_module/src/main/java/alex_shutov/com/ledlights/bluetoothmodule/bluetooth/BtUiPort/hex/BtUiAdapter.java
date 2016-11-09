@@ -1,9 +1,13 @@
 package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtUiPort.hex;
 
+import android.content.Context;
+import android.content.Intent;
+
 import java.util.List;
 
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtUiPort.BtUiPort;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtUiPort.ChooseDeviceActivity;
 import alex_shutov.com.ledlights.hex_general.Adapter;
 import alex_shutov.com.ledlights.hex_general.PortInfo;
 
@@ -33,6 +37,15 @@ public class BtUiAdapter extends Adapter implements BtUiPort {
         portInfo.setPortDescription("Port for selecting device by UI");
     }
 
+    /**
+     * We need Context to start new activity
+     */
+    private Context context;
+
+    public BtUiAdapter(Context context){
+        this.context = context;
+    }
+
     @Override
     public void initialize() {
 
@@ -52,7 +65,9 @@ public class BtUiAdapter extends Adapter implements BtUiPort {
      */
     @Override
     public void showUiForPickingDevice() {
-
+        Intent startIntent = new Intent(context, ChooseDeviceActivity.class);
+        startIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(startIntent);
     }
 
     /**

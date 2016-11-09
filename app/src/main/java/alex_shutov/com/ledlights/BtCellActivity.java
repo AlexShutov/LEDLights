@@ -10,6 +10,7 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtComm
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommPortListener;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtLogicCell;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtUiPort.BtUiPort;
 import alex_shutov.com.ledlights.hex_general.LogicCell;
 
 /**
@@ -89,8 +90,10 @@ public class BtCellActivity extends Activity {
     private void startPolling(){
         BtCommPort commPort = btCell.getBtCommPort();
         //commPort.startConnection();
-        commPort.selectAnotherDevice();
+        //commPort.selectAnotherDevice();
 
+        BtUiPort uiPort = btCell.getBtUiPort();
+        uiPort.showUiForPickingDevice();
     }
 
 }

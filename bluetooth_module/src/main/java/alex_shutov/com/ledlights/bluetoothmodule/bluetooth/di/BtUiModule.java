@@ -1,5 +1,7 @@
 package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di;
 
+import android.content.Context;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -16,14 +18,13 @@ public class BtUiModule {
 
     @Provides
     @Singleton
-    public BtUiAdapter provideUiAdapter(){
-        BtUiAdapter adapter = new BtUiAdapter();
+    public BtUiAdapter provideUiAdapter(Context context){
+        BtUiAdapter adapter = new BtUiAdapter(context);
         return adapter;
     }
 
     @Provides
     @Singleton
-    @Named("ActualInstance")
     public BtUiPort provideBtUiPort(BtUiAdapter adapter){
         return adapter;
     }

@@ -139,7 +139,7 @@ public class BtLogicCell extends LogicCell {
     public BtCommPort getBtCommPort(){
         return btCommAdapter;
     }
-    public BtUiPort getBtUiAdapter() {
+    public BtUiPort getBtUiPort() {
         return btUiAdapter;
     }
 

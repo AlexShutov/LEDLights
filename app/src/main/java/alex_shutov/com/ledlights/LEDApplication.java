@@ -4,18 +4,14 @@ import android.content.Context;
 import android.support.multidex.MultiDexApplication;
 import android.widget.Toast;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.util.UUID;
 
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCellDeployer;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.CommFeedbackInterface;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtLogicCell;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtLogicCellFacade;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.hex.BtStoragePort;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtUiPort.BtUiPort;
 import alex_shutov.com.ledlights.hex_general.CellDeployer;
 
 /**
@@ -28,6 +24,7 @@ public class LEDApplication extends MultiDexApplication{
     BtConnPort connPort;
     BtScanPort scanPort;
     BtStoragePort dbPort;
+    BtUiPort uiPort;
 
     CellDeployer btCellDeployer;
     BtLogicCell cell;
@@ -54,7 +51,7 @@ public class LEDApplication extends MultiDexApplication{
         scanPort = cell.getBtScanPort();
         connPort = cell.getBtConnPort();
         dbPort = cell.getBtStoragePort();
-
+        uiPort = cell.getBtUiPort();
     }
 
     @Override
@@ -80,6 +77,10 @@ public class LEDApplication extends MultiDexApplication{
 
     public BtStoragePort getDbPort() {
         return dbPort;
+    }
+
+    public BtUiPort getUiPort() {
+        return uiPort;
     }
 
     public BtLogicCell getCell() {
