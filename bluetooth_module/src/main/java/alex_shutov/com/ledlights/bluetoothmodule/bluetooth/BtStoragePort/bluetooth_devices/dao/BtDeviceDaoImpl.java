@@ -26,18 +26,16 @@ import static alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.
 public class BtDeviceDaoImpl implements BtDeviceDao {
 
     private StorageManager storageManager;
-    private Realm realm;
 
     public BtDeviceDaoImpl(StorageManager storageManager){
         this.storageManager = storageManager;
-        realm = null;
     }
 
-    private void allocateDb(){
-        realm = storageManager.allocateInstance();
+    private Realm allocateDb(){
+        return storageManager.allocateInstance();
     }
 
-    private void disposeOfDb(){
+    private void disposeOfDb(Realm realm){
         storageManager.disposeOfInstance(realm);
         realm = null;
     }
@@ -54,13 +52,13 @@ public class BtDeviceDaoImpl implements BtDeviceDao {
     @NonNull
     @Override
     public List<BtDevice> getDeviceHistory() {
-        allocateDb();
+        Realm realm = allocateDb();
         List<BluetoothDevice> dbDevices = realm.where(BluetoothDevice.class).findAll();
         List<BtDevice> devices = new ArrayList<>();
         for (BluetoothDevice dd : dbDevices){
             devices.add(convertFromDbModel(dd));
         }
-        disposeOfDb();
+        disposeOfDb(realm);
         return devices;
     }
 
@@ -69,56 +67,56 @@ public class BtDeviceDaoImpl implements BtDeviceDao {
      */
     @Override
     public void clearConnectionHistory() {
-        allocateDb();
+        Realm realm = allocateDb();
         realm.beginTransaction();
         realm.where(BluetoothDevice.class).findAll().clear();
         realm.commitTransaction();
-        disposeOfDb();
+        disposeOfDb(realm);
     }
 
     @Override
     public void addMotorcycleToHistory(BtDevice device) {
         BluetoothDevice dbDevice = convertToDbModel(device);
-        allocateDb();
+        Realm realm = allocateDb();
         realm.beginTransaction();
         realm.copyToRealmOrUpdate(dbDevice);
         realm.commitTransaction();
-        disposeOfDb();
+        disposeOfDb(realm);
     }
 
     @Override
     public boolean hasConnectionHistory() {
-        allocateDb();
+        Realm realm = allocateDb();
         long numberOfDevices = realm.where(BluetoothDevice.class).count();
-        disposeOfDb();
+        disposeOfDb(realm);
         return numberOfDevices != 0;
     }
 
     @Nullable
     @Override
     public BtDevice getLastConnectedMotorcycleInfo() {
-        allocateDb();
+        Realm realm = allocateDb();
         RealmResults<LastPairedDevice> stats = realm.where(LastPairedDevice.class).findAll();
         LastPairedDevice stat = stats.isEmpty() ? null : stats.get(0);
         if (stat == null || stat.getLastPairedDevice() == null){
-            disposeOfDb();
+            disposeOfDb(realm);
             return null;
         }
         BtDevice device = convertFromDbModel(stat.getLastPairedDevice());
-        disposeOfDb();
+        disposeOfDb(realm);
         return device;
     }
 
     @Override
     public void clearLastConnectedDeviceInfo() {
-        allocateDb();
+        Realm realm = allocateDb();
         RealmResults<LastPairedDevice> stat = realm.where(LastPairedDevice.class).findAll();
         if (!stat.isEmpty()){
             realm.beginTransaction();
             stat.clear();
             realm.commitTransaction();
         }
-        disposeOfDb();
+        disposeOfDb(realm);
     }
 
     /**
@@ -128,7 +126,7 @@ public class BtDeviceDaoImpl implements BtDeviceDao {
      */
     @Override
     public void setLastConnectedMotorcycleInfo(BtDevice motorcycleInfo) {
-        allocateDb();
+        Realm realm = allocateDb();
         // LastDeviceInfo has no primary key, so we can't update this field, have to remove
         // it first
         RealmResults<LastPairedDevice> lastInfo =  realm.where(LastPairedDevice.class).findAll();
@@ -146,45 +144,46 @@ public class BtDeviceDaoImpl implements BtDeviceDao {
         lastDeviceInfo = realm.copyToRealm(lastDeviceInfo);
         lastDeviceInfo.setLastPairedDevice(lastDevice);
         realm.commitTransaction();
+        disposeOfDb(realm);
     }
 
     @NonNull
     @Override
     public Long getLastConnectionStartTime() {
-        allocateDb();
+        Realm realm = allocateDb();
         RealmResults<LastPairedDevice> lastInfo =  realm.where(LastPairedDevice.class).findAll();
         if (lastInfo.isEmpty()){
             // don't forget releasing database instance
-            disposeOfDb();
+            disposeOfDb(realm);
             return null;
         }
         LastPairedDevice lastDevice = lastInfo.first();
         Long startTime = lastDevice.getPairingStartTime();
 
-        disposeOfDb();
+        disposeOfDb(realm);
         return startTime;
     }
 
     @NonNull
     @Override
     public Long getLastConnectionEndTime() {
-        allocateDb();
+        Realm realm = allocateDb();
         RealmResults<LastPairedDevice> lastInfo =  realm.where(LastPairedDevice.class).findAll();
         if (lastInfo.isEmpty()){
             // don't forget releasing database instance
-            disposeOfDb();
+            disposeOfDb(realm);
             return null;
         }
         LastPairedDevice lastDevice = lastInfo.first();
         Long endTime = lastDevice.getPairingEndTime();
 
-        disposeOfDb();
+        disposeOfDb(realm);
         return endTime;
     }
 
     @Override
     public void setLastConnectionStartTime(long startTime) {
-        allocateDb();
+        Realm realm = allocateDb();
         RealmResults<LastPairedDevice> lastInfo =  realm.where(LastPairedDevice.class).findAll();
         if (lastInfo.isEmpty()){
             // last device info not specified, save empty value
@@ -194,19 +193,19 @@ public class BtDeviceDaoImpl implements BtDeviceDao {
         }
         // lastInfo is active query ('window' to database), reuse it, there must be an item
         if (lastInfo.isEmpty()){
-            disposeOfDb();
+            disposeOfDb(realm);
             throw new RuntimeException("Realm is broken");
         }
         LastPairedDevice device = lastInfo.first();
         realm.beginTransaction();
         device.setPairingStartTime(startTime);
         realm.commitTransaction();
-        disposeOfDb();
+        disposeOfDb(realm);
     }
 
     @Override
     public void setLastConnectionEndTime(long endTime) {
-        allocateDb();
+        Realm realm = allocateDb();
         RealmResults<LastPairedDevice> lastInfo =  realm.where(LastPairedDevice.class).findAll();
         if (lastInfo.isEmpty()){
             // last device info not specified, save empty value
@@ -216,14 +215,14 @@ public class BtDeviceDaoImpl implements BtDeviceDao {
         }
         // lastInfo is active query ('window' to database), reuse it, there must be an item
         if (lastInfo.isEmpty()){
-            disposeOfDb();
+            disposeOfDb(realm);
             throw new RuntimeException("Realm is broken");
         }
         LastPairedDevice device = lastInfo.first();
         realm.beginTransaction();
         device.setPairingEndTime(endTime);
         realm.commitTransaction();
-        disposeOfDb();
+        disposeOfDb(realm);
     }
 
 }
