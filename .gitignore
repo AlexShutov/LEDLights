@@ -3144,3 +3144,16 @@ bluetooth_module/build/retrolambda/release/alex_shutov/com/ledlights/bluetoothmo
 bluetooth_module/build/retrolambda/release/alex_shutov/com/ledlights/bluetoothmodule/bluetooth/di/BtUiModule.class
 bluetooth_module/build/retrolambda/release/alex_shutov/com/ledlights/bluetoothmodule/bluetooth/di/BtUiModule_ProvideBtUiPortFactory.class
 bluetooth_module/build/retrolambda/release/alex_shutov/com/ledlights/bluetoothmodule/bluetooth/di/BtUiModule_ProvideUiAdapterFactory.class
+.idea/runConfigurations.xml
+bluetooth_module/build/intermediates/bundles/debug/res/layout/activity_pick_device.xml
+bluetooth_module/build/intermediates/classes/debug/alex_shutov/com/ledlights/bluetoothmodule/bluetooth/BtScannerPort/hex/BtScanAdapter$$Lambda$2.class
+bluetooth_module/build/intermediates/classes/debug/alex_shutov/com/ledlights/bluetoothmodule/bluetooth/BtScannerPort/hex/BtScanAdapter$$Lambda$3.class
+bluetooth_module/build/intermediates/classes/debug/alex_shutov/com/ledlights/bluetoothmodule/bluetooth/BtUiPort/ChooseDeviceActivity.class
+bluetooth_module/build/intermediates/classes/debug/alex_shutov/com/ledlights/bluetoothmodule/bluetooth/logic/establish_connection/EstablishConnectionAlgorithm$$Lambda$2.class
+bluetooth_module/build/intermediates/classes/debug/alex_shutov/com/ledlights/bluetoothmodule/bluetooth/logic/establish_connection/EstablishConnectionAlgorithm$$Lambda$3.class
+bluetooth_module/build/intermediates/classes/release/alex_shutov/com/ledlights/bluetoothmodule/bluetooth/BtUiPort/ChooseDeviceActivity.class
+bluetooth_module/build/intermediates/res/merged/androidTest/debug/layout/activity_pick_device.xml
+bluetooth_module/build/intermediates/res/merged/debug/layout/activity_pick_device.xml
+bluetooth_module/build/intermediates/res/merged/release/layout/activity_pick_device.xml
+bluetooth_module/build/retrolambda/debug/alex_shutov/com/ledlights/bluetoothmodule/bluetooth/BtUiPort/ChooseDeviceActivity.class
+bluetooth_module/build/retrolambda/release/alex_shutov/com/ledlights/bluetoothmodule/bluetooth/BtUiPort/ChooseDeviceActivity.class
