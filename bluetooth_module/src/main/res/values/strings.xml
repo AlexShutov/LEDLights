@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">BluetoothModule</string>
+    <string name="idh_list_item_device_name">My bike</string>
 </resources>
