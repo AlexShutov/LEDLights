@@ -4,7 +4,6 @@ import android.util.Log;
 
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.bluetooth_devices.dao.BtDeviceDao;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.DataProvider;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionCallback;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionDataProvider;
@@ -30,7 +29,7 @@ public class ReconnectStrategy extends EstablishConnectionStrategy {
     private BtConnPort connPort;
     // FRP - logic
 
-    private Observable<LastDeviceData> getLastDeviceFromDbtask =
+    private Observable<LastDeviceData> getLastDeviceFromDbTask =
             Observable.just("")
             .subscribeOn(Schedulers.io())
             .map(t -> {
@@ -98,7 +97,7 @@ public class ReconnectStrategy extends EstablishConnectionStrategy {
     public void attemptToEstablishConnection() {
         Log.i(LOG_TAG, "attemptToEstablishConnection()");
         stopTask();
-        pendingLastDeviceTask = Observable.defer(() -> getLastDeviceFromDbtask)
+        pendingLastDeviceTask = Observable.defer(() -> getLastDeviceFromDbTask)
                 .observeOn(Schedulers.computation())
 
                 .subscribe(lastDeviceInfo -> {

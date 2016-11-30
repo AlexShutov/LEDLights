@@ -72,10 +72,10 @@ public class BtUiAdapter extends Adapter implements BtUiPort {
 
     /**
      * Store list of device history and give it to UI.
-     * @param historyDEvices
+     * @param historyDevices
      */
     @Override
-    public void acceptListOfHistoryDevices(List<BtDevice> historyDEvices) {
+    public void acceptListOfHistoryDevices(List<BtDevice> historyDevices) {
 
     }
 

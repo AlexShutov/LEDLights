@@ -24,9 +24,9 @@ public interface BtUiPort extends Port {
      * Take into account list of devices from history. UI should indicate in some way if
      * any of paired devices or newly discovered device belong to device history (some check mark
      * or something)
-     * @param historyDEvices
+     * @param historyDevices
      */
-    void acceptListOfHistoryDevices(List<BtDevice> historyDEvices);
+    void acceptListOfHistoryDevices(List<BtDevice> historyDevices);
 
     /**
      * Bluetooth adapter instantly return set of all paired devices, so we can display those

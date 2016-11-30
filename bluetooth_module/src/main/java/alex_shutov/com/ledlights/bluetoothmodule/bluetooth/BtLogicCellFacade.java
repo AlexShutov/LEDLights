@@ -17,6 +17,7 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.B
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.bluetooth_devices.dao.BtDeviceDao;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.hex.BtStoragePort;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtUiPort.BtUiPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionAlgorithm;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionCallback;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionDataProvider;
@@ -41,6 +42,8 @@ public class BtLogicCellFacade implements CommInterface, EstablishConnectionData
     public BtScanPort scanPort;
     @Inject
     public BtStoragePort storagePort;
+    @Inject
+    public BtUiPort uiPort;
 
     private BtCommPortListener commFeedback;
 
@@ -86,6 +89,11 @@ public class BtLogicCellFacade implements CommInterface, EstablishConnectionData
     }
 
     @Override
+    public BtUiPort provideBtUiPort() {
+        return uiPort;
+    }
+
+    @Override
     public EventBus provideEventBus() {
         return eventBus;
     }
@@ -106,7 +114,8 @@ public class BtLogicCellFacade implements CommInterface, EstablishConnectionData
         connecAlgorithm.setCallback(new EstablishConnectionCallback() {
             @Override
             public void onConnectionEstablished(BtDevice connectedDevice) {
-                Log.i(LOG_TAG, "Connection established with device: " +
+                String msg = "Connection established with device ";
+                Log.i(LOG_TAG, connectedDevice == null ? msg : msg +
                         connectedDevice.getDeviceName());
                 BtLogicCellFacade.this.connectedDevice = connectedDevice;
                 commFeedback.onConnectionStarted(connectedDevice);
@@ -120,7 +129,7 @@ public class BtLogicCellFacade implements CommInterface, EstablishConnectionData
 
             @Override
             public void onUnsupportedOperation() {
-
+                commFeedback.onConnectionFailed();
             }
         });
         connecAlgorithm.init(this);

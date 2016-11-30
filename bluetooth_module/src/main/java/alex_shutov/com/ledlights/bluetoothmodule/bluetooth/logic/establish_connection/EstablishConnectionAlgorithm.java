@@ -63,7 +63,6 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm implements
         currentStrategySubscriptions = new CallbackSubscriptionManager();
     }
 
-
     @Override
     public void suspend() {
         reconnectStrategy.setCallback(null);
@@ -101,7 +100,7 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm implements
 
     @Override
     public void stopConnecting() {
-
+        currentStrategy.stopConnecting();
     }
 
     @Override
@@ -153,7 +152,7 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm implements
      * algorithm.
      * @param strategy
      */
-    private void chooseStrategy(EstablishConnectionStrategy strategy){
+    private void chooseStrategy(EstablishConnectionStrategy strategy) {
         // pic strategy if it not active yet
         if (currentStrategy == strategy){
             return;
@@ -192,7 +191,7 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm implements
         currentStrategySubscriptions.failureSubscription =
                 currentStrategyCallbackWrapper.getFailureSource()
                         .subscribe(t -> {
-                            Log.i(LOG_TAG, "device reconnected(): " + connectedDevice.getDeviceName());
+                            Log.w(LOG_TAG, "Connection attempt have failed");
                             EstablishConnectionAlgorithm.this.connectedDevice = connectedDevice;
                             if (null != callback){
                                 callback.onConnectionEstablished(connectedDevice);

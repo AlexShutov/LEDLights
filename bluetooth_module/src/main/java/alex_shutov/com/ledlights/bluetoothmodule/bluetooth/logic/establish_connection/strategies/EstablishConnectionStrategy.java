@@ -5,7 +5,6 @@ import android.util.Log;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.esb.BtConnEsbStore;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.bluetooth_devices.dao.BtDeviceDao;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.BtAlgorithm;
@@ -54,11 +53,11 @@ public abstract class EstablishConnectionStrategy extends BtAlgorithm
     protected Subscription notifyAboutFailure;
     public EstablishConnectionStrategy(){
         setCallback(stubCallback);
-        pendingConectTask = null;
+        pendingConnectTask = null;
     }
 
     /**
-     *  The mext section is responsible for getting instance of EventBus and registering this
+     *  The next section is responsible for getting instance of EventBus and registering this
      *  object in it so we can track completion and failure events emitted into ESB.
      *  This logic has to be here in base class, because all strategies handle results in the
      *  same way.
@@ -70,7 +69,7 @@ public abstract class EstablishConnectionStrategy extends BtAlgorithm
      */
     private PublishSubject<Boolean> connResultPipe = PublishSubject.create();
 
-    private Subscription pendingConectTask;
+    private Subscription pendingConnectTask;
     /**
      * Concrete strategies need convenient FRP way to be notified about completion of
      * connection request- whether it was successful and device is connected or if it failed
@@ -89,8 +88,8 @@ public abstract class EstablishConnectionStrategy extends BtAlgorithm
      * At some point strategy knows what device it want to connect to. But, ESb provide only
      * event, indicating, if connection attempt was successful. It won't give you actual
      * device infos. So, we have to combine result pipe with device data in order to in the
-     * end what device we connected to.
-     * Notice, i use Observable.defer(), because device will differ every time.
+     * end know what device we connected to.
+     * Notice, I use Observable.defer(), because device will differ every time.
      * @param device Device we want to connect to
      * @return Source, returning device info in case of success or error when connection attempt
      *          fails.
@@ -157,7 +156,7 @@ public abstract class EstablishConnectionStrategy extends BtAlgorithm
 
     @Subscribe
     public void onEvent(ArgumentConnectionFailedEvent failedEvent){
-        Log.i(LOG_TAG, "Connection port told that connectionattempt have failed");
+        Log.i(LOG_TAG, "Connection port told that connection attempt have failed");
         connResultPipe.onNext(false);
     }
 
@@ -185,7 +184,7 @@ public abstract class EstablishConnectionStrategy extends BtAlgorithm
      * of successful connection and update history of last connection. But, additional
      * behaviour vary, as well as behaviour in case of connection error. In case of 'reconnet'
      * strategy, when connection is established, we just have to close algorithm and do noting.
-     * But, for 'lookup from history' behavior, when ther is ap lot of pending device candidates,
+     * But, for 'lookup from history' behavior, when there is a lot of pending device candidates,
      * we have to tell concrete strategy, that job is done and we don't have to try connecting
      * to another devices from that list. Consider 'prompt selection' strategy - UI show list of
      * scanned devices and we have to select one to connect. If successful, show popup message and
@@ -212,7 +211,7 @@ public abstract class EstablishConnectionStrategy extends BtAlgorithm
         Observable<BtDevice> trigger = formConnDevicePipe(device);
         // release previous request is there is any
         cancelConnectionPendingRequest();
-        pendingConectTask = trigger
+        pendingConnectTask = trigger
                 .observeOn(Schedulers.computation())
                 .subscribe(connectedDevice -> {
                     Log.i(LOG_TAG, "Connected to: " + connectedDevice.getDeviceName());
@@ -233,27 +232,25 @@ public abstract class EstablishConnectionStrategy extends BtAlgorithm
     }
 
     /**
-     * Strategy is attempting to connect only when it has active subscriptioin
+     * Strategy is attempting to connect only when it has active subscription
      * to 'connect' task
      * @return
      */
     @Override
     public boolean isAttemptingToConnect() {
-        return pendingConectTask != null && !pendingConectTask.isUnsubscribed();
+        return pendingConnectTask != null && !pendingConnectTask.isUnsubscribed();
     }
 
     /**
-     * Ubsubscribe from pending 'connect' task result and stop any
+     * Unsubscribe from pending 'connect' task result and stop any
      * ongoing connection.
      */
-    protected void cancelConnectionPendingRequest(){
-        if (null != pendingConectTask && !pendingConectTask.isUnsubscribed()){
-            pendingConectTask.unsubscribe();
-            pendingConectTask = null;
+    protected void cancelConnectionPendingRequest() {
+        if (null != pendingConnectTask && !pendingConnectTask.isUnsubscribed()){
+            pendingConnectTask.unsubscribe();
+            pendingConnectTask = null;
         }
     }
-
-
 
     /**
      * Use callback to notify it that concrete connection strategy didn't work.
@@ -267,7 +264,7 @@ public abstract class EstablishConnectionStrategy extends BtAlgorithm
                             callback.onUnsupportedOperation();
                         }
                     } else {
-                        Log.w(LOG_TAG, "callback is null, can't tell it of faulure");
+                        Log.w(LOG_TAG, "callback is null, can't tell it of failure");
                     }
                 });
     }
@@ -275,7 +272,7 @@ public abstract class EstablishConnectionStrategy extends BtAlgorithm
 
 
     /**
-     * I assume here that process of notifying about failure may take a while
+     * I assume here that failure notification process may take a while
      */
     protected void cancellFailureNotification(){
         if (null != notifyAboutFailure && !notifyAboutFailure.isUnsubscribed()){

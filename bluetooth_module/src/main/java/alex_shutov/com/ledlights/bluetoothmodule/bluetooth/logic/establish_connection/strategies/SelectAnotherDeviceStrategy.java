@@ -3,13 +3,17 @@ package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conn
 import android.util.Log;
 
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtUiPort.BtUiPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.DataProvider;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionDataProvider;
 
 /**
  * Created by Alex on 11/7/2016.
  */
 public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy {
     private static final String LOG_TAG = SelectAnotherDeviceStrategy.class.getSimpleName();
+
+    private BtUiPort uiPort;
 
     public SelectAnotherDeviceStrategy(){
         super();
@@ -28,36 +32,57 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy {
     @Override
     protected void getDependenciesFromFacade(DataProvider dataProvider) {
         super.getDependenciesFromFacade(dataProvider);
-        // TODO: read UI port from data provider
+        EstablishConnectionDataProvider provider = (EstablishConnectionDataProvider) dataProvider;
+        uiPort = provider.provideBtUiPort();
     }
 
+    /**
+     * Callback, called whenever app is connected to another Bluetooth device. Connection
+     * to device has to be initiated by createPendingConnectTask(BtDevice device) method in
+     * base class (EstablishConnectionStrategy)
+     * @param device
+     */
     @Override
     protected void doOnConnectionSuccessful(BtDevice device) {
-
+        Log.i(LOG_TAG, "Device successfully connected: " + device.getDeviceName());
     }
 
     @Override
     protected void doOnConnectionAttemptFailed() {
-
+        Log.w(LOG_TAG, "Connection attempt failed");
     }
 
+    /**
+     * User tell this strategy to start working on establishing connection by this method.
+     *
+     */
     @Override
     public void attemptToEstablishConnection() {
-        selectDevice();
+        startDeviceSelectionProcessByUsingUI();
     }
 
+    /**
+     * Strategu is being told to stop connection attempt
+     */
     @Override
     public void stopConnecting() {
 
     }
 
+    /**
+     * Start selectinf device by UI. In case of this strategy it is the same, as
+     * attemptToEstablishConnection() method.
+     */
     @Override
     public void selectDeviceByUi() {
-        selectDevice();
+        startDeviceSelectionProcessByUsingUI();
     }
 
-    private void selectDevice(){
-        Log.i(LOG_TAG, "Selecting another device");
+    /**
+     * Entry point to start device selection
+     */
+    private void startDeviceSelectionProcessByUsingUI() {
+
     }
 
 }

@@ -41,7 +41,8 @@ public class BtCellActivity extends Activity {
         btCell.setBtCommPortListener(new BtCommPortListener() {
             @Override
             public void onConnectionStarted(BtDevice btDevice) {
-                Log.i(LOG_TAG, "onConnectionStarted(): " + btDevice.getDeviceName());
+                Log.i(LOG_TAG, "onConnectionStarted() " + (btDevice == null ? "" :
+                        btDevice.getDeviceName()) );
             }
 
             @Override
@@ -89,11 +90,8 @@ public class BtCellActivity extends Activity {
 
     private void startPolling(){
         BtCommPort commPort = btCell.getBtCommPort();
-        //commPort.startConnection();
-        //commPort.selectAnotherDevice();
-
-        BtUiPort uiPort = btCell.getBtUiPort();
-        uiPort.showUiForPickingDevice();
+        commPort.startConnection();
+        commPort.selectAnotherDevice();
     }
 
 }
