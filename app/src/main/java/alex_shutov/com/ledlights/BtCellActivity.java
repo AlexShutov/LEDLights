@@ -10,8 +10,6 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtComm
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommPortListener;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtLogicCell;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtUiPort.BtUiPort;
-import alex_shutov.com.ledlights.hex_general.LogicCell;
 
 /**
  * Created by Alex on 10/20/2016.

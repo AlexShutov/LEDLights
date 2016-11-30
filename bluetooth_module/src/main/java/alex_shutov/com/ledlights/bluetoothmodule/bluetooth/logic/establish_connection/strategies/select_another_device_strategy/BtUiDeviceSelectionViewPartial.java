@@ -1,12 +1,13 @@
-package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtUiPort;
+package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy;
 
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.hex_general.PortListener;
+import rx.Observable;
 
 /**
  * Created by Alex on 11/8/2016.
  */
-public interface BtUiPortListener extends PortListener {
+public interface BtUiDeviceSelectionViewPartial extends PortListener {
 
     /**
      * User choose some device from one of device list - either from connection history,
@@ -24,7 +25,7 @@ public interface BtUiPortListener extends PortListener {
      * UI is shown and it need to start discovery for Bluetooth devices. But we need to
      * stop any data transfer or ongoing connection requests first.
      */
-    void stopBluetoothCommunication();
+    Observable<Boolean> stopBluetoothCommunication();
 
 
 }

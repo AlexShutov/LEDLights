@@ -1,7 +1,5 @@
 package alex_shutov.com.ledlights.bluetoothmodule.bluetooth;
 
-import android.app.SharedElementCallback;
-import android.bluetooth.BluetoothDevice;
 import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
@@ -10,14 +8,12 @@ import org.greenrobot.eventbus.Subscribe;
 import javax.inject.Inject;
 
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.CommInterface;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommPortListener;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.esb.BtConnEsbStore;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.bluetooth_devices.dao.BtDeviceDao;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.hex.BtStoragePort;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtUiPort.BtUiPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionAlgorithm;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionCallback;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionDataProvider;
@@ -42,8 +38,6 @@ public class BtLogicCellFacade implements CommInterface, EstablishConnectionData
     public BtScanPort scanPort;
     @Inject
     public BtStoragePort storagePort;
-    @Inject
-    public BtUiPort uiPort;
 
     private BtCommPortListener commFeedback;
 
@@ -88,10 +82,6 @@ public class BtLogicCellFacade implements CommInterface, EstablishConnectionData
         return scanPort;
     }
 
-    @Override
-    public BtUiPort provideBtUiPort() {
-        return uiPort;
-    }
 
     @Override
     public EventBus provideEventBus() {

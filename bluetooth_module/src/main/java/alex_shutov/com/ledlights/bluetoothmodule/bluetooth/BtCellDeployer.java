@@ -9,14 +9,12 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtComm
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnAdapter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanAdapter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.hex.BtStorageAdapter;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtUiPort.hex.BtUiAdapter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtAlgorithmicModule;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtCellModule;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtCommModule;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtConnectorModule;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtScannerModule;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtStorageModule;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtUiModule;
 import alex_shutov.com.ledlights.hex_general.CellDeployer;
 import alex_shutov.com.ledlights.hex_general.LogicCell;
 import alex_shutov.com.ledlights.hex_general.PortAdapterCreator;
@@ -39,8 +37,6 @@ public class BtCellDeployer extends CellDeployer {
     public BtStorageAdapter btStorageAdapter;
     @Inject
     public BtCommAdapter btCommAdapter;
-    @Inject
-    public BtUiAdapter btUiAdapter;
 
     public BtCellDeployer(Context context){
         this.context = context;
@@ -60,7 +56,6 @@ public class BtCellDeployer extends CellDeployer {
         // create database, storing history of bluetooth devices
         BtStorageModule storageModule = new BtStorageModule();
         BtCommModule commModule = new BtCommModule();
-        BtUiModule uiModule = new BtUiModule();
         BtAlgorithmicModule algorithmicModule = new BtAlgorithmicModule();
         PortAdapterCreator creator = DaggerBtPortAdapterCreator.builder()
                 .systemModule(systemModule)
@@ -88,7 +83,6 @@ public class BtCellDeployer extends CellDeployer {
         btCell.setBtConnAdapter(btConnAdapter);
         btCell.setBtStorageAdapter(btStorageAdapter);
         btCell.setBtCommAdapter(btCommAdapter);
-        btCell.setBtUiAdapter(btUiAdapter);
         // TODO: add the rest of ports here
 
         /* all ports is set, call 'init method from logic cell so

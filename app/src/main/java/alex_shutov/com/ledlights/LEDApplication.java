@@ -11,7 +11,7 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.B
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtLogicCell;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.hex.BtStoragePort;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtUiPort.BtUiPort;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.BtUiDeviceSelectionInterface;
 import alex_shutov.com.ledlights.hex_general.CellDeployer;
 
 /**
@@ -24,7 +24,6 @@ public class LEDApplication extends MultiDexApplication{
     BtConnPort connPort;
     BtScanPort scanPort;
     BtStoragePort dbPort;
-    BtUiPort uiPort;
 
     CellDeployer btCellDeployer;
     BtLogicCell cell;
@@ -51,7 +50,6 @@ public class LEDApplication extends MultiDexApplication{
         scanPort = cell.getBtScanPort();
         connPort = cell.getBtConnPort();
         dbPort = cell.getBtStoragePort();
-        uiPort = cell.getBtUiPort();
     }
 
     @Override
@@ -79,9 +77,6 @@ public class LEDApplication extends MultiDexApplication{
         return dbPort;
     }
 
-    public BtUiPort getUiPort() {
-        return uiPort;
-    }
 
     public BtLogicCell getCell() {
         return cell;

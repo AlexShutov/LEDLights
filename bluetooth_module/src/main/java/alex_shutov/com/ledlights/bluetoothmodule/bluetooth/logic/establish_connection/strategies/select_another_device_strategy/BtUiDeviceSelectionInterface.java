@@ -1,16 +1,17 @@
-package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtUiPort;
+package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy;
 
 import java.util.List;
 
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanPort;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionDataProvider;
 import alex_shutov.com.ledlights.hex_general.Port;
 
 /**
  * Created by Alex on 11/8/2016.
  */
-public interface BtUiPort extends Port {
+public interface BtUiDeviceSelectionInterface extends Port {
 
     /**
      * Tell this port to show UI, which will display list of devices so user can pick one.
@@ -19,6 +20,13 @@ public interface BtUiPort extends Port {
      * To stop communication, it need BtConnPort
     */
     void showUiForPickingDevice();
+
+    /**
+     * This Ui port follows a convention - UI can't close itself (Activity.finish()).
+     * It can only tell Strategy or any other logic entity that user refused to select a device
+     * and that logic has to decide what to do next.
+     */
+    void closeUiForPickingDevice();
 
     /**
      * Take into account list of devices from history. UI should indicate in some way if
@@ -46,7 +54,7 @@ public interface BtUiPort extends Port {
     /**
      * UI serves as just 'face' to selection algorithm. All actuall work is done by
      * corresponding strategy.
-     *
+     * Use this method for clearing all previously saved state of UI (optional)
      */
     void clearUI();
 }
