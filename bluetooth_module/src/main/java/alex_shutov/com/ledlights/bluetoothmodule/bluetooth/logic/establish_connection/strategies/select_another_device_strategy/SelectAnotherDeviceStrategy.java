@@ -201,6 +201,13 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
     }
 
 
+    @Override
+    public Observable<BtDevice> discoverDevices() {
+        BtScanAdapter scanAdapter = (BtScanAdapter) scanPort;
+        scanAdapter.setPortListener(this);
+        scanPort.startDiscovery();
+        return null;
+    }
 
     /**
      * Inherited from BtScanPortListener
@@ -220,12 +227,12 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
 
     @Override
     public void onDeviceFound(BtDevice device) {
-
+        Log.i(LOG_TAG, "Bluetooth device found: " + device.getDeviceName());
     }
 
     @Override
     public void onScanCompleted() {
-
+        Log.i(LOG_TAG, "Bluetooth discovery complete");
     }
 
     /**

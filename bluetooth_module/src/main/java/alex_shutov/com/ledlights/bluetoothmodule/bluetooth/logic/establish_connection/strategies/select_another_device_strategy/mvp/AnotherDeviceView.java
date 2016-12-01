@@ -27,5 +27,12 @@ public interface AnotherDeviceView extends BaseView {
      */
     void displayPairedSystemDevices(List<BtDevice> devices);
 
+    /**
+     * Show Bluetooth devices
+     * @param devices
+     */
+    void displayDiscoveredDevices(List<BtDevice> devices);
+
+    void onNewDeviceDiscovered(BtDevice device);
 
 }

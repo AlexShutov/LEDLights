@@ -8,11 +8,12 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.ChooseDeviceActivity;
 import alex_shutov.com.ledlights.hex_general.BasePresenter;
-import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -36,7 +37,18 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
     private Subscription linkQueryForAppHistoryDevices;
     private Subscription linkQueryPairedDevices;
 
-    private List<BtDevice> pairedDevices = new ArrayList<>();
+    /**
+     * List of cached paired devices
+     */
+    private List<BtDevice> cachePairedDevices = new ArrayList<>();
+    /**
+     * Cached values of discovered devices. We need to know ids to check if this device is
+     * discovered already - the same device can be returned immediately if we have a bond with it
+     * and the next time - after discovery.
+     */
+    private Set<String> cacheIdsOfDiscoveredDevices = new TreeSet<>();
+    private List<BtDevice> cachedDiscoveredDevices = new ArrayList<>();
+
 
     public AnotherDevicePresenter(EventBus eventBus, Context context) {
         super(eventBus);
@@ -104,11 +116,37 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
      * empty
      */
     public void queryListOfPairedDevices(){
-        if (!pairedDevices.isEmpty()) {
-            getView().displayPairedSystemDevices(pairedDevices);
+        if (!cachePairedDevices.isEmpty()) {
+            getView().displayPairedSystemDevices(cachePairedDevices);
         } else {
             refreshPairedDevices();
         }
+    }
+
+
+    /**
+     * This link is active when discovery is in progress.
+     * We can know if there is cached device by checkin cached discovered devices and checking if
+     * this link is active;
+     */
+    private Subscription linkDeviceDiscovery;
+
+    /**
+     * Return all cached devices and query devices it wasn't done before
+     */
+    public void queryAllBluetoothDevicesWithDiscovery() {
+        getModel().discoverDevices();
+    }
+
+
+    /**
+     * We can figure out if discovery process is finished by checking list of discovered devices
+     * and activity of discovery link
+     * @return
+     */
+    private boolean isDiscoveryFinished(){
+        return cacheIdsOfDiscoveredDevices.isEmpty() && null != linkDeviceDiscovery &&
+                !linkDeviceDiscovery.isUnsubscribed();
     }
 
 
@@ -119,12 +157,15 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
      * device screen rotation.
      * To solve that we need a method for updating all cached device history, which will be
      * triggered when user swipe screen for update or when there is no cached data at all.
-     * We don't need to keep cached values all time, so Presenter is gonne wipe it out at a moment
+     * We don't need to keep cached values all time, so Presenter is gonna wipe it out at a moment
      * when model is detached.
      */
     public void refreshDevicesFromSystem(){
+        wipeOutCachedDevices();
         refreshPairedDevices();
+        discoverDevices();
     }
+
 
     private void refreshPairedDevices(){
         // check if this operation requested already
@@ -135,9 +176,9 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
                 .getPairedSystemDevices()
                 .subscribeOn(Schedulers.io())
                 .map(devices -> {
-                    pairedDevices.clear();
-                    pairedDevices.addAll(devices);
-                    return pairedDevices;
+                    cachePairedDevices.clear();
+                    cachePairedDevices.addAll(devices);
+                    return cachePairedDevices;
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(devices ->  {
@@ -145,11 +186,18 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
                 });
     }
 
+    private void discoverDevices(){
+
+    }
+
+
     /**
      * Remove all cached device history.
      */
-    public void wipeOutCachedDevices() {
-        pairedDevices.clear();
+    private void wipeOutCachedDevices() {
+        cachePairedDevices.clear();
+        cacheIdsOfDiscoveredDevices.clear();
+        cachedDiscoveredDevices.clear();
     }
 
     /**
@@ -163,6 +211,10 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
         if (null != linkQueryPairedDevices && !linkQueryPairedDevices.isUnsubscribed()) {
             linkQueryPairedDevices.unsubscribe();
             linkQueryPairedDevices = null;
+        }
+        if (null != linkDeviceDiscovery && !linkDeviceDiscovery.isUnsubscribed()) {
+            linkDeviceDiscovery.unsubscribe();
+            linkDeviceDiscovery = null;
         }
     }
 }

@@ -20,4 +20,6 @@ public interface AnotherDeviceModel extends BaseModel {
 
     Observable<List<BtDevice>> getPairedSystemDevices();
 
+    Observable<BtDevice> discoverDevices();
+
 }

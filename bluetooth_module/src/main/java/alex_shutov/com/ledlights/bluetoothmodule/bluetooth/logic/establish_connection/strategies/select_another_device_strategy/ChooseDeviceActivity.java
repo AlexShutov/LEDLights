@@ -3,6 +3,7 @@ package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conn
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatButton;
 import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
@@ -31,6 +32,11 @@ public class ChooseDeviceActivity extends AppCompatActivity implements AnotherDe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pick_device);
         eventBus = EventBus.getDefault();
+        AppCompatButton button = (AppCompatButton) findViewById(R.id.apd_refresh);
+        button.setOnClickListener(v -> {
+
+            presenter.queryAllBluetoothDevicesWithDiscovery();
+        });
     }
 
     @Override
@@ -56,7 +62,6 @@ public class ChooseDeviceActivity extends AppCompatActivity implements AnotherDe
         presenter = instanceEvent.getPresenter();
         presenter.attachView(this);
 
-        presenter.queryDevicesFromAppHistory();
         presenter.queryListOfPairedDevices();
     }
 
@@ -72,5 +77,15 @@ public class ChooseDeviceActivity extends AppCompatActivity implements AnotherDe
     @Override
     public void displayPairedSystemDevices(List<BtDevice> devices) {
         Log.i(LOG_TAG, "Phone is paired to " + devices.size() + " devices");
+    }
+
+    @Override
+    public void displayDiscoveredDevices(List<BtDevice> devices) {
+
+    }
+
+    @Override
+    public void onNewDeviceDiscovered(BtDevice device) {
+
     }
 }

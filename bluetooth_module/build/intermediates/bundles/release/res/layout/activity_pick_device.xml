@@ -18,4 +18,12 @@
         android:layout_below="@id/apd_tl_device_kind_selector"
         android:layout_weight="1"
         android:background="@android:color/white" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/apd_refresh"
+        android:text="refresh all"/>
+
 </RelativeLayout>

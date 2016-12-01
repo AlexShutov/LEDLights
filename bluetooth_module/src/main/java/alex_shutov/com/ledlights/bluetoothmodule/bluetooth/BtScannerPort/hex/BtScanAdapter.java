@@ -15,6 +15,7 @@ import alex_shutov.com.ledlights.hex_general.Adapter;
 import alex_shutov.com.ledlights.hex_general.PortInfo;
 import rx.Observable;
 import rx.Subscription;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by lodoss on 27/07/16.
@@ -43,6 +44,7 @@ public class BtScanAdapter extends Adapter implements BtScanPort {
      * getting respoonse. Subscription is cancelled when results arrive
      */
     Subscription pairedDevicesSubscription;
+
     /**
      * Connects BTDeviceScanner and BtScanAdapter during scan process. It is cancelled on
      * scan completion.
@@ -66,43 +68,6 @@ public class BtScanAdapter extends Adapter implements BtScanPort {
     @Override
     public PortInfo getPortInfo() {
         return portInfo;
-    }
-
-
-    /**
-     * All results arrive to BtScanPortListener on background thread
-     */
-    private void subscribeToPairedDevicesSource(
-            Observable<Set<BluetoothDevice>> pairedDevicesSource){
-        if (null != discoverySubscription && ! discoverySubscription.isUnsubscribed()){
-            Log.w(LOG_TAG, "Paired devices is already requested, resetting previous request");
-            discoverySubscription.unsubscribe();
-            discoverySubscription = null;
-        }
-        BtScanPortListener listener = (BtScanPortListener) getPortListener();
-        discoverySubscription =
-                pairedDevicesSource
-                .subscribe(devices -> {
-                    if (devices.isEmpty()){
-                        Log.i(LOG_TAG, "There is no paired devices");
-                    } else {
-                        Log.i(LOG_TAG, "Got " + devices.size() + " paired devices");
-                    }
-                    Set<BtDevice> btDevices = new HashSet<BtDevice>();
-                    for (BluetoothDevice d : devices){
-                        BtDevice converted = BtDeviceConverter.fromAndroidBluetoothDevice(d);
-                        /** mark converted value as paired device */
-                        converted.setPaired(true);
-                        btDevices.add(converted);
-                    }
-                    listener.onPairedDevicesReceived(btDevices);
-                    /** We passed result to listener, unsubscribe from result pipe */
-                    discoverySubscription.unsubscribe();
-                    discoverySubscription = null;
-                }, error -> {
-                    Log.e(LOG_TAG, "Error getting paired devices");
-                }, () -> {
-                });
     }
 
     /**  Inherited from BtScanPort */
@@ -152,12 +117,78 @@ public class BtScanAdapter extends Adapter implements BtScanPort {
     @Override
     public void startDiscovery() {
         Log.i(LOG_TAG, "Starting scanning for bluetooth devices");
-        btScanner.startDiscovery();
+        Observable<BluetoothDevice> src = btScanner.startDiscovery();
+        subscribeToDiscoverySource(src);
     }
 
     @Override
     public void stopDiscovery() {
         Log.i(LOG_TAG, "Cancelling bluetooth scanning");
         btScanner.stopDiscovery();
+    }
+
+    /**
+     * All results arrive to BtScanPortListener on background thread
+     */
+    private void subscribeToPairedDevicesSource(
+            Observable<Set<BluetoothDevice>> pairedDevicesSource){
+        if (null != pairedDevicesSubscription && ! pairedDevicesSubscription.isUnsubscribed()){
+            Log.w(LOG_TAG, "Paired devices is already requested, resetting previous request");
+            pairedDevicesSubscription.unsubscribe();
+            pairedDevicesSubscription = null;
+        }
+        BtScanPortListener listener = (BtScanPortListener) getPortListener();
+        pairedDevicesSubscription =
+                pairedDevicesSource
+                        .observeOn(Schedulers.computation())
+                        .subscribe(devices -> {
+                            if (devices.isEmpty()){
+                                Log.i(LOG_TAG, "There is no paired devices");
+                            } else {
+                                Log.i(LOG_TAG, "Got " + devices.size() + " paired devices");
+                            }
+                            Set<BtDevice> btDevices = new HashSet<BtDevice>();
+                            for (BluetoothDevice d : devices){
+                                BtDevice converted = BtDeviceConverter.fromAndroidBluetoothDevice(d);
+                                /** mark converted value as paired device */
+                                converted.setPaired(true);
+                                btDevices.add(converted);
+                            }
+                            listener.onPairedDevicesReceived(btDevices);
+                            /** We passed result to listener, unsubscribe from result pipe */
+                            pairedDevicesSubscription.unsubscribe();
+                            pairedDevicesSubscription = null;
+                        }, error -> {
+                            Log.e(LOG_TAG, "Error getting paired devices");
+                        }, () -> {
+                        });
+    }
+
+    /**
+     * Caller receive all discovered devices via BtScanPortListener
+     * @param discoverySource
+     */
+    private void subscribeToDiscoverySource(Observable<BluetoothDevice> discoverySource) {
+        if (null != discoverySubscription && !discoverySubscription.isUnsubscribed()){
+            Log.w(LOG_TAG, "Discovery is already in progress, restarting it");
+            // cancel discovery
+            discoverySubscription.unsubscribe();
+            discoverySubscription = null;
+        }
+        BtScanPortListener listener = (BtScanPortListener) getPortListener();
+        discoverySubscription = discoverySource
+                .observeOn(Schedulers.computation())
+                .subscribe(discoveredDevice -> {
+                    BtDevice d =
+                            BtDeviceConverter.fromAndroidBluetoothDevice(discoveredDevice);
+                    listener.onDeviceFound(d);
+                }, error -> {
+                    Log.e(LOG_TAG, "Error occured during scanning for bluetooth devices");
+                    // consider scan complete
+                    listener.onScanCompleted();
+                }, () -> {
+                    // discovery complete, inform listener about it
+                    listener.onScanCompleted();
+                });
     }
 }
