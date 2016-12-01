@@ -2,13 +2,17 @@ package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conn
 
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanAdapter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanPort;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanPortListener;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.DataProvider;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionCallback;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionDataProvider;
@@ -17,13 +21,16 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conne
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.mvp.AnotherDeviceModel;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.mvp.AnotherDevicePresenter;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by Alex on 11/7/2016.
  */
 public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
-        implements BtUiDeviceSelectionViewPartial, AnotherDeviceModel {
+        implements BtUiDeviceSelectionViewPartial, AnotherDeviceModel ,
+        BtScanPortListener {
     private static final String LOG_TAG = SelectAnotherDeviceStrategy.class.getSimpleName();
 
     private BtScanPort scanPort;
@@ -168,9 +175,12 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
         Log.i(LOG_TAG, "onCriticalFailure( portID: " + portID + ", error: " + e.getMessage());
     }
 
+
     /**
      * Inherited from AnotherDeviceModel
      */
+
+    private PublishSubject<List<BtDevice>> pairedDevicesResultPipe = PublishSubject.create();
 
     @Override
     public Observable<List<BtDevice>> getDevicesFromConnectionHistory() {
@@ -179,6 +189,43 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
                 .observeOn(Schedulers.io())
                 .map(t -> historyDb.getDeviceHistory());
         return Observable.defer(() -> historyDevicesTask);
+    }
+
+    @Override
+    public Observable<List<BtDevice>> getPairedSystemDevices() {
+        BtScanAdapter scanAdapter = (BtScanAdapter) scanPort;
+        scanAdapter.setPortListener(this);
+        scanPort.getPairedDevices();
+        return pairedDevicesResultPipe.asObservable()
+                .take(1);
+    }
+
+
+
+    /**
+     * Inherited from BtScanPortListener
+     */
+
+    @Override
+    public void onPairedDevicesReceived(Set<BtDevice> devices) {
+        Observable<List<BtDevice>> passDevicesTask =
+                Observable.just(devices)
+                        .observeOn(Schedulers.computation())
+                .map(deviceSet -> new ArrayList<BtDevice>(devices));
+        Observable.defer(() -> passDevicesTask)
+                .subscribe(listOfDevices -> {
+                    pairedDevicesResultPipe.onNext(listOfDevices);
+                }, e -> {});
+    }
+
+    @Override
+    public void onDeviceFound(BtDevice device) {
+
+    }
+
+    @Override
+    public void onScanCompleted() {
+
     }
 
     /**

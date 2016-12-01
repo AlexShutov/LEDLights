@@ -57,7 +57,7 @@ public class ChooseDeviceActivity extends AppCompatActivity implements AnotherDe
         presenter.attachView(this);
 
         presenter.queryDevicesFromAppHistory();
-        presenter.refreshDevicesFromSystem();
+        presenter.queryListOfPairedDevices();
     }
 
     /**
@@ -69,4 +69,8 @@ public class ChooseDeviceActivity extends AppCompatActivity implements AnotherDe
         Log.i(LOG_TAG, "App remember " + devices.size() + " devices");
     }
 
+    @Override
+    public void displayPairedSystemDevices(List<BtDevice> devices) {
+        Log.i(LOG_TAG, "Phone is paired to " + devices.size() + " devices");
+    }
 }

@@ -20,4 +20,12 @@ public interface AnotherDeviceView extends BaseView {
      * @param devices
      */
     void displayDevicesFromAppHistory(List<BtDevice> devices);
+
+    /**
+     * Show devices, this phone currently paired with.
+     * @param devices
+     */
+    void displayPairedSystemDevices(List<BtDevice> devices);
+
+
 }

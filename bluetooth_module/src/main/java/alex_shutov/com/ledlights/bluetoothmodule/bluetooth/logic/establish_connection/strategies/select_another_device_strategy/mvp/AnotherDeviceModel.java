@@ -18,4 +18,6 @@ public interface AnotherDeviceModel extends BaseModel {
      */
     Observable<List<BtDevice>> getDevicesFromConnectionHistory();
 
+    Observable<List<BtDevice>> getPairedSystemDevices();
+
 }

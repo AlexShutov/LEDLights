@@ -6,13 +6,16 @@ import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.ChooseDeviceActivity;
 import alex_shutov.com.ledlights.hex_general.BasePresenter;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
@@ -31,6 +34,9 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
     private Context context;
 
     private Subscription linkQueryForAppHistoryDevices;
+    private Subscription linkQueryPairedDevices;
+
+    private List<BtDevice> pairedDevices = new ArrayList<>();
 
     public AnotherDevicePresenter(EventBus eventBus, Context context) {
         super(eventBus);
@@ -60,6 +66,7 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
     protected void onViewDetached() {
         Log.i(LOG_TAG, "View detached");
         severAllLinks();
+        wipeOutCachedDevices();
     }
 
     @Override
@@ -92,6 +99,21 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
     }
 
     /**
+     * Presenter caches paired and discovered devices, so we can return it to View right away.
+     * Notice, Presenter will attempt to get paired devices from system if device list is
+     * empty
+     */
+    public void queryListOfPairedDevices(){
+        if (!pairedDevices.isEmpty()) {
+            getView().displayPairedSystemDevices(pairedDevices);
+        } else {
+            refreshPairedDevices();
+        }
+    }
+
+
+
+    /**
      * Model only know how to start discovery of all Bluetooth devices and how to get history of
      * all paired devices. But, unfortunately, it is too expansive to do it every time after
      * device screen rotation.
@@ -101,16 +123,46 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
      * when model is detached.
      */
     public void refreshDevicesFromSystem(){
-
+        refreshPairedDevices();
     }
 
+    private void refreshPairedDevices(){
+        // check if this operation requested already
+        if (null != linkQueryPairedDevices && !linkQueryPairedDevices.isUnsubscribed()) {
+            return;
+        }
+        linkQueryPairedDevices = getModel()
+                .getPairedSystemDevices()
+                .subscribeOn(Schedulers.io())
+                .map(devices -> {
+                    pairedDevices.clear();
+                    pairedDevices.addAll(devices);
+                    return pairedDevices;
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(devices ->  {
+                    getView().displayPairedSystemDevices(devices);
+                });
+    }
 
+    /**
+     * Remove all cached device history.
+     */
+    public void wipeOutCachedDevices() {
+        pairedDevices.clear();
+    }
 
-
+    /**
+     * Cancel all pending jobs
+     */
     private void severAllLinks(){
         if (null != linkQueryForAppHistoryDevices && !linkQueryForAppHistoryDevices.isUnsubscribed()) {
             linkQueryForAppHistoryDevices.unsubscribe();
             linkQueryForAppHistoryDevices = null;
+        }
+        if (null != linkQueryPairedDevices && !linkQueryPairedDevices.isUnsubscribed()) {
+            linkQueryPairedDevices.unsubscribe();
+            linkQueryPairedDevices = null;
         }
     }
 }
