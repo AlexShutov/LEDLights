@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -35,7 +36,7 @@ public class ChooseDeviceActivity extends AppCompatActivity implements AnotherDe
         AppCompatButton button = (AppCompatButton) findViewById(R.id.apd_refresh);
         button.setOnClickListener(v -> {
 
-            presenter.queryAllBluetoothDevicesWithDiscovery();
+            presenter.refreshDevicesFromSystem();
         });
     }
 
@@ -77,15 +78,23 @@ public class ChooseDeviceActivity extends AppCompatActivity implements AnotherDe
     @Override
     public void displayPairedSystemDevices(List<BtDevice> devices) {
         Log.i(LOG_TAG, "Phone is paired to " + devices.size() + " devices");
+        for (BtDevice device : devices){
+            String msg = "Paired device: " + device.getDeviceName() + " " +
+                    device.getDeviceAddress();
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        }
     }
 
-    @Override
-    public void displayDiscoveredDevices(List<BtDevice> devices) {
-
-    }
 
     @Override
     public void onNewDeviceDiscovered(BtDevice device) {
+        String msg = "Device found: " + device.getDeviceName() + " : " +
+                device.getDeviceAddress();
+        Toast.makeText(this, msg , Toast.LENGTH_SHORT).show();
+    }
 
+    @Override
+    public void onDiscoveryComplete() {
+        Toast.makeText(this, "Bluetooth discovery complete" , Toast.LENGTH_SHORT).show();
     }
 }

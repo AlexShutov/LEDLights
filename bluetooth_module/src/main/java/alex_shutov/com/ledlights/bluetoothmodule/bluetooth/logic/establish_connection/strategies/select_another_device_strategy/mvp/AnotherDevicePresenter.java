@@ -14,6 +14,7 @@ import java.util.TreeSet;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.ChooseDeviceActivity;
 import alex_shutov.com.ledlights.hex_general.BasePresenter;
+import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -35,7 +36,18 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
     private Context context;
 
     private Subscription linkQueryForAppHistoryDevices;
+    /**
+     * Presenter use model to query paired devices. This is done in background and presenter might
+     * be detached from model during process. If that happens, it need a way to cancel operation.
+     */
     private Subscription linkQueryPairedDevices;
+    /**
+     * This link is active when discovery is in progress.
+     * We can know if there is cached device by checkin cached discovered devices and checking if
+     * this link is active;
+     */
+    private Subscription linkDeviceDiscovery;
+
 
     /**
      * List of cached paired devices
@@ -46,7 +58,7 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
      * discovered already - the same device can be returned immediately if we have a bond with it
      * and the next time - after discovery.
      */
-    private Set<String> cacheIdsOfDiscoveredDevices = new TreeSet<>();
+    private Set<String> cacheDiscoveredAddresses = new TreeSet<>();
     private List<BtDevice> cachedDiscoveredDevices = new ArrayList<>();
 
 
@@ -78,7 +90,9 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
     protected void onViewDetached() {
         Log.i(LOG_TAG, "View detached");
         severAllLinks();
-        wipeOutCachedDevices();
+        cachedDiscoveredDevices.clear();
+        cacheDiscoveredAddresses.clear();
+        cachePairedDevices.clear();
     }
 
     @Override
@@ -124,20 +138,34 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
     }
 
 
-    /**
-     * This link is active when discovery is in progress.
-     * We can know if there is cached device by checkin cached discovered devices and checking if
-     * this link is active;
-     */
-    private Subscription linkDeviceDiscovery;
 
     /**
-     * Return all cached devices and query devices it wasn't done before
+     * Return all cached devices and query devices it wasn't done before.
+     * All discovered devices is added to cache. Consider the following case - view request
+     * discovery and then request it again while previous request is in progress.
+     * Newly discovered devices will be saved to cache and handed off to View anyways
      */
     public void queryAllBluetoothDevicesWithDiscovery() {
-        getModel().discoverDevices();
+        if (isDiscoveryFinished()) {
+            for (BtDevice d : cachedDiscoveredDevices) {
+                getView().onNewDeviceDiscovered(d);
+            }
+        } else {
+            discoverDevices();
+        }
     }
 
+
+    /**
+     * Check link to discovery task. If discovery is active, this link is active too.
+     * In presenter request discovery and then gets detached from model, discovery will be
+     * re-activated (scanner stops discovery before starting it, making sure there is always
+     * one active discovery)
+     * @return
+     */
+    private boolean isDiscoveryInProgress(){
+        return linkDeviceDiscovery != null && !linkDeviceDiscovery.isUnsubscribed();
+    }
 
     /**
      * We can figure out if discovery process is finished by checking list of discovered devices
@@ -145,10 +173,8 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
      * @return
      */
     private boolean isDiscoveryFinished(){
-        return cacheIdsOfDiscoveredDevices.isEmpty() && null != linkDeviceDiscovery &&
-                !linkDeviceDiscovery.isUnsubscribed();
+        return !cacheDiscoveredAddresses.isEmpty() || isDiscoveryInProgress();
     }
-
 
 
     /**
@@ -159,11 +185,13 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
      * triggered when user swipe screen for update or when there is no cached data at all.
      * We don't need to keep cached values all time, so Presenter is gonna wipe it out at a moment
      * when model is detached.
+     * This method is supposed to be used when user want update all data, so here app history
+     * is queried too.
      */
     public void refreshDevicesFromSystem(){
-        wipeOutCachedDevices();
         refreshPairedDevices();
         discoverDevices();
+        queryDevicesFromAppHistory();
     }
 
 
@@ -172,6 +200,8 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
         if (null != linkQueryPairedDevices && !linkQueryPairedDevices.isUnsubscribed()) {
             return;
         }
+        // remove all cached paired devices
+        cachePairedDevices.clear();
         linkQueryPairedDevices = getModel()
                 .getPairedSystemDevices()
                 .subscribeOn(Schedulers.io())
@@ -187,18 +217,49 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
     }
 
     private void discoverDevices(){
+        // check is discovery already in progress and do nothing if it is
+        if (isDiscoveryInProgress()) {
+            Log.w(LOG_TAG, "Trying to start discovery while another discovery is still in progress");
+            return;
+        }
 
+        Observable<BtDevice> discoveryTask =
+                Observable.just("")
+                .subscribeOn(Schedulers.computation())
+                .map(t -> {
+                    // clear cached discovery data
+                    cacheDiscoveredAddresses.clear();
+                    cachedDiscoveredDevices.clear();
+                    return t;
+                })
+                .observeOn(Schedulers.io())
+                .flatMap(t -> getModel().discoverDevices())
+                        .subscribeOn(Schedulers.computation())
+                        // process only new devices (safeguard)
+                .filter(foundDevice -> {
+                    String address = foundDevice.getDeviceAddress();
+                    boolean alreadyThere = cacheDiscoveredAddresses.contains(address);
+                    return !alreadyThere;
+                })
+                // save device info into cache
+                .map(device -> {
+                    cachedDiscoveredDevices.add(device);
+                    cacheDiscoveredAddresses.add(device.getDeviceAddress());
+                    return device;
+                });
+        linkDeviceDiscovery = Observable.defer(() -> discoveryTask)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(device -> {
+                    AnotherDeviceView view = getView();
+                    view.onNewDeviceDiscovered(device);
+                }, error -> {
+                    Log.e(LOG_TAG, "Error during device discovery");
+                    getView().onDiscoveryComplete();
+                }, () -> {
+                    getView().onDiscoveryComplete();
+                });
     }
 
-
-    /**
-     * Remove all cached device history.
-     */
-    private void wipeOutCachedDevices() {
-        cachePairedDevices.clear();
-        cacheIdsOfDiscoveredDevices.clear();
-        cachedDiscoveredDevices.clear();
-    }
 
     /**
      * Cancel all pending jobs

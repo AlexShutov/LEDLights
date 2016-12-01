@@ -21,7 +21,6 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conne
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.mvp.AnotherDeviceModel;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.mvp.AnotherDevicePresenter;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
@@ -180,7 +179,15 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
      * Inherited from AnotherDeviceModel
      */
 
-    private PublishSubject<List<BtDevice>> pairedDevicesResultPipe = PublishSubject.create();
+    /** Vortex, receiving list of paired devices, which reference can be returned as result of
+     * operation
+     */
+    private PublishSubject<List<BtDevice>> pairedDevicesVortex = PublishSubject.create();
+
+    /** Vortex for discovered devices. Notice, it will get corrupted once discovery completes
+     * (.onCompleted() method, so we need to create new every time.
+     */
+    private PublishSubject<BtDevice> discoveredDeviceVortex;
 
     @Override
     public Observable<List<BtDevice>> getDevicesFromConnectionHistory() {
@@ -196,17 +203,24 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
         BtScanAdapter scanAdapter = (BtScanAdapter) scanPort;
         scanAdapter.setPortListener(this);
         scanPort.getPairedDevices();
-        return pairedDevicesResultPipe.asObservable()
+        return pairedDevicesVortex.asObservable()
                 .take(1);
     }
 
 
     @Override
     public Observable<BtDevice> discoverDevices() {
-        BtScanAdapter scanAdapter = (BtScanAdapter) scanPort;
-        scanAdapter.setPortListener(this);
-        scanPort.startDiscovery();
-        return null;
+        Observable<BtDevice> task = Observable.just("")
+                .subscribeOn(Schedulers.computation())
+                .flatMap(t -> {
+                    BtScanAdapter scanAdapter = (BtScanAdapter) scanPort;
+                    scanAdapter.setPortListener(this);
+                    scanPort.startDiscovery();
+                    // create new vortex
+                    discoveredDeviceVortex = PublishSubject.create();
+                    return discoveredDeviceVortex.asObservable();
+                });
+        return Observable.defer(() -> task);
     }
 
     /**
@@ -221,18 +235,27 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
                 .map(deviceSet -> new ArrayList<BtDevice>(devices));
         Observable.defer(() -> passDevicesTask)
                 .subscribe(listOfDevices -> {
-                    pairedDevicesResultPipe.onNext(listOfDevices);
+                    pairedDevicesVortex.onNext(listOfDevices);
                 }, e -> {});
     }
 
+    /**
+     * BtScanPort will call this method when Bluetooth device is discovered
+     * @param device
+     */
     @Override
     public void onDeviceFound(BtDevice device) {
         Log.i(LOG_TAG, "Bluetooth device found: " + device.getDeviceName());
+        discoveredDeviceVortex.onNext(device);
     }
 
+    /**
+     * Is called by BtScanPort when discovery is over.
+     */
     @Override
     public void onScanCompleted() {
         Log.i(LOG_TAG, "Bluetooth discovery complete");
+        discoveredDeviceVortex.onCompleted();
     }
 
     /**
