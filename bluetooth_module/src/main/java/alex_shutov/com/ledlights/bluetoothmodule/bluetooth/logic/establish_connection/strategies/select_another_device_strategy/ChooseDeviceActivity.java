@@ -3,12 +3,16 @@ package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conn
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.List;
+
 import alex_shutov.com.ledlights.bluetoothmodule.R;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.events.PresenterInstanceEvent;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.mvp.AnotherDevicePresenter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.mvp.AnotherDeviceView;
@@ -51,6 +55,18 @@ public class ChooseDeviceActivity extends AppCompatActivity implements AnotherDe
     public void onEvent(PresenterInstanceEvent instanceEvent) {
         presenter = instanceEvent.getPresenter();
         presenter.attachView(this);
+
+        presenter.queryDevicesFromAppHistory();
+        presenter.refreshDevicesFromSystem();
+    }
+
+    /**
+     * Inherited from AnothedDeviceView
+     */
+
+    @Override
+    public void displayDevicesFromAppHistory(List<BtDevice> devices) {
+        Log.i(LOG_TAG, "App remember " + devices.size() + " devices");
     }
 
 }

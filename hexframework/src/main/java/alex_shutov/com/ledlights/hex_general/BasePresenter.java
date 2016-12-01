@@ -59,4 +59,9 @@ public abstract class BasePresenter<M extends BaseModel, V extends BaseView> {
     public EventBus getEventBus() {
         return eventBus;
     }
+
+    public M getModel() {
+        return model;
+    }
+
 }

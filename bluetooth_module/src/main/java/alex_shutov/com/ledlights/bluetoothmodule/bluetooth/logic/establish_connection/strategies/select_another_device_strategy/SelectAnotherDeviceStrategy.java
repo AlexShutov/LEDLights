@@ -2,6 +2,8 @@ package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conn
 
 import android.util.Log;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnPort;
@@ -164,6 +166,19 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
     @Override
     public void onCriticalFailure(int portID, Exception e) {
         Log.i(LOG_TAG, "onCriticalFailure( portID: " + portID + ", error: " + e.getMessage());
+    }
+
+    /**
+     * Inherited from AnotherDeviceModel
+     */
+
+    @Override
+    public Observable<List<BtDevice>> getDevicesFromConnectionHistory() {
+
+        Observable<List<BtDevice>> historyDevicesTask = Observable.just("")
+                .observeOn(Schedulers.io())
+                .map(t -> historyDb.getDeviceHistory());
+        return Observable.defer(() -> historyDevicesTask);
     }
 
     /**
