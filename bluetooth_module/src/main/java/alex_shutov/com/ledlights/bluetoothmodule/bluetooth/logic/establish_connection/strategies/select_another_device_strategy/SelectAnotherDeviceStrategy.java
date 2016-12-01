@@ -2,6 +2,8 @@ package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conn
 
 import android.util.Log;
 
+import javax.inject.Inject;
+
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanPort;
@@ -9,6 +11,9 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.DataProvider;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionCallback;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionDataProvider;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.EstablishConnectionStrategy;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.events.PresenterInstanceEvent;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.mvp.AnotherDeviceModel;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.mvp.AnotherDevicePresenter;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
@@ -16,13 +21,13 @@ import rx.schedulers.Schedulers;
  * Created by Alex on 11/7/2016.
  */
 public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
-        implements BtUiDeviceSelectionViewPartial {
+        implements BtUiDeviceSelectionViewPartial, AnotherDeviceModel {
     private static final String LOG_TAG = SelectAnotherDeviceStrategy.class.getSimpleName();
-
 
     private BtScanPort scanPort;
     private BtConnPort connPort;
-
+    @Inject
+    AnotherDevicePresenter presenter;
 
     public SelectAnotherDeviceStrategy(){
         super();
@@ -30,12 +35,23 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
 
     @Override
     public void suspend() {
+        // unregister this strategy from presenter
+        presenter.detachView();
+        // remove event with instance of presenter from a bus
+        eventBus.removeStickyEvent(PresenterInstanceEvent.class);
         super.suspend();
     }
 
     @Override
     protected void start() {
         super.start();
+        // register this strategy as a view in Presenter
+        presenter.attachModel(this);
+        // send reference to presenter in sticjy event so View can get it at any time
+        PresenterInstanceEvent event = new PresenterInstanceEvent();
+        event.setPresenter(presenter);
+        eventBus.removeStickyEvent(PresenterInstanceEvent.class);
+        eventBus.postSticky(event);
     }
 
     @Override
@@ -44,6 +60,7 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
         EstablishConnectionDataProvider partsProvider = (EstablishConnectionDataProvider) dataProvider;
         scanPort = partsProvider.provideBtScanPort();
         connPort = partsProvider.provideBtConnPort();
+        partsProvider.provideDiComponent().injectSelectAnotherDeviceStrategy(this);
     }
 
     /**
@@ -60,6 +77,7 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
     @Override
     protected void doOnConnectionAttemptFailed() {
         Log.w(LOG_TAG, "Connection attempt failed");
+
     }
 
     /**
@@ -77,7 +95,7 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
     @Override
     public void stopConnecting() {
         cancelOngoingConnectionAttemptsAndDiscovery();
-        unregisterFromUiPortAndCloseUi();
+
     }
 
     /**
@@ -161,26 +179,12 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
         connPort.close();
     }
 
-    /**
-     * Discard all changes made in device picking UI and unbind this strategy from
-     * ui adapter (it is set as listener now).
-     */
-    private void unregisterFromUiPortAndCloseUi(){
-
-    }
 
 
-    /**
-     * Strategy tell UI port to select UI first, and, when UI is shown, it will tell port to
-     * clear all previous UI data. This might be the case, because strategy can be triggered
-     * from backgound (not from UI).
-     * We have to set this strategy as port listener first and then tell port to display UI.
-     */
+
     private void triggerUi() {
-
-
+        presenter.showUiForSelectingAnotherBluetoothDevice();
     }
-
 }
 
 

@@ -94,6 +94,11 @@ public class BtLogicCellFacade implements CommInterface, EstablishConnectionData
         return historyDatabase;
     }
 
+    @Override
+    public BtPortAdapterCreator provideDiComponent() {
+        return diComponent;
+    }
+
     /**
      * Request all objects after everything is ready (BtLogicCell is initialized)
      */
