@@ -111,8 +111,8 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm implements
 
     @Override
     public void attemptToEstablishConnection() {
-        testWriteLastDevice();
-        reconnectStrategy.attemptToEstablishConnection();
+        chooseStrategy(reconnectStrategy);
+        currentStrategy.attemptToEstablishConnection();
     }
 
     public void setCallback(EstablishConnectionCallback callback) {
@@ -124,26 +124,26 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm implements
     }
 
 
-    private void testWriteLastDevice(){
-        // remove any info regarding last connected device
-        deviceDatabase.clearLastConnectedDeviceInfo();
-        BtDevice hc05 = new BtDevice();
-        hc05.setDeviceName("My bike");
-        String address = "98:D3:31:20:A0:08";
-        String uuid = "00001101-0000-1000-8000-00805F9B34FB";
-        hc05.setDeviceAddress(address);
-        hc05.setDeviceUuIdSecure(uuid);
-        hc05.setDeviceUuIdInsecure(uuid);
-        hc05.setPaired(true);
-        hc05.setSecureOperation(true);
-        deviceDatabase.setLastConnectedMotorcycleInfo(hc05);
-        // 1 hour ago
-        Long startConnectionTime = System.currentTimeMillis() - 60 * 60 * 1000;
-        // as though it disconnected 10 seconds ago
-        Long endConnectionTime = System.currentTimeMillis() - 10 * 1000;
-        deviceDatabase.setLastConnectionStartTime(startConnectionTime);
-        deviceDatabase.setLastConnectionEndTime(endConnectionTime);
-    }
+//    private void testWriteLastDevice(){
+//        // remove any info regarding last connected device
+//        deviceDatabase.clearLastConnectedDeviceInfo();
+//        BtDevice hc05 = new BtDevice();
+//        hc05.setDeviceName("My bike");
+//        String address = "98:D3:31:20:A0:08";
+//        String uuid = "00001101-0000-1000-8000-00805F9B34FB";
+//        hc05.setDeviceAddress(address);
+//        hc05.setDeviceUuIdSecure(uuid);
+//        hc05.setDeviceUuIdInsecure(uuid);
+//        hc05.setPaired(true);
+//        hc05.setSecureOperation(true);
+//        deviceDatabase.setLastConnectedMotorcycleInfo(hc05);
+//        // 1 hour ago
+//        Long startConnectionTime = System.currentTimeMillis() - 60 * 60 * 1000;
+//        // as though it disconnected 10 seconds ago
+//        Long endConnectionTime = System.currentTimeMillis() - 10 * 1000;
+//        deviceDatabase.setLastConnectionStartTime(startConnectionTime);
+//        deviceDatabase.setLastConnectionEndTime(endConnectionTime);
+//    }
 
     /**
      * Only one strategy can be active at a time, so we have to choose it.

@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">BluetoothModule</string>
     <string name="idh_list_item_device_name">My bike</string>
+
+    <!--bluetooth device info-->
+    <string name="device_name_hint">Honda cbr 600 F4</string>
 </resources>

@@ -1,10 +1,14 @@
 package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy;
 
+import android.content.Context;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.database.DatabaseUtilsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
@@ -15,9 +19,12 @@ import java.util.List;
 
 import alex_shutov.com.ledlights.bluetoothmodule.R;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.databinding.DeviceInfoViewModel;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.events.PresenterInstanceEvent;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.mvp.AnotherDevicePresenter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.mvp.AnotherDeviceView;
+import alex_shutov.com.ledlights.bluetoothmodule.databinding.ActivityPickDeviceBinding;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
  * Created by lodoss on 09/11/16.
@@ -28,10 +35,33 @@ public class ChooseDeviceActivity extends AppCompatActivity implements AnotherDe
     private EventBus eventBus;
     private AnotherDevicePresenter presenter;
 
+    ActivityPickDeviceBinding activityBinding;
+    private DeviceInfoViewModel viewModel;
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pick_device);
+        // inflate layout, create databinding and set model
+        View root = DataBindingUtil.setContentView(this, R.layout.activity_pick_device).getRoot();
+        activityBinding = DataBindingUtil.bind(root);
+        viewModel = new DeviceInfoViewModel();
+        activityBinding.apdDeviceInfo.setModel(viewModel);
+
+        viewModel.setDeviceName("Alpha 50cc");
+        viewModel.setDeviceFromHistory(false);
+        viewModel.setPairedDevice(true);
+        viewModel.setShowDeviceDetailsListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(ChooseDeviceActivity.this, "details button clicked", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         eventBus = EventBus.getDefault();
         AppCompatButton button = (AppCompatButton) findViewById(R.id.apd_refresh);
         button.setOnClickListener(v -> {
@@ -83,6 +113,7 @@ public class ChooseDeviceActivity extends AppCompatActivity implements AnotherDe
                     device.getDeviceAddress();
             Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
         }
+        BtDevice device;
     }
 
 
