@@ -4,9 +4,10 @@ import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.database.DatabaseUtilsCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatButton;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -15,11 +16,12 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import alex_shutov.com.ledlights.bluetoothmodule.R;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.databinding.DeviceInfoViewModel;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.device_list_fragments.DevicesFragment;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.events.PresenterInstanceEvent;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.mvp.AnotherDevicePresenter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.mvp.AnotherDeviceView;
@@ -29,14 +31,17 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 /**
  * Created by lodoss on 09/11/16.
  */
-public class ChooseDeviceActivity extends AppCompatActivity implements AnotherDeviceView {
+public class ChooseDeviceActivity extends AppCompatActivity implements AnotherDeviceView,
+        DevicesFragment.PresenterProvider {
+
     private static final String LOG_TAG = ChooseDeviceActivity.class.getSimpleName();
 
     private EventBus eventBus;
     private AnotherDevicePresenter presenter;
 
-    ActivityPickDeviceBinding activityBinding;
-    private DeviceInfoViewModel viewModel;
+    /** Binding for this Activity. It is used for setting up TabLayout and ViewPager */
+    private ActivityPickDeviceBinding activityBinding;
+
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -46,28 +51,14 @@ public class ChooseDeviceActivity extends AppCompatActivity implements AnotherDe
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // inflate layout, create databinding and set model
+        // inflate layout, create data binding and set model
         View root = DataBindingUtil.setContentView(this, R.layout.activity_pick_device).getRoot();
         activityBinding = DataBindingUtil.bind(root);
-        viewModel = new DeviceInfoViewModel();
-        activityBinding.apdDeviceInfo.setModel(viewModel);
-
-        viewModel.setDeviceName("Alpha 50cc");
-        viewModel.setDeviceFromHistory(false);
-        viewModel.setPairedDevice(true);
-        viewModel.setShowDeviceDetailsListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(ChooseDeviceActivity.this, "details button clicked", Toast.LENGTH_SHORT).show();
-            }
-        });
+        // create view model for this Activity
 
         eventBus = EventBus.getDefault();
-        AppCompatButton button = (AppCompatButton) findViewById(R.id.apd_refresh);
-        button.setOnClickListener(v -> {
 
-            presenter.refreshDevicesFromSystem();
-        });
+        setupViewPager();
     }
 
     @Override
@@ -91,9 +82,9 @@ public class ChooseDeviceActivity extends AppCompatActivity implements AnotherDe
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onEvent(PresenterInstanceEvent instanceEvent) {
         presenter = instanceEvent.getPresenter();
-        presenter.attachView(this);
-
-        presenter.queryListOfPairedDevices();
+//        presenter.attachView(this);
+//
+//        presenter.queryListOfPairedDevices();
     }
 
     /**
@@ -128,4 +119,56 @@ public class ChooseDeviceActivity extends AppCompatActivity implements AnotherDe
     public void onDiscoveryComplete() {
         Toast.makeText(this, "Bluetooth discovery complete" , Toast.LENGTH_SHORT).show();
     }
+
+
+    private void setupViewPager(){
+        Adapter adapter = new Adapter(getSupportFragmentManager());
+        // init all fragments here
+
+
+    }
+
+    /**
+     * Inherited from PresenterProvider
+     */
+
+    @Override
+    public AnotherDevicePresenter providePresenter() {
+        return presenter;
+    }
+
+    /**
+     * Adapter for tab layout
+     */
+    static class Adapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragments = new ArrayList<>();
+        private final List<String> mFragmentTitles = new ArrayList<>();
+
+        public Adapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            mFragments.add(fragment);
+            mFragmentTitles.add(title);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragments.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragments.size();
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitles.get(position);
+        }
+
+
+    }
+
 }
