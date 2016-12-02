@@ -1,6 +1,7 @@
 package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort;
 
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothClass;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -150,7 +151,8 @@ public class BTDeviceScanner {
         Log.i(LOG_TAG, "Device name: " + deviceName);
         String deviceAddress = device.getAddress();
         Log.i(LOG_TAG, "Device address: " + deviceAddress);
-        String bluetoothClass = device.getBluetoothClass().toString();
+        BluetoothClass bc = device.getBluetoothClass();
+        String bluetoothClass = bc == null ? "" : device.getBluetoothClass().toString();
         Log.i(LOG_TAG, "Device bluetooth class: " + bluetoothClass);
     }
 

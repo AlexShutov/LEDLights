@@ -6,7 +6,6 @@
         <item name="colorPrimary">@color/app_primary</item>
         <item name="colorPrimaryDark">@color/app_primary_dark</item>
         <item name="colorAccent">@color/app_accent</item>
-
     </style>
 
     <style name="AppGeneral" parent="AppTheme">
@@ -17,13 +16,12 @@
         <item name="android:textColorPrimaryInverse">@color/text_light</item>
         <item name="android:statusBarColor" tools:targetApi="lollipop">@color/app_primary_dark</item>
         <item name="android:textColor">@color/text_dark</item>
-        <item name="android:windowBackground">@color/light_grey</item>
-        <item name="android:colorBackground">@color/light_grey</item>
+        <item name="android:windowBackground">@color/blue_700</item>
+        <item name="android:colorBackground">@color/blue_900</item>
 
         <item name="colorControlNormal">@color/app_primary</item>
         <item name="colorControlActivated">@color/app_primary</item>
         <item name="colorControlHighlight">@color/app_primary</item>
-
     </style>
 
 

@@ -1,16 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="app_primary">#c82620</color>
-    <color name="app_primary_dark">#E7372D</color>
+    <color name="colorPrimary">#5677fc</color>
+    <color name="colorPrimaryDark">#3b50ce</color>
+    <color name="colorAccent">#738ffe</color>
+
+    <color name="app_primary">#5677fc</color>
+    <color name="app_primary_dark">#3b50ce</color>
     <color name="app_blank">#424242</color>
-    <color name="app_accent">#3F51B5</color>
+    <color name="app_accent">#738ffe</color>
 
     <color name="text_light">@android:color/white</color>
     <color name="text_dark">#616161</color>
 
-    <color name="green">#00e676</color>
-    <color name="red">#ff5252</color>
-    <color name="light_grey">#f5f5f5</color>
 
+
+    <color name="blue_050">#e7e9fd</color> <!-- Use with black text -->
+    <color name="blue_100">#d0d9ff</color> <!-- Use with black text -->
+    <color name="blue_200">#afbfff</color> <!-- Use with black text -->
+    <color name="blue_300">#91a7ff</color> <!-- Use with black text -->
+    <color name="blue_400">#738ffe</color> <!-- Use with black text -->
+    <color name="blue_500">#5677fc</color> <!-- Use with white text -->
+    <color name="blue_600">#4e6cef</color> <!-- Use with white text -->
+    <color name="blue_700">#455ede</color> <!-- Use with white text -->
+    <color name="blue_800">#3b50ce</color> <!-- Use with white text -->
+    <color name="blue_900">#2a36b1</color> <!-- Use with white text -->
+    <color name="blue_a100">#a6baff</color> <!-- Use with black text -->
+    <color name="blue_a200">#6889ff</color> <!-- Use with white text -->
+    <color name="blue_a400">#4d73ff</color> <!-- Use with white text -->
+    <color name="blue_a700">#4d69ff</color> <!-- Use with white text -->
 </resources>

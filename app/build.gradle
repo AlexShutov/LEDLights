@@ -46,8 +46,6 @@ dependencies {
     // Multidex support, because we project has more than one modules
     compile 'com.android.support:multidex:1.0.0'
 
-    compile project (':hexframework')
-
     compile ('com.android.support:recyclerview-v7:23.0.1'){
         exclude group: 'com.android.support', module: 'support-v4'
     }
@@ -65,4 +63,5 @@ dependencies {
     provided 'org.glassfish:javax.annotation:10.0-b28'
 
     compile project(path: ':bluetooth_module')
+    compile project (':hexframework')
 }

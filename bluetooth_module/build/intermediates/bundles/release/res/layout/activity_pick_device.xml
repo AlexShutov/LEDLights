@@ -2,12 +2,12 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    style="@style/AppTheme"
+    style="@style/AppGeneral"
     >
     <android.support.design.widget.TabLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/apd_tl_device_kind_selector"
+        android:id="@+id/apd_tl_view_mode_selector"
         >
     </android.support.design.widget.TabLayout>
 
@@ -15,7 +15,7 @@
         android:id="@+id/apd_vp_device_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/apd_tl_device_kind_selector"
+        android:layout_below="@id/apd_tl_view_mode_selector"
         android:layout_weight="1"
         android:background="@android:color/white" />
 

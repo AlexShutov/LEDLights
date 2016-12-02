@@ -88,7 +88,6 @@ public class BtCellActivity extends Activity {
 
     private void startPolling(){
         BtCommPort commPort = btCell.getBtCommPort();
-        commPort.startConnection();
         commPort.selectAnotherDevice();
     }
 
