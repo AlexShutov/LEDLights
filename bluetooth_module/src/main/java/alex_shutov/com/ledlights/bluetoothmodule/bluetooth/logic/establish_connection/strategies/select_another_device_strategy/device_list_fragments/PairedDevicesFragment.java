@@ -17,52 +17,44 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conne
  */
 
 /**
- * In this fragment we'll show all devices from application history.
- * Every line from list has to have two state icons - if this device is from history and
- * if it is paired.
- * We can query list of paired devices from Presenter and do it quit fast.
- * After that, we create map of devices my their addresses and look for intersection of
- * history devices and paired devices.
- * I don't move this functionality into bas class, because paired devices will have 'base set'
- * from paired devices and this class from history devices.
+ * Get list of paired devices and turn on 'history' icon if that device is form application history.
  */
-public class HistoryDevicesFragment extends HistoryPairedFragment {
+public class PairedDevicesFragment extends HistoryPairedFragment {
 
-    public static final String LOG_TAG = HistoryDevicesFragment.class.getSimpleName();
+    private static final String LOG_TAG = PairedDevicesFragment.class.getSimpleName();
 
     public static DevicesFragment newInstance() {
         Bundle args = new Bundle();
-        args.putInt(ARG_FRAGMENT_TYPE, ChooseDeviceActivity.FRAGMENT_HISTORY);
-        HistoryDevicesFragment instance = new HistoryDevicesFragment();
+        args.putInt(ARG_FRAGMENT_TYPE, ChooseDeviceActivity.FRAGMENT_PAIRED);
+        PairedDevicesFragment instance = new PairedDevicesFragment();
         instance.setArguments(args);
         return instance;
     }
 
     @Override
     protected int getEmptyTextResource() {
-        return R.string.device_list_history_empty;
+        return R.string.device_list_paired_empty;
     }
 
     @Override
     protected List<DeviceInfoViewModel> mapHistoryAndPairedLists(List<BtDevice> history,
-                                                               List<BtDevice> paired) {
-        List<DeviceInfoViewModel> historyViewModel = new ArrayList<>();
-        Map<String, DeviceInfoViewModel> historyMapping = new TreeMap<>();
-        for (BtDevice device : history) {
+                                                                 List<BtDevice> paired) {
+        List<DeviceInfoViewModel> pairedViewModel = new ArrayList<>();
+        Map<String, DeviceInfoViewModel> pairedMapping = new TreeMap<>();
+        for (BtDevice device : paired) {
             DeviceInfoViewModel vm = convertToViewModel(device);
             // This is a device from history
             vm.setDeviceFromHistory(true);
-            historyViewModel.add(vm);
-            historyMapping.put(vm.getDeviceAddress(), vm);
+            pairedViewModel.add(vm);
+            pairedMapping.put(vm.getDeviceAddress(), vm);
         }
         // now check which paired devices is in device history and mark those devices as paired
-        for (BtDevice device : paired) {
+        for (BtDevice device : history) {
             String address = device.getDeviceAddress();
-            if (!historyMapping.containsKey(address)) continue;
+            if (!pairedMapping.containsKey(address)) continue;
             // We're sure this device is paired to this phone
-            historyMapping.get(address).setPairedDevice(true);
+            pairedMapping.get(address).setDeviceFromHistory(true);
         }
-        return historyViewModel;
+        return pairedViewModel;
     }
-
 }

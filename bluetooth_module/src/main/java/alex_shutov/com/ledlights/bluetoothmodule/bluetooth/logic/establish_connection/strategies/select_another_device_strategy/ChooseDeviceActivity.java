@@ -22,6 +22,7 @@ import alex_shutov.com.ledlights.bluetoothmodule.R;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.databinding.DeviceInfoViewModel;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.device_list_fragments.DevicesFragment;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.device_list_fragments.HistoryDevicesFragment;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.device_list_fragments.PairedDevicesFragment;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.events.PresenterInstanceEvent;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.mvp.AnotherDevicePresenter;
 import alex_shutov.com.ledlights.bluetoothmodule.databinding.ActivityPickDeviceBinding;
@@ -133,8 +134,13 @@ public class ChooseDeviceActivity extends AppCompatActivity implements DevicesFr
     private void setupViewPager(){
         Adapter adapter = new Adapter(getSupportFragmentManager());
         // init all fragments here
+        // fragment for paired devices
+        DevicesFragment pairedDevicesFragment = PairedDevicesFragment.newInstance();
+        adapter.addFragment(pairedDevicesFragment, getString(R.string.device_list_paired));
+        // fragment for device history
         DevicesFragment historyDevicesFragment = HistoryDevicesFragment.newInstance();
         adapter.addFragment(historyDevicesFragment, getString(R.string.device_list_history));
+
 
         activityBinding.apdVpDevices.setAdapter(adapter);
     }

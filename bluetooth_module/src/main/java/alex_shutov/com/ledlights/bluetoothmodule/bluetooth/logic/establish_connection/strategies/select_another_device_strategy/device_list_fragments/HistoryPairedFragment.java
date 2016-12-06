@@ -40,6 +40,7 @@ public abstract class HistoryPairedFragment extends DevicesFragment {
     protected abstract List<DeviceInfoViewModel> mapHistoryAndPairedLists(List<BtDevice> history,
                                                                           List<BtDevice> paired);
 
+
     Observable<List<DeviceInfoViewModel>> processAlg =
             Observable.zip(historyDevicesSource.asObservable(),
                     pairedDevicesSource.asObservable(),

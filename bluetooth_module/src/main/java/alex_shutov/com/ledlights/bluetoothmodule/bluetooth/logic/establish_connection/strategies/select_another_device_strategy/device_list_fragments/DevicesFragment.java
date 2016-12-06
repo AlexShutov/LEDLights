@@ -67,6 +67,12 @@ public abstract class DevicesFragment extends Fragment implements AnotherDeviceV
     protected abstract void init();
     protected abstract void suspend();
 
+    /**
+     * String id for 'empty' message
+     * @return
+     */
+    protected abstract int getEmptyTextResource();
+
     // use static fabric method only
     protected DevicesFragment() {
         super();
@@ -96,7 +102,7 @@ public abstract class DevicesFragment extends Fragment implements AnotherDeviceV
         viewBinding = DataBindingUtil.bind(view);
         viewModel = new DevicePickerViewModel();
         viewBinding.setModel(viewModel);
-        viewModel.setEmptyText(R.string.device_list_history_empty);
+        viewModel.setEmptyText(getEmptyTextResource());
         // hide 'empty' message by default
         viewModel.setEmpty(false);
     }
