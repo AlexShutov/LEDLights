@@ -22,6 +22,7 @@ import alex_shutov.com.ledlights.bluetoothmodule.R;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.ListOfDevicesAdapter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.databinding.DeviceInfoViewModel;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.databinding.DevicePickerViewModel;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.events.PresenterInstanceEvent;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.mvp.AnotherDevicePresenter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.mvp.AnotherDeviceView;
@@ -52,7 +53,8 @@ public abstract class DevicesFragment extends Fragment implements AnotherDeviceV
     private AnotherDevicePresenter presenter;
     // Adapter for RecyclerView with list of devices
     private ListOfDevicesAdapter listAdapter;
-
+    // ViewModel for showing hiding 'empty' text
+    DevicePickerViewModel viewModel;
     /**
      * All device lists has the same layout, only logic differ
      */
@@ -92,6 +94,11 @@ public abstract class DevicesFragment extends Fragment implements AnotherDeviceV
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         viewBinding = DataBindingUtil.bind(view);
+        viewModel = new DevicePickerViewModel();
+        viewBinding.setModel(viewModel);
+        viewModel.setEmptyText(R.string.device_list_history_empty);
+        // hide 'empty' message by default
+        viewModel.setEmpty(false);
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
@@ -115,7 +122,7 @@ public abstract class DevicesFragment extends Fragment implements AnotherDeviceV
         presenter.detachView();
         // cancel refresh animation
         if (viewBinding.dlRefreshLayout.isRefreshing()) {
-            Log.i(LOG_TAG, "content is still refreshing, c§ancelling");
+            Log.i(LOG_TAG, "content is still refreshing, cancelling");
             viewBinding.dlRefreshLayout.setRefreshing(false);
         }
         super.onPause();
@@ -222,5 +229,9 @@ public abstract class DevicesFragment extends Fragment implements AnotherDeviceV
 
     public int getFragmentType() {
         return fragmentType;
+    }
+
+    public DevicePickerViewModel getViewModel() {
+        return viewModel;
     }
 }

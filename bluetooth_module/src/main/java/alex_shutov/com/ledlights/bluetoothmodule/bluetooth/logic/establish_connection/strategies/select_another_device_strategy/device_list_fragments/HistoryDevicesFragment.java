@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.ChooseDeviceActivity;
@@ -45,6 +46,17 @@ public class HistoryDevicesFragment extends DevicesFragment {
 
     private PublishSubject<List<BtDevice>> historyDevicesSource = PublishSubject.create();
     private PublishSubject<List<BtDevice>> pairedDevicesSource = PublishSubject.create();
+
+    Observable<List<DeviceInfoViewModel>> processAlg =
+            Observable.zip(historyDevicesSource.asObservable(),
+                    pairedDevicesSource.asObservable(),
+                    (history, paired) -> {
+                        List<DeviceInfoViewModel> viewModels =
+                                mapHistoryAndPairedLists(history, paired);
+                        addUserActionListeners(viewModels);
+                        return viewModels;
+                    });
+
     /**
      * Resembles connection to algorithm for processing resulting lists
      */
@@ -73,15 +85,6 @@ public class HistoryDevicesFragment extends DevicesFragment {
 
     @Override
     protected void init() {
-        Observable<List<DeviceInfoViewModel>> processAlg =
-                Observable.zip(historyDevicesSource.asObservable(),
-                        pairedDevicesSource.asObservable(),
-                        (history, paired) -> {
-                            List<DeviceInfoViewModel> viewModels =
-                                mapHistoryAndPairedLists(history, paired);
-                            addUserActionListeners(viewModels);
-                            return viewModels;
-                        });
         // check if previous algorithm is running and suspend it if it is.
         suspendReceivingAlgorithm();
         listProcessingSubscription =
@@ -92,6 +95,8 @@ public class HistoryDevicesFragment extends DevicesFragment {
                             Log.i(LOG_TAG, deviceList.size() + " devices in history");
                             // device list is updated
                             onUpdateComplete();
+                            // show ot hide empty text and change list visibility
+                            getViewModel().setEmpty(deviceList.isEmpty());
                             showDeviceList(deviceList);
                         });
         // query device list
@@ -106,6 +111,10 @@ public class HistoryDevicesFragment extends DevicesFragment {
     @Override
     public void displayDevicesFromAppHistory(List<BtDevice> devices) {
         Log.i(LOG_TAG, "There is " + devices.size() + " devices in app history");
+        BtDevice dummy = new BtDevice();
+        dummy.setDeviceName("Dummy device");
+        dummy.setDeviceAddress("782634uii31h2");
+        devices.add(dummy);
         historyDevicesSource.onNext(devices);
     }
 

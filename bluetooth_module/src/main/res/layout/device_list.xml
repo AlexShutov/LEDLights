@@ -2,9 +2,11 @@
 
 <layout>
     <data>
+        <import type="android.view.View"/>
         <variable
-            name="foo"
-            type="int"/>
+            name="model"
+            type="alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.databinding.DevicePickerViewModel"
+            />
     </data>
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -18,16 +20,32 @@
             android:id="@+id/dl_refresh_layout"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true">
+            android:layout_alignParentStart="true" >
 
             <android.support.v7.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/dl_list">
-
+                android:id="@+id/dl_list"
+                >
             </android.support.v7.widget.RecyclerView>
 
         </android.support.v4.widget.SwipeRefreshLayout>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true" >
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/device_info_empty_text_size"
+                fontPath="fonts/open-sans/OpenSans-Bold.ttf"
+                android:visibility="@{model.empty ? View.VISIBLE : View.GONE}"
+                android:text="@{model.emptyText}"
+                />
+        </FrameLayout>
+
     </RelativeLayout>
 
 </layout>
