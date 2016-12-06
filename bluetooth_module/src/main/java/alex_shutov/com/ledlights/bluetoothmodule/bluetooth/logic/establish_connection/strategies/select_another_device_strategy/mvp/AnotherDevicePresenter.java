@@ -188,10 +188,12 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
      * This method is supposed to be used when user want update all data, so here app history
      * is queried too.
      */
-    public void refreshDevicesFromSystem(){
+    public void refreshDevicesFromSystem(boolean startDiscovery){
         refreshPairedDevices();
-        discoverDevices();
         queryDevicesFromAppHistory();
+        if (startDiscovery) {
+            discoverDevices();
+        }
     }
 
 

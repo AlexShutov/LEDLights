@@ -4,4 +4,6 @@
 
     <!--bluetooth device info-->
     <string name="device_name_hint">Honda cbr 600 F4</string>
+    <string name="device_list_history">History</string>
+    <string name="device_list_history_empty">Connection history is empty</string>
 </resources>
