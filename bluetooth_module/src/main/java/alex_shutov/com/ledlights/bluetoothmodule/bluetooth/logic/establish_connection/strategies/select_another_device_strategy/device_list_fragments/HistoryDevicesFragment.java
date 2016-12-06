@@ -1,22 +1,15 @@
 package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.device_list_fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.concurrent.TimeUnit;
 
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.ChooseDeviceActivity;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.databinding.DeviceInfoViewModel;
-import rx.Observable;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-import rx.subjects.PublishSubject;
 
 /**
  * Created by lodoss on 06/12/16.
@@ -32,7 +25,7 @@ import rx.subjects.PublishSubject;
  * I don't move this functionality into bas class, because paired devices will have 'base set'
  * from paired devices and this class from history devices.
  */
-public class HistoryDevicesFragment extends DevicesFragment {
+public class HistoryDevicesFragment extends HistoryPairedFragment {
 
     public static final String LOG_TAG = HistoryDevicesFragment.class.getSimpleName();
 
@@ -44,104 +37,8 @@ public class HistoryDevicesFragment extends DevicesFragment {
         return instance;
     }
 
-    private PublishSubject<List<BtDevice>> historyDevicesSource = PublishSubject.create();
-    private PublishSubject<List<BtDevice>> pairedDevicesSource = PublishSubject.create();
-
-    Observable<List<DeviceInfoViewModel>> processAlg =
-            Observable.zip(historyDevicesSource.asObservable(),
-                    pairedDevicesSource.asObservable(),
-                    (history, paired) -> {
-                        List<DeviceInfoViewModel> viewModels =
-                                mapHistoryAndPairedLists(history, paired);
-                        addUserActionListeners(viewModels);
-                        return viewModels;
-                    });
-
-    /**
-     * Resembles connection to algorithm for processing resulting lists
-     */
-    private Subscription listProcessingSubscription;
-
-
-    /**
-     * Inherited from DevicesFragment
-     */
-
-    /**
-     * This method is triggered when user swipes screen for update.
-     * History devices don't need discovery, so we just need to update cached values
-     */
     @Override
-    protected void updateDeviceList() {
-        Log.i(LOG_TAG, "Updating history and paired device lists");
-        getPresenter().refreshDevicesFromSystem(false);
-    }
-
-    @Override
-    protected void suspend() {
-        Log.i(LOG_TAG, "stopping updating device list");
-        suspendReceivingAlgorithm();
-    }
-
-    @Override
-    protected void init() {
-        // check if previous algorithm is running and suspend it if it is.
-        suspendReceivingAlgorithm();
-        listProcessingSubscription =
-                Observable.defer(() -> processAlg)
-                        .subscribeOn(Schedulers.computation())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(deviceList -> {
-                            Log.i(LOG_TAG, deviceList.size() + " devices in history");
-                            // device list is updated
-                            onUpdateComplete();
-                            // show ot hide empty text and change list visibility
-                            getViewModel().setEmpty(deviceList.isEmpty());
-                            showDeviceList(deviceList);
-                        });
-        // query device list
-        getPresenter().queryDevicesFromAppHistory();
-        getPresenter().queryListOfPairedDevices();
-    }
-
-    /**
-     * Inherited from AnotherDeviceView
-     */
-
-    @Override
-    public void displayDevicesFromAppHistory(List<BtDevice> devices) {
-        Log.i(LOG_TAG, "There is " + devices.size() + " devices in app history");
-        BtDevice dummy = new BtDevice();
-        dummy.setDeviceName("Dummy device");
-        dummy.setDeviceAddress("782634uii31h2");
-        devices.add(dummy);
-        historyDevicesSource.onNext(devices);
-    }
-
-    @Override
-    public void displayPairedSystemDevices(List<BtDevice> devices) {
-        Log.i(LOG_TAG, "There is " + devices.size() + " paired devices");
-        pairedDevicesSource.onNext(devices);
-    }
-
-    @Override
-    public void onNewDeviceDiscovered(BtDevice device) {
-        Log.e(LOG_TAG, "History fragment can't trigger discovery, error");
-    }
-
-    @Override
-    public void onDiscoveryComplete() {
-        Log.e(LOG_TAG, "History fragment can't trigger discovery, error");
-    }
-
-    private void suspendReceivingAlgorithm() {
-        if (null != listProcessingSubscription && !listProcessingSubscription.isUnsubscribed()) {
-            listProcessingSubscription.unsubscribe();
-            listProcessingSubscription = null;
-        }
-    }
-
-    private List<DeviceInfoViewModel> mapHistoryAndPairedLists(List<BtDevice> history,
+    protected List<DeviceInfoViewModel> mapHistoryAndPairedLists(List<BtDevice> history,
                                                                List<BtDevice> paired) {
         List<DeviceInfoViewModel> historyViewModel = new ArrayList<>();
         Map<String, DeviceInfoViewModel> historyMapping = new TreeMap<>();
@@ -161,6 +58,5 @@ public class HistoryDevicesFragment extends DevicesFragment {
         }
         return historyViewModel;
     }
-
 
 }

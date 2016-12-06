@@ -38,6 +38,7 @@ public class ChooseDeviceActivity extends AppCompatActivity implements DevicesFr
     private AnotherDevicePresenter presenter;
 
     public static final int FRAGMENT_HISTORY = 0;
+    public static final int FRAGMENT_PAIRED = 1;
 
     /** Binding for this Activity. It is used for setting up TabLayout and ViewPager */
     private ActivityPickDeviceBinding activityBinding;
