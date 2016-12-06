@@ -28,6 +28,7 @@
             card_view:cardUseCompatPadding="true"
             android:clipToPadding="false"
             app:cardElevation="7dp"
+            android:onClick="@{(v) -> model.devicePickedListener.onClick(v)}"
             app:cardBackgroundColor="@color/blue_500"
             >
             <RelativeLayout

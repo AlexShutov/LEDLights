@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -143,12 +144,14 @@ public class ChooseDeviceActivity extends AppCompatActivity implements DevicesFr
 
     @Override
     public void onDevicePicked(int fragmentType, DeviceInfoViewModel device) {
-
+        Toast.makeText(this, "Device picked: " + device.getDeviceName(),
+                Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onAdditionalInfoClicked(int fragmentType, DeviceInfoViewModel device) {
-
+        Toast.makeText(this, "Show additional info for device: " + device.getDeviceName(),
+                Toast.LENGTH_SHORT).show();
     }
 
     /**

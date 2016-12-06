@@ -115,7 +115,7 @@ public abstract class DevicesFragment extends Fragment implements AnotherDeviceV
         presenter.detachView();
         // cancel refresh animation
         if (viewBinding.dlRefreshLayout.isRefreshing()) {
-            Log.i(LOG_TAG, "content is still refreshing, cancelling");
+            Log.i(LOG_TAG, "content is still refreshing, c§ancelling");
             viewBinding.dlRefreshLayout.setRefreshing(false);
         }
         super.onPause();
@@ -149,6 +149,24 @@ public abstract class DevicesFragment extends Fragment implements AnotherDeviceV
      */
     protected void addDeviceToTheList(DeviceInfoViewModel device) {
         getListAdapter().addDevice(device);
+    }
+
+    /**
+     * Each device list representation need listener for user actions - 'show more info' and
+     * selection action. Click listeners is stored in view model
+     * @param vms
+     */
+    protected void addUserActionListeners(List<DeviceInfoViewModel> vms) {
+        for (DeviceInfoViewModel vm : vms) {
+            vm.setShowDeviceDetailsListener(v -> {
+                UserActionListener l = (UserActionListener) getActivity();
+                l.onAdditionalInfoClicked(getFragmentType(), vm);
+            });
+            vm.setDevicePickedListener((v) -> {
+                UserActionListener l = (UserActionListener) getActivity();
+                l.onDevicePicked(getFragmentType(), vm);
+            });
+        }
     }
 
     /**

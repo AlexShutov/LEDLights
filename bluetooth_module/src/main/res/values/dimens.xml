@@ -3,8 +3,8 @@
 
     <!--Dimensions of layout for Bluetooth device info-->
     <dimen name="device_info_height">100dp</dimen>
-    <dimen name="device_info_margin_top">2dp</dimen>
-    <dimen name="device_info_margin_bottom">2dp</dimen>
+    <dimen name="device_info_margin_top">1dp</dimen>
+    <dimen name="device_info_margin_bottom">1dp</dimen>
     <dimen name="device_info_card_corner_radius">2dp</dimen>
     <dimen name="device_info_expand_btn_margin_left">2dp</dimen>
     <dimen name="device_info_expand_btn_margin_top">50dp</dimen>

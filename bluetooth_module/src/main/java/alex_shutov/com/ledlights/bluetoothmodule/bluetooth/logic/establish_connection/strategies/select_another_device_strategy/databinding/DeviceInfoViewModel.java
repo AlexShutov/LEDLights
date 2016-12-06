@@ -26,6 +26,7 @@ public class DeviceInfoViewModel extends BaseObservable {
     private boolean isPairedDevice;
 
     private View.OnClickListener showDeviceDetailsListener;
+    private View.OnClickListener devicePickedListener;
 
     @Bindable
     public String getDeviceName() {
@@ -95,5 +96,14 @@ public class DeviceInfoViewModel extends BaseObservable {
     public void setShowDescription(boolean showDescription) {
         this.showDescription = showDescription;
         notifyPropertyChanged(BR.showDescription);
+    }
+
+    @Bindable
+    public View.OnClickListener getDevicePickedListener() {
+        return devicePickedListener;
+    }
+
+    public void setDevicePickedListener(View.OnClickListener devicePickedListener) {
+        this.devicePickedListener = devicePickedListener;
     }
 }

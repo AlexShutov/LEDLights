@@ -153,14 +153,5 @@ public class HistoryDevicesFragment extends DevicesFragment {
         return historyViewModel;
     }
 
-    private void addUserActionListeners(List<DeviceInfoViewModel> vms) {
-        for (DeviceInfoViewModel vm : vms) {
-            vm.setShowDeviceDetailsListener(v -> {
-                UserActionListener l = (UserActionListener) getActivity();
-                l.onAdditionalInfoClicked(getFragmentType(), vm);
-            });
-        }
-
-    }
 
 }
