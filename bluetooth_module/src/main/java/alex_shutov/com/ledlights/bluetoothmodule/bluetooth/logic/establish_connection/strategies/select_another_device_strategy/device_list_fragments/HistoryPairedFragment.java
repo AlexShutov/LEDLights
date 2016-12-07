@@ -11,6 +11,7 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by lodoss on 06/12/16.
@@ -54,7 +55,7 @@ public abstract class HistoryPairedFragment extends DevicesFragment {
     /**
      * Resembles connection to algorithm for processing resulting lists
      */
-    private Subscription listProcessingSubscription;
+    private CompositeSubscription listProcessingSubscription;
 
     /**
      * Inherited from DevicesFragment
@@ -67,7 +68,7 @@ public abstract class HistoryPairedFragment extends DevicesFragment {
     @Override
     protected void updateDeviceList() {
         Log.i(LOG_TAG, "Updating history and paired device lists");
-        getPresenter().refreshDevicesFromSystem(false);
+        onUpdateComplete();
     }
 
     @Override
@@ -80,7 +81,8 @@ public abstract class HistoryPairedFragment extends DevicesFragment {
     protected void init() {
         // check if previous algorithm is running and suspend it if it is.
         suspendReceivingAlgorithm();
-        listProcessingSubscription =
+        listProcessingSubscription = new CompositeSubscription();
+        Subscription task =
                 Observable.defer(() -> processAlg)
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -92,36 +94,32 @@ public abstract class HistoryPairedFragment extends DevicesFragment {
                             getViewModel().setEmpty(deviceList.isEmpty());
                             showDeviceList(deviceList);
                         });
+        listProcessingSubscription.add(task);
         // query device list
-        getPresenter().queryDevicesFromAppHistory();
-        getPresenter().queryListOfPairedDevices();
+        Subscription s = getPresenter().queryDevicesFromAppHistory()
+                .subscribe(historyDevicesSource);
+        listProcessingSubscription.add(s);
+        s = getPresenter().queryListOfPairedDevices()
+                .subscribe(pairedDevicesSource);
+        listProcessingSubscription.add(s);
     }
 
     /**
      * Inherited from AnotherDeviceView
      */
 
-    @Override
+
     public void displayDevicesFromAppHistory(List<BtDevice> devices) {
         Log.i(LOG_TAG, "There is " + devices.size() + " devices in app history");
         historyDevicesSource.onNext(devices);
     }
 
-    @Override
+
     public void displayPairedSystemDevices(List<BtDevice> devices) {
         Log.i(LOG_TAG, "There is " + devices.size() + " paired devices");
         pairedDevicesSource.onNext(devices);
     }
 
-    @Override
-    public void onNewDeviceDiscovered(BtDevice device) {
-        Log.e(LOG_TAG, "History fragment can't trigger discovery, error");
-    }
-
-    @Override
-    public void onDiscoveryComplete() {
-        Log.e(LOG_TAG, "History fragment can't trigger discovery, error");
-    }
 
     private void suspendReceivingAlgorithm() {
         if (null != listProcessingSubscription && !listProcessingSubscription.isUnsubscribed()) {

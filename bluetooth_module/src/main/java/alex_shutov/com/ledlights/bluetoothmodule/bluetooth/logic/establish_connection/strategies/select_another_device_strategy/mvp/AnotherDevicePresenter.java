@@ -18,6 +18,7 @@ import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
@@ -110,18 +111,31 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
      * Its own methods
      */
 
+    private PublishSubject<List<BtDevice>> sourceHistory = PublishSubject.create();
+    private PublishSubject<List<BtDevice>> sourcePairedDevices = PublishSubject.create();
+
+    /**
+     * Get link to a source, emitting paired devices
+     * @return
+     */
+    public Observable<List<BtDevice>> getSourcePairedDevices() {
+        return sourcePairedDevices.asObservable();
+    }
+
     /**
      * Here it is assumed that this method is called from View so Model and View is attached -
      * we don't have to null check it
      */
-    public void queryDevicesFromAppHistory(){
+    public Observable<List<BtDevice>> queryDevicesFromAppHistory() {
         linkQueryForAppHistoryDevices =
                 getModel().getDevicesFromConnectionHistory()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(devices -> {
-                    AnotherDeviceView v = getView();
-                    v.displayDevicesFromAppHistory(devices);
+                    sourceHistory.onNext(devices);
+//                    AnotherDeviceView v = getView();
+//                    v.displayDevicesFromAppHistory(devices);
                 });
+        return sourceHistory.asObservable().take(1);
     }
 
     /**
@@ -129,12 +143,15 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
      * Notice, Presenter will attempt to get paired devices from system if device list is
      * empty
      */
-    public void queryListOfPairedDevices(){
+    public Observable<List<BtDevice>> queryListOfPairedDevices(){
         if (!cachePairedDevices.isEmpty()) {
-            getView().displayPairedSystemDevices(cachePairedDevices);
+            sourcePairedDevices.onNext(cachePairedDevices);
+//            getView().displayPairedSystemDevices(cachePairedDevices);
         } else {
             refreshPairedDevices();
         }
+        return sourcePairedDevices.asObservable()
+                .take(1);
     }
 
 
@@ -148,13 +165,12 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
     public void queryAllBluetoothDevicesWithDiscovery() {
         if (isDiscoveryFinished()) {
             for (BtDevice d : cachedDiscoveredDevices) {
-                getView().onNewDeviceDiscovered(d);
+//                getView().onNewDeviceDiscovered(d);
             }
         } else {
             discoverDevices();
         }
     }
-
 
     /**
      * Check link to discovery task. If discovery is active, this link is active too.
@@ -188,7 +204,7 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
      * This method is supposed to be used when user want update all data, so here app history
      * is queried too.
      */
-    public void refreshDevicesFromSystem(boolean startDiscovery){
+    public void refreshDevicesFromSystem(boolean startDiscovery) {
         refreshPairedDevices();
         queryDevicesFromAppHistory();
         if (startDiscovery) {
@@ -197,7 +213,8 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
     }
 
 
-    private void refreshPairedDevices(){
+
+    private void refreshPairedDevices() {
         // check if this operation requested already
         if (null != linkQueryPairedDevices && !linkQueryPairedDevices.isUnsubscribed()) {
             return;
@@ -214,9 +231,11 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(devices ->  {
-                    getView().displayPairedSystemDevices(devices);
+                    sourcePairedDevices.onNext(devices);
+//                    getView().displayPairedSystemDevices(devices);
                 });
     }
+
 
     private void discoverDevices(){
         // check is discovery already in progress and do nothing if it is
@@ -253,12 +272,12 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(device -> {
                     AnotherDeviceView view = getView();
-                    view.onNewDeviceDiscovered(device);
+//                    view.onNewDeviceDiscovered(device);
                 }, error -> {
                     Log.e(LOG_TAG, "Error during device discovery");
-                    getView().onDiscoveryComplete();
+//                    getView().onDiscoveryComplete();
                 }, () -> {
-                    getView().onDiscoveryComplete();
+//                    getView().onDiscoveryComplete();
                 });
     }
 

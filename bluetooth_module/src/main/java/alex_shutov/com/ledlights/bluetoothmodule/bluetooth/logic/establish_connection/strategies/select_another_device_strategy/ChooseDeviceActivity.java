@@ -141,7 +141,6 @@ public class ChooseDeviceActivity extends AppCompatActivity implements DevicesFr
         DevicesFragment historyDevicesFragment = HistoryDevicesFragment.newInstance();
         adapter.addFragment(historyDevicesFragment, getString(R.string.device_list_history));
 
-
         activityBinding.apdVpDevices.setAdapter(adapter);
     }
 
