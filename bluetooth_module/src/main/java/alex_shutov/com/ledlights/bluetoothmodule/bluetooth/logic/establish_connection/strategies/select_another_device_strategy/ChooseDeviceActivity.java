@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -53,11 +54,11 @@ public class ChooseDeviceActivity extends AppCompatActivity implements DevicesFr
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i(LOG_TAG, "onCreate()");
         // inflate layout, create data binding and set model
         View root = DataBindingUtil.setContentView(this, R.layout.activity_pick_device).getRoot();
         activityBinding = DataBindingUtil.bind(root);
         // create view model for this Activity
-
         eventBus = EventBus.getDefault();
     }
 
@@ -82,14 +83,17 @@ public class ChooseDeviceActivity extends AppCompatActivity implements DevicesFr
      */
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onEvent(PresenterInstanceEvent instanceEvent) {
-        presenter = instanceEvent.getPresenter();
-        init();
+        if (null == presenter) {
+            presenter = instanceEvent.getPresenter();
+            Log.i(LOG_TAG, "Initializing Activity for choosing device");
+            init();
+        }
     }
 
     /**
      * Init all fragments once we have presenter reference
      */
-    private void init(){
+    private void init() {
         if (activityBinding.apdVpDevices != null) {
             setupViewPager();
             activityBinding.apdVpDevices.setCurrentItem(FRAGMENT_HISTORY);
@@ -117,7 +121,6 @@ public class ChooseDeviceActivity extends AppCompatActivity implements DevicesFr
 //        BtDevice device;
 //    }
 //
-//
 //    @Override
 //    public void onNewDeviceDiscovered(BtDevice device) {
 //        String msg = "Device found: " + device.getDeviceName() + " : " +
@@ -131,15 +134,17 @@ public class ChooseDeviceActivity extends AppCompatActivity implements DevicesFr
 //    }
 
 
-    private void setupViewPager(){
+    private void setupViewPager() {
+        Log.i(LOG_TAG, "Setting up ViewPager");
         Adapter adapter = new Adapter(getSupportFragmentManager());
         // init all fragments here
-        // fragment for paired devices
-        DevicesFragment pairedDevicesFragment = PairedDevicesFragment.newInstance();
-        adapter.addFragment(pairedDevicesFragment, getString(R.string.device_list_paired));
         // fragment for device history
         DevicesFragment historyDevicesFragment = HistoryDevicesFragment.newInstance();
         adapter.addFragment(historyDevicesFragment, getString(R.string.device_list_history));
+        // fragment for paired devices
+        DevicesFragment pairedDevicesFragment = PairedDevicesFragment.newInstance();
+        adapter.addFragment(pairedDevicesFragment, getString(R.string.device_list_paired));
+
 
         activityBinding.apdVpDevices.setAdapter(adapter);
     }

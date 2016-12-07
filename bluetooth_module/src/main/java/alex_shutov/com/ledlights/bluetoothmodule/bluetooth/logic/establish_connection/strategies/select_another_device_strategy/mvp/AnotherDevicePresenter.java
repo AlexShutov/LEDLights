@@ -62,7 +62,6 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
     private Set<String> cacheDiscoveredAddresses = new TreeSet<>();
     private List<BtDevice> cachedDiscoveredDevices = new ArrayList<>();
 
-
     public AnotherDevicePresenter(EventBus eventBus, Context context) {
         super(eventBus);
         this.context = context;
@@ -71,12 +70,11 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
     /**
      * Start Activity, which will show user all available devices so he or she can pick one.
      */
-    public void showUiForSelectingAnotherBluetoothDevice(){
+    public void showUiForSelectingAnotherBluetoothDevice() {
         Intent startIntent = new Intent(context, ChooseDeviceActivity.class);
         startIntent.addFlags(FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(startIntent);
     }
-
 
     /**
      * Inherited from BasePresenter
@@ -131,6 +129,7 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
                 getModel().getDevicesFromConnectionHistory()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(devices -> {
+                    Log.i(LOG_TAG, devices.size() + " devices in history");
                     sourceHistory.onNext(devices);
 //                    AnotherDeviceView v = getView();
 //                    v.displayDevicesFromAppHistory(devices);
@@ -143,9 +142,10 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
      * Notice, Presenter will attempt to get paired devices from system if device list is
      * empty
      */
-    public Observable<List<BtDevice>> queryListOfPairedDevices(){
+    public Observable<List<BtDevice>> queryListOfPairedDevices() {
         if (!cachePairedDevices.isEmpty()) {
             sourcePairedDevices.onNext(cachePairedDevices);
+            Log.i(LOG_TAG, cachePairedDevices.size() + " cached paired devices");
 //            getView().displayPairedSystemDevices(cachePairedDevices);
         } else {
             refreshPairedDevices();
@@ -153,8 +153,6 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
         return sourcePairedDevices.asObservable()
                 .take(1);
     }
-
-
 
     /**
      * Return all cached devices and query devices it wasn't done before.
@@ -212,9 +210,8 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
         }
     }
 
-
-
     private void refreshPairedDevices() {
+        Log.i(LOG_TAG, "refreshPairedDevices()");
         // check if this operation requested already
         if (null != linkQueryPairedDevices && !linkQueryPairedDevices.isUnsubscribed()) {
             return;
@@ -225,6 +222,7 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
                 .getPairedSystemDevices()
                 .subscribeOn(Schedulers.io())
                 .map(devices -> {
+                    Log.i(LOG_TAG, "Refreshed: " + devices.size() + " paired devices");
                     cachePairedDevices.clear();
                     cachePairedDevices.addAll(devices);
                     return cachePairedDevices;

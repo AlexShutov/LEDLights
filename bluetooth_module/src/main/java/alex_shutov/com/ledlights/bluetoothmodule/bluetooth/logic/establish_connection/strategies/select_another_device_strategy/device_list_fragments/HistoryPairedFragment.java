@@ -41,7 +41,6 @@ public abstract class HistoryPairedFragment extends DevicesFragment {
     protected abstract List<DeviceInfoViewModel> mapHistoryAndPairedLists(List<BtDevice> history,
                                                                           List<BtDevice> paired);
 
-
     Observable<List<DeviceInfoViewModel>> processAlg =
             Observable.zip(historyDevicesSource.asObservable(),
                     pairedDevicesSource.asObservable(),
@@ -50,12 +49,13 @@ public abstract class HistoryPairedFragment extends DevicesFragment {
                                 mapHistoryAndPairedLists(history, paired);
                         addUserActionListeners(viewModels);
                         return viewModels;
-                    });
+                    })
+            .take(1);
 
     /**
      * Resembles connection to algorithm for processing resulting lists
      */
-    private CompositeSubscription listProcessingSubscription;
+    private Subscription listProcessingSubscription;
 
     /**
      * Inherited from DevicesFragment
@@ -79,10 +79,20 @@ public abstract class HistoryPairedFragment extends DevicesFragment {
 
     @Override
     protected void init() {
+        Log.i(LOG_TAG, "init()");
+        scheduleAlgorithm();
+    }
+
+    /**
+     * Inherited from AnotherDeviceView
+     */
+    /**
+     * Form rx pipeline, which will receive list of devices from hisctory and paired devices
+     */
+    private void scheduleAlgorithm() {
         // check if previous algorithm is running and suspend it if it is.
         suspendReceivingAlgorithm();
-        listProcessingSubscription = new CompositeSubscription();
-        Subscription task =
+        listProcessingSubscription =
                 Observable.defer(() -> processAlg)
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -94,20 +104,23 @@ public abstract class HistoryPairedFragment extends DevicesFragment {
                             getViewModel().setEmpty(deviceList.isEmpty());
                             showDeviceList(deviceList);
                         });
-        listProcessingSubscription.add(task);
         // query device list
-        Subscription s = getPresenter().queryDevicesFromAppHistory()
-                .subscribe(historyDevicesSource);
-        listProcessingSubscription.add(s);
-        s = getPresenter().queryListOfPairedDevices()
-                .subscribe(pairedDevicesSource);
-        listProcessingSubscription.add(s);
+        Observable<List<BtDevice>> history =
+        getPresenter().queryDevicesFromAppHistory()
+                .take(1);
+        Observable.defer(() -> history)
+                .subscribe(devices -> {
+                    historyDevicesSource.onNext(devices);
+                });
+
+        Observable<List<BtDevice>> paired =
+        getPresenter().queryListOfPairedDevices()
+                .take(1);
+        Observable.defer(() -> paired)
+                .subscribe(devices -> {
+                    pairedDevicesSource.onNext(devices);
+                });
     }
-
-    /**
-     * Inherited from AnotherDeviceView
-     */
-
 
     public void displayDevicesFromAppHistory(List<BtDevice> devices) {
         Log.i(LOG_TAG, "There is " + devices.size() + " devices in app history");
@@ -120,11 +133,11 @@ public abstract class HistoryPairedFragment extends DevicesFragment {
         pairedDevicesSource.onNext(devices);
     }
 
-
     private void suspendReceivingAlgorithm() {
         if (null != listProcessingSubscription && !listProcessingSubscription.isUnsubscribed()) {
             listProcessingSubscription.unsubscribe();
             listProcessingSubscription = null;
         }
     }
+
 }
