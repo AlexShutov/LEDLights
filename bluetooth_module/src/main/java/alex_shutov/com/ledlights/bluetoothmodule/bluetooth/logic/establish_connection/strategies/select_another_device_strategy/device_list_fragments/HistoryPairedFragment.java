@@ -68,7 +68,9 @@ public abstract class HistoryPairedFragment extends DevicesFragment {
     @Override
     protected void updateDeviceList() {
         Log.i(LOG_TAG, "Updating history and paired device lists");
-        onUpdateComplete();
+        suspendReceivingAlgorithm();
+        scheduleAlgorithm();
+        getPresenter().refreshDevicesFromSystem(false);
     }
 
     @Override

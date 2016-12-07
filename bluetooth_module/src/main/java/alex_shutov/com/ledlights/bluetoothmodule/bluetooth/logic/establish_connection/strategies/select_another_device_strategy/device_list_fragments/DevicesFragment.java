@@ -139,6 +139,7 @@ public abstract class DevicesFragment extends Fragment implements AnotherDeviceV
         super.onResume();
         eventBus = EventBus.getDefault();
         eventBus.register(this);
+        onUpdateComplete();
     }
 
     /**

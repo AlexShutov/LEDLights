@@ -43,7 +43,7 @@ public class PairedDevicesFragment extends HistoryPairedFragment {
         for (BtDevice device : paired) {
             DeviceInfoViewModel vm = convertToViewModel(device);
             // This is a device from history
-            vm.setDeviceFromHistory(true);
+            vm.setPairedDevice(true);
             pairedViewModel.add(vm);
             pairedMapping.put(vm.getDeviceAddress(), vm);
         }

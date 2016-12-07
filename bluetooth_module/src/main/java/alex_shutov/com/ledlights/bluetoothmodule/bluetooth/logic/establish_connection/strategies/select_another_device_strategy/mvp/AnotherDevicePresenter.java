@@ -234,14 +234,12 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
                 });
     }
 
-
     private void discoverDevices(){
         // check is discovery already in progress and do nothing if it is
         if (isDiscoveryInProgress()) {
             Log.w(LOG_TAG, "Trying to start discovery while another discovery is still in progress");
             return;
         }
-
         Observable<BtDevice> discoveryTask =
                 Observable.just("")
                 .subscribeOn(Schedulers.computation())
