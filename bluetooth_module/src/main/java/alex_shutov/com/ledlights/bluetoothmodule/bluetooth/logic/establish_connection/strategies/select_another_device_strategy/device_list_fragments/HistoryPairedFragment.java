@@ -129,7 +129,4 @@ public abstract class HistoryPairedFragment extends DevicesFragment {
             listProcessingSubscription = null;
         }
     }
-
-
-
 }

@@ -20,9 +20,8 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conne
  * Get list of paired devices and turn on 'history' icon if that device is form application history.
  */
 public class PairedDevicesFragment extends HistoryPairedFragment {
-
     private static final String LOG_TAG = PairedDevicesFragment.class.getSimpleName();
-
+    
     public static DevicesFragment newInstance() {
         Bundle args = new Bundle();
         args.putInt(ARG_FRAGMENT_TYPE, ChooseDeviceActivity.FRAGMENT_PAIRED);

@@ -64,5 +64,4 @@ public class HistoryDevicesFragment extends HistoryPairedFragment {
         }
         return historyViewModel;
     }
-
 }
