@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 
 import alex_shutov.com.ledlights.bluetoothmodule.R;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
@@ -81,6 +82,7 @@ public class ScanFragment extends DevicesFragment {
         knownDevicesLink =
                 knownDevicesTask
                 .observeOn(AndroidSchedulers.mainThread())
+                        .delay(100, TimeUnit.MILLISECONDS)
                 .subscribe(t -> {}, e -> {
                     onUpdateComplete();
                     }, () -> {
