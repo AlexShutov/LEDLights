@@ -190,7 +190,6 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
         return !cacheDiscoveredAddresses.isEmpty() || isDiscoveryInProgress();
     }
 
-
     /**
      * Model only know how to start discovery of all Bluetooth devices and how to get history of
      * all paired devices. But, unfortunately, it is too expansive to do it every time after
