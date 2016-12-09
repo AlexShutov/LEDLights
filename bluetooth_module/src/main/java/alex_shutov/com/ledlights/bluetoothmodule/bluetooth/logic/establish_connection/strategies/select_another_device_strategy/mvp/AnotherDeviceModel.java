@@ -22,4 +22,6 @@ public interface AnotherDeviceModel extends BaseModel {
 
     Observable<BtDevice> discoverDevices();
 
+    void stopDiscovery();
+
 }

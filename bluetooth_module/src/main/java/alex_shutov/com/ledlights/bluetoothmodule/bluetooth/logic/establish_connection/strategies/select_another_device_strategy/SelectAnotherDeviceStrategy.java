@@ -208,6 +208,7 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
     }
 
 
+
     @Override
     public Observable<BtDevice> discoverDevices() {
         Observable<BtDevice> task = Observable.just("")
@@ -222,6 +223,12 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
                 });
         return Observable.defer(() -> task);
     }
+
+    @Override
+    public void stopDiscovery() {
+        scanPort.stopDiscovery();
+    }
+
 
     /**
      * Inherited from BtScanPortListener

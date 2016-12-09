@@ -18,7 +18,6 @@ import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -85,6 +84,11 @@ public class ScanFragment extends DevicesFragment {
     private PublishSubject<Map<String, DeviceInfoViewModel>> knownDevicesDrain;
     private Map<String, DeviceInfoViewModel> knownDevices;
 
+    /**
+     * Before we start discovering new devices we need to have information about all devices,
+     * known to this app and phone (history and paired devices).  It is necessary, because it is
+     * convenient, showing icons if that device not completely new.
+     */
     private void configureGettingKnownDevices() {
         // stop previous scanning if it active (normally it should not be)
         stopScanAlgorithm();
@@ -148,9 +152,14 @@ public class ScanFragment extends DevicesFragment {
     }
 
     private void startDiscovery() {
-        Toast.makeText(getActivity(), "source emitted " + knownDevices.size() + " items", Toast.LENGTH_SHORT).show();
+        Log.i(LOG_TAG, "We have all known devices (" + knownDevices.size() + " psc., starting " +
+                "discovery");
+        Toast.makeText(getActivity(), "source emitted " + knownDevices.size() + " items",
+                Toast.LENGTH_SHORT).show();
+
         hideEmptyText();
         onDiscoveryFinished();
+
     }
 
 
