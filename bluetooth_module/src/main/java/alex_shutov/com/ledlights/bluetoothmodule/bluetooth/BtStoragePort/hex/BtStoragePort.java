@@ -10,7 +10,7 @@ public interface BtStoragePort extends Port {
 
     /**
      * Return concrete implementation of database, containing history of connected devices as
-     * well as information about last connected device, last connection start and end time.
+     * well as information about last connected device, last connection createPipeline and end time.
      * @return
      */
     BtDeviceDao getHistoryDatabase();

@@ -191,7 +191,7 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
     }
 
     /**
-     * Model only know how to start discovery of all Bluetooth devices and how to get history of
+     * Model only know how to createPipeline discovery of all Bluetooth devices and how to get history of
      * all paired devices. But, unfortunately, it is too expansive to do it every time after
      * device screen rotation.
      * To solve that we need a method for updating all cached device history, which will be
@@ -236,7 +236,7 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
     private void discoverDevices(){
         // check is discovery already in progress and do nothing if it is
         if (isDiscoveryInProgress()) {
-            Log.w(LOG_TAG, "Trying to start discovery while another discovery is still in progress");
+            Log.w(LOG_TAG, "Trying to createPipeline discovery while another discovery is still in progress");
             return;
         }
         Observable<BtDevice> discoveryTask =

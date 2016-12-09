@@ -123,7 +123,7 @@ public abstract class EstablishConnectionStrategy extends BtAlgorithm
 
     /**
      * When Bluetooth device is connected, we should update record in database for last
-     * connected device as well as start time of connection
+     * connected device as well as createPipeline time of connection
      * @param device
      */
     protected void updateLastConnectedDeviceRecord(BtDevice device){

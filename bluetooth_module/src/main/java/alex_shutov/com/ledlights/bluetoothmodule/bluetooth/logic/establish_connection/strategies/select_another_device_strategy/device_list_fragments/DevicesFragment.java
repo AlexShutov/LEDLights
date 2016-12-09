@@ -107,6 +107,23 @@ public abstract class DevicesFragment extends Fragment implements AnotherDeviceV
         viewModel.setEmpty(false);
     }
 
+    /**
+     * Show text, which is displayed when list is empty. It is used by 'scan' fragment for
+     * prompting user to swipe to refresh
+     * @param textResourceId
+     */
+    public void showEmptyText(int textResourceId) {
+        viewModel.setEmpty(true);
+        viewModel.setEmptyText(textResourceId);
+    }
+
+    /**
+     * Hide text for empty state
+     */
+    public void hideEmptyText(){
+        viewModel.setEmpty(false);
+    }
+
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onEvent(PresenterInstanceEvent instanceEvent) {
         presenter = instanceEvent.getPresenter();
@@ -183,23 +200,6 @@ public abstract class DevicesFragment extends Fragment implements AnotherDeviceV
         }
     }
 
-    /**
-     * Convert application model into view model (is used in different fragments. All additional
-     * flags is set to false
-     * @param d
-     * @return
-     */
-    protected DeviceInfoViewModel convertToViewModel(BtDevice d) {
-        DeviceInfoViewModel vm = new DeviceInfoViewModel();
-        vm.setDeviceName(d.getDeviceName());
-        vm.setDeviceAddress(d.getDeviceAddress());
-        vm.setDeviceDescription(d.getDeviceDescription());
-        // additional fields set tu false by default
-        vm.setPairedDevice(false);
-        vm.setDeviceFromHistory(false);
-        vm.setShowDescription(false);
-        return vm;
-    }
 
     /**
      * When user swipe view down, show refresh animation and ask derived class to update data.

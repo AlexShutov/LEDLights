@@ -15,7 +15,7 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 public interface CommFeedbackInterface {
 
     /**
-     * Called as response to request to start connection from input port.
+     * Called as response to request to createPipeline connection from input port.
      * Workflow - app calls .startConnection() method on input port, resulting in establishing
      * a connection or error either.
      */

@@ -170,11 +170,11 @@ public class BluetoothChatService {
     }
 
     /**
-     * Start the chat service. Specifically start AcceptThread to begin a
+     * Start the chat service. Specifically createPipeline AcceptThread to begin a
      * session in listening (server) mode. Called by the Activity onResume()
      */
     public synchronized void start() {
-        Log.d(LOG_TAG, "start");
+        Log.d(LOG_TAG, "createPipeline");
 
         // Cancel any thread attempting to make a connection
         if (mConnectThread != null) {

@@ -22,7 +22,7 @@ public interface BtUiDeviceSelectionViewPartial extends PortListener {
     void onCancelledByUser();
 
     /**
-     * UI is shown and it need to start discovery for Bluetooth devices. But we need to
+     * UI is shown and it need to createPipeline discovery for Bluetooth devices. But we need to
      * stop any data transfer or ongoing connection requests first.
      */
     Observable<Boolean> stopBluetoothCommunication();

@@ -210,7 +210,7 @@ public class BtConnAdapter extends Adapter implements BtConnPort {
             return;
         }
         /**
-         * Here we can just suspend all activity and start accepting again
+         * Here we can just suspend all activity and createPipeline accepting again
          */
         close();
         startListening();

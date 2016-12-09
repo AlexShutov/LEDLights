@@ -89,7 +89,7 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
     }
 
     /**
-     * User tell this strategy to start working on establishing connection by this method.
+     * User tell this strategy to createPipeline working on establishing connection by this method.
      *
      */
     @Override

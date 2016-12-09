@@ -28,7 +28,7 @@ public interface BtConnPort extends Port {
 
     /**
      * Tell bluetooth device to begin accepting incoming connections matching
-     * Port's parameters (uuid, address) - the same as 'start()' method in
+     * Port's parameters (uuid, address) - the same as 'createPipeline()' method in
      * BluetoothChatService
      */
     void startListening();

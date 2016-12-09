@@ -97,7 +97,7 @@ public class BTDeviceScanner {
     }
 
     /**
-     * Stops device discovery if it is active and start anew. New discovered devices come to
+     * Stops device discovery if it is active and createPipeline anew. New discovered devices come to
      * DeviceReceiver BroadcastReceiver which passes those to rx chain. If user does not
      * subscribe to returned Observable, all devices found in that time will be missed.
      * @return source of discovered devices.

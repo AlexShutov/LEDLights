@@ -4,11 +4,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.concurrent.TimeUnit;
 
 import alex_shutov.com.ledlights.bluetoothmodule.R;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
@@ -18,8 +17,8 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conne
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
+import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -44,10 +43,20 @@ public class ScanFragment extends DevicesFragment {
         return instance;
     }
 
+    /**
+     * Subscription, containing all supplimentary subscriptions, used by scanning algorithm
+     */
+    private CompositeSubscription scanLink;
+
+    public ScanFragment() {
+        super();
+        // new instance of algorithm, retriving all known devices
+        knownDevicesFetcher = new KnownDevicesAlgorithm();
+    }
+
     private AnotherDevicePresenter presenter;
-    // connection of task, quering all history and paired devices.
-    private Subscription knownDevicesLink;
-    private Map<String, DeviceInfoViewModel> knownDevices = new TreeMap<>();
+
+    private KnownDevicesAlgorithm knownDevicesFetcher;
 
     @Override
     protected int getEmptyTextResource() {
@@ -56,136 +65,100 @@ public class ScanFragment extends DevicesFragment {
 
     @Override
     protected void updateDeviceList() {
-        startScanAlgorithm();
+        // hide prompt to refresh
+        hideEmptyText();
+        // and begin scan process
+        configureGettingKnownDevices();
+        startAlgorithm();
     }
 
     @Override
     protected void init() {
-        if (null == presenter) {
-            presenter = getPresenter();
-            startScanAlgorithm();
-        }
+        presenter = getPresenter();
+        showEmptyText(R.string.device_list_discovery_prompt_to_refresh);
     }
 
     @Override
     protected void suspend() {
+    }
+
+    private PublishSubject<Map<String, DeviceInfoViewModel>> knownDevicesDrain;
+    private Map<String, DeviceInfoViewModel> knownDevices;
+
+    private void configureGettingKnownDevices() {
+        // stop previous scanning if it active (normally it should not be)
         stopScanAlgorithm();
-    }
+        scanLink = new CompositeSubscription();
+        Subscription s;
+        // allocate new instance of drain, receiving known devices
+        knownDevicesDrain = PublishSubject.create();
 
-    private void startScanAlgorithm() {
-        // check if scanning is in progress already
-        if (isLoadingKnownDevices()) {
-            Log.w(LOG_TAG, "scanning for devices is already in progress");
-            return;
-        }
-        Observable<Boolean> knownDevicesTask =  Observable.defer(() -> getKnownDevices());
-        knownDevicesLink =
-                knownDevicesTask
+        // create pipeline by using algorithm and pass known devices to
+        // result drain
+        s = knownDevicesFetcher.createPipeline()
+                .subscribe(knownDevicesDrain);
+        scanLink.add(s);
+//        s =
+//        knownDevicesDrain.asObservable()
+//                .map(vmm -> new ArrayList(vmm.values()))
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(devices -> {
+//                    Toast.makeText(getActivity(), "known devices received: " + devices.size(), Toast.LENGTH_SHORT).show();
+//                    showDeviceList(devices);
+//                });
+//        scanLink.add(s);
+        s =
+        knownDevicesDrain.asObservable()
+                //.observeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
-                        .delay(100, TimeUnit.MILLISECONDS)
-                .subscribe(t -> {}, e -> {
-                    onUpdateComplete();
-                    }, () -> {
-                            Toast.makeText(getActivity(), "All known devices received: " +
-                                    knownDevices.size() , Toast.LENGTH_SHORT)
-                                    .show();
-                            onUpdateComplete();
-                            showKnownDevices();
-                        });
-    }
-
-    // get list of devices from history and convert into View Model
-    Observable<DeviceInfoViewModel> historyDevices =
-            Observable.defer(() ->
-            presenter.queryDevicesFromAppHistory()
-                    .take(1)
-                    .flatMap(devices -> Observable.from(devices))
-                    .map(device -> convertToViewModel(device))
-                    .map(device -> {
-                        device.setDeviceFromHistory(true);
-                        return device;
-                    }));
-    // get list of paired devices and convert those into ViewModel
-    Observable<DeviceInfoViewModel> pairedDevices =
-            Observable.defer(() ->
-            presenter.queryListOfPairedDevices()
-                    .take(1)
-                    .flatMap(devices -> Observable.from(devices))
-                    .map(device -> convertToViewModel(device))
-                    .map(device -> {
-                        device.setPairedDevice(true);
-                        return device;
-                    }));
-
-    /**
-     * We need to display icons if newly discovered device is from history or
-     * if phone is paired with it.
-     * We query all devices from history and paired devices and then combine those to
-     * single array.
-     * Here I use old rxJava, in version 2 we could use Completable instead of Observable,
-     * returning Boolean
-     * @return
-     */
-    private Observable<Boolean> getKnownDevices() {
-        AnotherDevicePresenter presenter = getPresenter();
-        // mix all device into the same pipe
-        Observable<Boolean> mapTask =
-                Observable.merge(historyDevices, pairedDevices)
-                .observeOn(Schedulers.computation())
-                .doOnSubscribe(() -> knownDevices.clear())
-                .doOnNext(device -> processKnownDevice(device))
-                .map(t -> true);
-        return mapTask;
-    }
-
-    private void processKnownDevice(DeviceInfoViewModel device) {
-        Log.i(LOG_TAG, "Received device: " + device.getDeviceName());
-        String deviceAddress = device.getDeviceAddress();
-        // add new device to the list
-        if (!knownDevices.containsKey(deviceAddress)) {
-            knownDevices.put(deviceAddress, device);
-        } else {
-            // update saved view model
-            // get saved device with the same address
-            DeviceInfoViewModel savedDevice = knownDevices.get(deviceAddress);
-            boolean fromHistory = savedDevice.isDeviceFromHistory();
-            fromHistory |= device.isDeviceFromHistory();
-            savedDevice.setDeviceFromHistory(fromHistory);
-            boolean paired = savedDevice.isPairedDevice();
-            paired |= device.isPairedDevice();
-            savedDevice.setPairedDevice(paired);
-            // we can't edit device description here, only device from history can have description
-            String savedDescription = savedDevice.getDeviceDescription();
-            if (savedDescription == null || savedDescription.equals("")) {
-                String description = device.getDeviceDescription();
-                if (description != null && !description.isEmpty()) {
-                    savedDevice.setDeviceDescription(description);
-                }
-            }
-        }
-    }
-
-    private void showKnownDevices() {
-        Observable.defer(() -> Observable.just(""))
-                .subscribeOn(Schedulers.computation())
-                .map(t -> {
-                    List<DeviceInfoViewModel> devices = new ArrayList<>();
-                    devices.addAll(knownDevices.values());
+                .map(devices -> {
+                    // save list of devices
+                    knownDevices = devices;
+                    startDiscovery();
                     return devices;
                 })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(models -> showDeviceList(models));
+                .subscribe(devices -> {
+                    Toast.makeText(getActivity(), "starting discovery", Toast.LENGTH_SHORT).show();
+                });
+        scanLink.add(s);
     }
 
-    private boolean isLoadingKnownDevices() {
-        return null != knownDevicesLink && !knownDevicesLink.isUnsubscribed();
+    private void startAlgorithm() {
+        // query device list from history
+        Observable<List<BtDevice>> history =
+                getPresenter().queryDevicesFromAppHistory()
+                        .take(1);
+        // query devices paired to this phone
+        Observable<List<BtDevice>> pairedSource =
+                presenter.getSourcePairedDevices()
+                        .take(1)
+                        .subscribeOn(Schedulers.computation());
+
+        // start algorithm by subscribing to device sources. By doing so, app will start fetching
+        // known devices
+        knownDevicesFetcher.start(Observable.defer(() -> history), pairedSource);
+        presenter.queryListOfPairedDevices();
     }
 
     private void stopScanAlgorithm() {
-        if (null !=  knownDevicesLink && !knownDevicesLink.isUnsubscribed()) {
-            knownDevicesLink.unsubscribe();
-            knownDevicesLink = null;
+        if (null != scanLink && !scanLink.isUnsubscribed()) {
+            scanLink.unsubscribe();
+            scanLink = null;
         }
+    }
+
+    private void startDiscovery() {
+        Toast.makeText(getActivity(), "source emitted " + knownDevices.size() + " items", Toast.LENGTH_SHORT).show();
+        hideEmptyText();
+        onDiscoveryFinished();
+    }
+
+
+    /**
+     *  This method is called when app finishes scan for Bluetooth devices.
+     */
+    private void onDiscoveryFinished() {
+        onUpdateComplete();
     }
 
 }

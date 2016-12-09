@@ -16,7 +16,7 @@ public interface BtUiDeviceSelectionInterface extends Port {
     /**
      * Tell this port to show UI, which will display list of devices so user can pick one.
      * All Bluetooth communications has to be cancelled if user decide to pick another
-     * device. UI port must also start discovery of not paired devices, thus it need BtScanPort.
+     * device. UI port must also createPipeline discovery of not paired devices, thus it need BtScanPort.
      * To stop communication, it need BtConnPort
     */
     void showUiForPickingDevice();
@@ -45,7 +45,7 @@ public interface BtUiDeviceSelectionInterface extends Port {
 
     /**
      * At a instance when some algorithm decides to show this UI, we must stop any
-     * Bluetooth communication and start new discovery process as soon as UI is initialized.
+     * Bluetooth communication and createPipeline new discovery process as soon as UI is initialized.
      * Any newly discovered Bluetooth device must be added into device list of not paired devices.
      * @param device
      */

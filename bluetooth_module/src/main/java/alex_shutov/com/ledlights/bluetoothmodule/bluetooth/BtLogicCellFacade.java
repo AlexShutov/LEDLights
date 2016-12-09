@@ -128,7 +128,7 @@ public class BtLogicCellFacade implements CommInterface, EstablishConnectionData
             }
         });
         connecAlgorithm.init(this);
-        // start receiving ESB events
+        // createPipeline receiving ESB events
         connectionLostEventSource.asObservable()
                 .observeOn(Schedulers.computation())
                 .subscribe(t -> {
