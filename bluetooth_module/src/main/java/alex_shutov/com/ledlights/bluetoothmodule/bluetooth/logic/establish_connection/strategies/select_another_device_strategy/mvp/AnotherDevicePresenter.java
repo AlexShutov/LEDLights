@@ -187,21 +187,28 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
      */
     public Observable<BtDevice> createDiscoveryTask() {
         AnotherDeviceModel model = getModel();
-        if (isDiscoveryInProgress()) {
-            Log.w(LOG_TAG, "Attempting to start discovery while another discovery is in progress, " +
-                    "aborting the old one");
-            model.stopDiscovery();
-            if (null != linkDeviceDiscovery && !linkDeviceDiscovery.isUnsubscribed()) {
-                linkDeviceDiscovery.unsubscribe();
-                linkDeviceDiscovery = null;
-            }
-        }
+        stopDiscovery();
         // create source, which will emit all discovered devices
         discoveredDeviceSource = PublishSubject.create();
         return discoveredDeviceSource
                 .asObservable()
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.computation());
+    }
+
+    /**
+     * Tell model to stop scanning for devices if it currently doing so
+     */
+    public void stopDiscovery() {
+        if (isDiscoveryInProgress()) {
+            Log.w(LOG_TAG, "Attempting to start discovery while another discovery is in progress, " +
+                    "aborting the old one");
+            getModel().stopDiscovery();
+            if (null != linkDeviceDiscovery && !linkDeviceDiscovery.isUnsubscribed()) {
+                linkDeviceDiscovery.unsubscribe();
+                linkDeviceDiscovery = null;
+            }
+        }
     }
 
     /**

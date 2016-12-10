@@ -187,17 +187,21 @@ public abstract class DevicesFragment extends Fragment implements AnotherDeviceV
      * selection action. Click listeners is stored in view model
      * @param vms
      */
-    protected void addUserActionListeners(List<DeviceInfoViewModel> vms) {
+    protected void addUserActionListenersToList(List<DeviceInfoViewModel> vms) {
         for (DeviceInfoViewModel vm : vms) {
-            vm.setShowDeviceDetailsListener(v -> {
-                UserActionListener l = (UserActionListener) getActivity();
-                l.onAdditionalInfoClicked(getFragmentType(), vm);
-            });
-            vm.setDevicePickedListener((v) -> {
-                UserActionListener l = (UserActionListener) getActivity();
-                l.onDevicePicked(getFragmentType(), vm);
-            });
+            addUserActionListeners(vm);
         }
+    }
+
+    protected void addUserActionListeners(DeviceInfoViewModel viewModel) {
+        viewModel.setShowDeviceDetailsListener(v -> {
+            UserActionListener l = (UserActionListener) getActivity();
+            l.onAdditionalInfoClicked(getFragmentType(), viewModel);
+        });
+        viewModel.setDevicePickedListener((v) -> {
+            UserActionListener l = (UserActionListener) getActivity();
+            l.onDevicePicked(getFragmentType(), viewModel);
+        });
     }
 
 

@@ -154,6 +154,8 @@ public class ScanFragment extends DevicesFragment {
                 Toast.LENGTH_SHORT).show();
         // hide text, prompting to start discovery
         hideEmptyText();
+        // clear device list
+        showDeviceList(new ArrayList<>());
 
         Observable<BtDevice> discoveryTask = presenter.createDiscoveryTask();
         discoveryTask.subscribeOn(Schedulers.io())
@@ -198,6 +200,31 @@ public class ScanFragment extends DevicesFragment {
         Log.i(LOG_TAG, "Processing discovered device: " + justDiscovered.getDeviceName() +
             " " + justDiscovered.getDeviceAddress());
         DeviceInfoViewModel vm = convertToViewModel(justDiscovered);
+        String deviceAddress = vm.getDeviceAddress();
+        if (discoveredAddresses.contains(deviceAddress)) {
+            // we already handled that device, it was discovered again (not sure why,
+            // maybe because it can be connected secure and unsecure)
+            return;
+        }
+
+        discoveredAddresses.add(deviceAddress);
+        // we have to form final view model user will see
+        DeviceInfoViewModel modelToShow = null;
+        // check if that device is from known devices
+        if (knownDevices.containsKey(deviceAddress)) {
+            modelToShow = knownDevices.get(deviceAddress);
+        } else {
+            // or, if not, use model we just converted
+            modelToShow = vm;
+        }
+        //create final reference to model
+        DeviceInfoViewModel t = modelToShow;
+        // add listener for selection tap and details button+
+        addUserActionListeners(t);
+        // and add it to the list on main thread
+        Observable.defer(() -> Observable.just(t))
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(model -> addDeviceToTheList(model));
     }
 
 

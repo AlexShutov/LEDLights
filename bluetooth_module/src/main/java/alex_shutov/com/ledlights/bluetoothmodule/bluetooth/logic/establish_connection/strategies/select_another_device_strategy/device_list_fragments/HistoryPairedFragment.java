@@ -11,7 +11,6 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
-import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by lodoss on 06/12/16.
@@ -47,7 +46,7 @@ public abstract class HistoryPairedFragment extends DevicesFragment {
                     (history, paired) -> {
                         List<DeviceInfoViewModel> viewModels =
                                 mapHistoryAndPairedLists(history, paired);
-                        addUserActionListeners(viewModels);
+                        addUserActionListenersToList(viewModels);
                         return viewModels;
                     })
             .take(1);

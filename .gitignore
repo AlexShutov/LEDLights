@@ -5215,3 +5215,4 @@ bluetooth_module/build/retrolambda/release/uk/co/chrisjenx/calligraphy/R$string.
 bluetooth_module/build/retrolambda/release/uk/co/chrisjenx/calligraphy/R$style.class
 bluetooth_module/build/retrolambda/release/uk/co/chrisjenx/calligraphy/R$styleable.class
 bluetooth_module/build/retrolambda/release/uk/co/chrisjenx/calligraphy/R.class
+*.class
