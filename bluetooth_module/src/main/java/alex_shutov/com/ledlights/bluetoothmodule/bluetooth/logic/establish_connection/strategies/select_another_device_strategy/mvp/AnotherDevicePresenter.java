@@ -123,8 +123,6 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
                 .subscribe(devices -> {
                     Log.i(LOG_TAG, devices.size() + " devices in history");
                     sourceHistory.onNext(devices);
-//                    AnotherDeviceView v = getView();
-//                    v.displayDevicesFromAppHistory(devices);
                 });
         return sourceHistory.asObservable().take(1);
     }

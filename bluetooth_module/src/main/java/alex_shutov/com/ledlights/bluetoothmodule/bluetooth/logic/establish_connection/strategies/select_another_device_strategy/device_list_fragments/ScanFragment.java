@@ -106,8 +106,7 @@ public class ScanFragment extends DevicesFragment {
         s = knownDevicesFetcher.createPipeline()
                 .subscribe(knownDevicesDrain);
         scanLink.add(s);
-        s =
-        knownDevicesDrain.asObservable()
+        s = knownDevicesDrain.asObservable()
                 //.observeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(devices -> {
@@ -132,7 +131,6 @@ public class ScanFragment extends DevicesFragment {
                 presenter.getSourcePairedDevices()
                         .take(1)
                         .subscribeOn(Schedulers.computation());
-
         // start algorithm by subscribing to device sources. By doing so, app will start fetching
         // known devices
         knownDevicesFetcher.start(Observable.defer(() -> history), pairedSource);
@@ -206,13 +204,21 @@ public class ScanFragment extends DevicesFragment {
             // maybe because it can be connected secure and unsecure)
             return;
         }
-
         discoveredAddresses.add(deviceAddress);
         // we have to form final view model user will see
         DeviceInfoViewModel modelToShow = null;
         // check if that device is from known devices
         if (knownDevices.containsKey(deviceAddress)) {
             modelToShow = knownDevices.get(deviceAddress);
+            // check device name, app cache might have older one
+            // name of newly discovered device
+            String deviceName = vm.getDeviceName() == null ? "" : vm.getDeviceName();
+            if (modelToShow.getDeviceName() != null &&
+                    !deviceName.equals(modelToShow.getDeviceName())) {
+                // use newer name from discovery result
+                // notice, it will now override database of history device nor paired device
+                modelToShow.setDeviceName(deviceName);
+            }
         } else {
             // or, if not, use model we just converted
             modelToShow = vm;
@@ -226,7 +232,6 @@ public class ScanFragment extends DevicesFragment {
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe(model -> addDeviceToTheList(model));
     }
-
 
     private void showPopup(String msg) {
         Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
