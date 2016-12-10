@@ -70,7 +70,7 @@ public abstract class HistoryPairedFragment extends DevicesFragment {
         Log.i(LOG_TAG, "Updating history and paired device lists");
         suspendReceivingAlgorithm();
         scheduleAlgorithm();
-        getPresenter().refreshDevicesFromSystem(false);
+        getPresenter().refreshDevicesFromSystem();
     }
 
     @Override

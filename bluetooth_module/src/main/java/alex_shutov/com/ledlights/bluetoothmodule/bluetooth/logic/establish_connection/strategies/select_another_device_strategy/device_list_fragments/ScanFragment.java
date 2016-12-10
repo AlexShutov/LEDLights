@@ -8,11 +8,14 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import alex_shutov.com.ledlights.bluetoothmodule.R;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.ChooseDeviceActivity;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.databinding.DeviceInfoViewModel;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.databinding.ViewModelConverter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.mvp.AnotherDevicePresenter;
 import rx.Observable;
 import rx.Subscription;
@@ -20,6 +23,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+
+import static alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.databinding.ViewModelConverter.convertToViewModel;
 
 /**
  * Created by lodoss on 08/12/16.
@@ -54,7 +59,6 @@ public class ScanFragment extends DevicesFragment {
     }
 
     private AnotherDevicePresenter presenter;
-
     private KnownDevicesAlgorithm knownDevicesFetcher;
 
     @Override
@@ -102,15 +106,6 @@ public class ScanFragment extends DevicesFragment {
         s = knownDevicesFetcher.createPipeline()
                 .subscribe(knownDevicesDrain);
         scanLink.add(s);
-//        s =
-//        knownDevicesDrain.asObservable()
-//                .map(vmm -> new ArrayList(vmm.values()))
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(devices -> {
-//                    Toast.makeText(getActivity(), "known devices received: " + devices.size(), Toast.LENGTH_SHORT).show();
-//                    showDeviceList(devices);
-//                });
-//        scanLink.add(s);
         s =
         knownDevicesDrain.asObservable()
                 //.observeOn(Schedulers.computation())
@@ -145,6 +140,7 @@ public class ScanFragment extends DevicesFragment {
     }
 
     private void stopScanAlgorithm() {
+        discoveredAddresses.clear();
         if (null != scanLink && !scanLink.isUnsubscribed()) {
             scanLink.unsubscribe();
             scanLink = null;
@@ -156,18 +152,56 @@ public class ScanFragment extends DevicesFragment {
                 "discovery");
         Toast.makeText(getActivity(), "source emitted " + knownDevices.size() + " items",
                 Toast.LENGTH_SHORT).show();
-
+        // hide text, prompting to start discovery
         hideEmptyText();
-        onDiscoveryFinished();
 
+        Observable<BtDevice> discoveryTask = presenter.createDiscoveryTask();
+        discoveryTask.subscribeOn(Schedulers.io())
+                .doOnNext(device -> processDiscoveredDevice(device))
+        //   receive discovered devices on a main threadp to update UI
+        .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        device -> {
+                            // we already processed that device in .onNext() on background
+                            // thread ( see few lines above)
+                        }, error -> {
+                            showPopup("Error occured during discovery: " + error.getMessage());
+                        }, () -> {
+                            onDiscoveryFinished();
+                        });
+        presenter.startDiscovery();
     }
 
+    /**
+     * We have an issue here - on my HTC Desire C each device is gets discovered few times,
+     * perhaps, because it is already paired, but, can be connected to unsecurely.
+     * But, that device has the same address. We can ignore multiple occurrences of
+     * that device by having set, containing addresses of all located devices
+     */
+    private Set<String> discoveredAddresses = new TreeSet<>();
 
     /**
      *  This method is called when app finishes scan for Bluetooth devices.
      */
     private void onDiscoveryFinished() {
         onUpdateComplete();
+        showPopup("Discovery complete");
+        // check if at least one device is discovered. If not, show message, that no
+        // devices were found.
+        if (discoveredAddresses.isEmpty()) {
+            Log.i(LOG_TAG, "No devices found");
+            showEmptyText(R.string.device_discovery_not_found);
+        }
     }
 
+    private void processDiscoveredDevice(BtDevice justDiscovered) {
+        Log.i(LOG_TAG, "Processing discovered device: " + justDiscovered.getDeviceName() +
+            " " + justDiscovered.getDeviceAddress());
+        DeviceInfoViewModel vm = convertToViewModel(justDiscovered);
+    }
+
+
+    private void showPopup(String msg) {
+        Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
+    }
 }

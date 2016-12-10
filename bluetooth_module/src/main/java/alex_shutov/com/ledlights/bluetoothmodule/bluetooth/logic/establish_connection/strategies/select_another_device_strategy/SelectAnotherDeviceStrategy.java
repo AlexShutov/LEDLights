@@ -216,9 +216,9 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
                 .flatMap(t -> {
                     BtScanAdapter scanAdapter = (BtScanAdapter) scanPort;
                     scanAdapter.setPortListener(this);
+                    discoveredDeviceVortex = PublishSubject.create();
                     scanPort.startDiscovery();
                     // create new vortex
-                    discoveredDeviceVortex = PublishSubject.create();
                     return discoveredDeviceVortex.asObservable();
                 });
         return Observable.defer(() -> task);

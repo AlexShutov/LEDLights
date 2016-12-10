@@ -157,12 +157,10 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
      * This method is supposed to be used when user want update all data, so here app history
      * is queried too.
      */
-    public void refreshDevicesFromSystem(boolean startDiscovery) {
+    public void refreshDevicesFromSystem() {
         refreshPairedDevices();
         queryDevicesFromAppHistory();
-        if (startDiscovery) {
-            discoverDevices();
-        }
+
     }
 
     /**
@@ -180,16 +178,47 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
         return linkDeviceDiscovery != null && !linkDeviceDiscovery.isUnsubscribed();
     }
 
+
+    private PublishSubject<BtDevice> discoveredDeviceSource;
     /**
-     *
+     * We create pipeline, receiving discovered devices first and then start discovery by
+     * 'startDiscovery()' method by subscribing to that pipeline.
      * @return
      */
     public Observable<BtDevice> createDiscoveryTask() {
         AnotherDeviceModel model = getModel();
-
-        return null;
+        if (isDiscoveryInProgress()) {
+            Log.w(LOG_TAG, "Attempting to start discovery while another discovery is in progress, " +
+                    "aborting the old one");
+            model.stopDiscovery();
+            if (null != linkDeviceDiscovery && !linkDeviceDiscovery.isUnsubscribed()) {
+                linkDeviceDiscovery.unsubscribe();
+                linkDeviceDiscovery = null;
+            }
+        }
+        // create source, which will emit all discovered devices
+        discoveredDeviceSource = PublishSubject.create();
+        return discoveredDeviceSource
+                .asObservable()
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.computation());
     }
 
+    /**
+     * Crate actual task for making discovery and subscribe to it in a way that
+     * info about all found devices will go to specified source
+     */
+    public void startDiscovery() {
+        Observable<BtDevice> task =
+                Observable.just("")
+                        .observeOn(Schedulers.io())
+                        .flatMap(t -> getModel().discoverDevices())
+                        .subscribeOn(Schedulers.computation());
+        // subscribe to that task and redirect results to result drain
+        linkDeviceDiscovery =
+                Observable.defer(() -> task)
+                        .subscribe(discoveredDeviceSource);
+    }
 
     /**
      * private methods, not related to discovery
@@ -218,33 +247,6 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
                 });
     }
 
-
-    private void discoverDevices(){
-        // check is discovery already in progress and do nothing if it is
-        if (isDiscoveryInProgress()) {
-            Log.w(LOG_TAG, "Attempting to start discovery while another discovery is in progress, " +
-                    "aborting the old one");
-            getModel().stopDiscovery();
-        }
-        Observable<BtDevice> discoveryTask =
-                Observable.just("")
-                .observeOn(Schedulers.io())
-                .flatMap(t -> getModel().discoverDevices())
-                        .subscribeOn(Schedulers.computation());
-                        // process only new devices (safeguard)
-
-        linkDeviceDiscovery = Observable.defer(() -> discoveryTask)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(device -> {
-                    AnotherDeviceView view = getView();
-//                    view.onNewDeviceDiscovered(device);
-                }, error -> {
-                    Log.e(LOG_TAG, "Error during device discovery");
-//                    getView().onDiscoveryComplete();
-                }, () -> {
-//                    getView().onDiscoveryComplete();
-                });
-    }
 
 
     /**

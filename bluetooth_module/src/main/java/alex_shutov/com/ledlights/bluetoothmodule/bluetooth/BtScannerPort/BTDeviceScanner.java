@@ -179,15 +179,12 @@ public class BTDeviceScanner {
             // if receiver received discovery notification
             if (BluetoothDevice.ACTION_FOUND.equals(action)){
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                // we need only not paired devices, paired ones it returned by different method
-                if (device.getBondState() != BluetoothDevice.BOND_BONDED){
-                    // handle device
-                    Log.i(LOG_TAG, "-----------------------------------------");
-                    Log.i(LOG_TAG, "discovered not paired device ");
-                    logBluetoothDevice(device);
-                    if (null != drain) {
-                        drain.onNext(device);
-                    }
+                // handle device
+                Log.i(LOG_TAG, "-----------------------------------------");
+                Log.i(LOG_TAG, "discovered not paired device ");
+                logBluetoothDevice(device);
+                if (null != drain) {
+                    drain.onNext(device);
                 }
 
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)){
