@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
+        <import type="android.view.View"/>
+        <variable
+            name="model"
+            type="alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.databinding.DeviceInfoViewModel"
+            />
+    </data>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <android.support.v7.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/di_fn_name"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="20dp"
+                    fontPath="fonts/open-sans/OpenSans-Light.ttf"
+                    android:textColor="@color/blue_100"
+                    android:textSize="@dimen/device_info_field_name_text_size"
+                    android:text="@string/device_name_hint"
+                    />
+                <android.support.v7.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/di_fn_name"
+                    android:id="@+id/di_name"
+                    android:layout_marginTop="@dimen/device_info_field_margin_from_field_name"
+                    android:layout_centerHorizontal="true"
+                    android:text="Some Device"
+                    android:textSize="@dimen/device_info_field_text_size"
+                    android:textColor="?android:textColorPrimaryInverse"
+                    fontPath="fonts/open-sans/OpenSans-Bold.ttf"
+                    android:hint="Some device"
+                    android:textAlignment="@{model.deviceName}"
+                    />
+                <android.support.v7.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/di_fn_address"
+                    android:layout_below="@id/di_name"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="20dp"
+                    fontPath="fonts/open-sans/OpenSans-Light.ttf"
+                    android:textColor="@color/blue_100"
+                    android:textSize="@dimen/device_info_field_name_text_size"
+                    android:text="@string/device_info_address_field_name"
+                    />
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/di_address"
+                    android:layout_below="@id/di_fn_address"
+                    android:layout_marginTop="@dimen/device_info_field_margin_from_field_name"
+                    android:layout_centerHorizontal="true"
+                    android:text="Some Device"
+                    android:textSize="@dimen/device_info_field_text_size"
+                    android:textColor="?android:textColorPrimaryInverse"
+                    fontPath="fonts/open-sans/OpenSans-Bold.ttf"
+                    android:hint="Some device"
+                    android:textAlignment="@{model.deviceAddress}"
+                    />
+
+                <!--container for device kind indicators (history, paired)-->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/di_address"
+                    android:id="@+id/di_indicators"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="20dp"
+                    android:layout_centerHorizontal="true"
+                    >
+                    <android.support.v7.widget.AppCompatImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_device_from_history"
+                        android:visibility="@{model.deviceFromHistory ? View.VISIBLE : View.GONE}"
+                        />
+                    <android.support.v7.widget.AppCompatImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:src="@drawable/ic_paired_phone"
+                        android:visibility="@{model.pairedDevice ? View.VISIBLE : View.GONE}"
+                        />
+                </LinearLayout>
+                <android.support.v7.widget.AppCompatButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/di_indicators"
+                    android:id="@+id/di_btn_ok"
+                    android:layout_marginTop="20dp"
+                    android:background="?colorPrimaryDark"
+                    android:textColor="?android:textColorPrimaryInverse"
+                    android:text="@string/device_info_btn_confirm_text"
+                    />
+            </RelativeLayout>
+        </ScrollView>
+    </RelativeLayout>
+</layout>

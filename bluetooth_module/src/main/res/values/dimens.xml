@@ -12,5 +12,8 @@
     <dimen name="device_info_device_name_text_size">18sp</dimen>
     <dimen name="device_info_device_name_margin_top">30dp</dimen>
     <dimen name="device_info_empty_text_size">20sp</dimen>
-
+    <!--Dimensions used in fragment for device details-->
+    <dimen name="device_info_field_name_text_size">10sp</dimen>
+    <dimen name="device_info_field_text_size">18sp</dimen>
+    <dimen name="device_info_field_margin_from_field_name">3dp</dimen>
 </resources>

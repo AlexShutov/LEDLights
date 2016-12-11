@@ -11,4 +11,8 @@
     <string name="device_list_paired_empty">There is no paired devices</string>
     <string name="device_list_discovery_prompt_to_refresh">Swipe down to scan</string>
     <string name="device_discovery_not_found">No devices found</string>
+    <!--string resource used in dialog for device details-->
+    <string name="device_info_name">Device Name</string>
+    <string name="device_info_address_field_name">Device address</string>
+    <string name="device_info_btn_confirm_text">Got It</string>
 </resources>

@@ -107,35 +107,6 @@ public class ChooseDeviceActivity extends AppCompatActivity implements DevicesFr
      * Inherited from AnothedDeviceView
      */
 
-//    @Override
-//    public void displayDevicesFromAppHistory(List<BtDevice> devices) {
-//        Log.i(LOG_TAG, "App remember " + devices.size() + " devices");
-//    }
-//
-//    @Override
-//    public void displayPairedSystemDevices(List<BtDevice> devices) {
-//        Log.i(LOG_TAG, "Phone is paired to " + devices.size() + " devices");
-//        for (BtDevice device : devices){
-//            String msg = "Paired device: " + device.getDeviceName() + " " +
-//                    device.getDeviceAddress();
-//            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-//        }
-//        BtDevice device;
-//    }
-//
-//    @Override
-//    public void onNewDeviceDiscovered(BtDevice device) {
-//        String msg = "Device found: " + device.getDeviceName() + " : " +
-//                device.getDeviceAddress();
-//        Toast.makeText(this, msg , Toast.LENGTH_SHORT).show();
-//    }
-//
-//    @Override
-//    public void onDiscoveryComplete() {
-//        Toast.makeText(this, "Bluetooth discovery complete" , Toast.LENGTH_SHORT).show();
-//    }
-
-
     private void setupViewPager() {
         Log.i(LOG_TAG, "Setting up ViewPager");
         Adapter adapter = new Adapter(getSupportFragmentManager());
@@ -158,7 +129,8 @@ public class ChooseDeviceActivity extends AppCompatActivity implements DevicesFr
 
     @Override
     public void onDevicePicked(int fragmentType, DeviceInfoViewModel device) {
-        Toast.makeText(this, "Device picked: " + device.getDeviceName(),
+        Toast.makeText(this, "Device picked: " + device.getDeviceName() + " " +
+                    device.getDeviceAddress(),
                 Toast.LENGTH_SHORT).show();
     }
 
