@@ -10,8 +10,8 @@
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
+        android:layout_height="wrap_content"
+        android:background="@color/blue_400">
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -20,7 +20,8 @@
             android:layout_alignParentStart="true">
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                >
                 <android.support.v7.widget.AppCompatTextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -29,9 +30,9 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="20dp"
                     fontPath="fonts/open-sans/OpenSans-Light.ttf"
-                    android:textColor="@color/blue_100"
+                    android:textColor="?android:textColorPrimaryInverse"
                     android:textSize="@dimen/device_info_field_name_text_size"
-                    android:text="@string/device_name_hint"
+                    android:text="@string/device_info_name"
                     />
                 <android.support.v7.widget.AppCompatTextView
                     android:layout_width="wrap_content"
@@ -40,12 +41,11 @@
                     android:id="@+id/di_name"
                     android:layout_marginTop="@dimen/device_info_field_margin_from_field_name"
                     android:layout_centerHorizontal="true"
-                    android:text="Some Device"
                     android:textSize="@dimen/device_info_field_text_size"
                     android:textColor="?android:textColorPrimaryInverse"
                     fontPath="fonts/open-sans/OpenSans-Bold.ttf"
                     android:hint="Some device"
-                    android:textAlignment="@{model.deviceName}"
+                    android:text="@{model.deviceName}"
                     />
                 <android.support.v7.widget.AppCompatTextView
                     android:layout_width="wrap_content"
@@ -55,9 +55,9 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="20dp"
                     fontPath="fonts/open-sans/OpenSans-Light.ttf"
-                    android:textColor="@color/blue_100"
+                    android:textColor="?android:textColorPrimaryInverse"
                     android:textSize="@dimen/device_info_field_name_text_size"
-                    android:text="@string/device_info_address_field_name"
+                    android:text="@string/device_info_address"
                     />
 
                 <android.support.v7.widget.AppCompatTextView
@@ -67,12 +67,11 @@
                     android:layout_below="@id/di_fn_address"
                     android:layout_marginTop="@dimen/device_info_field_margin_from_field_name"
                     android:layout_centerHorizontal="true"
-                    android:text="Some Device"
                     android:textSize="@dimen/device_info_field_text_size"
                     android:textColor="?android:textColorPrimaryInverse"
                     fontPath="fonts/open-sans/OpenSans-Bold.ttf"
                     android:hint="Some device"
-                    android:textAlignment="@{model.deviceAddress}"
+                    android:text="@{model.deviceAddress}"
                     />
 
                 <!--container for device kind indicators (history, paired)-->

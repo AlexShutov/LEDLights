@@ -4,6 +4,7 @@ import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -136,8 +137,9 @@ public class ChooseDeviceActivity extends AppCompatActivity implements DevicesFr
 
     @Override
     public void onAdditionalInfoClicked(int fragmentType, DeviceInfoViewModel device) {
-        Toast.makeText(this, "Show additional info for device: " + device.getDeviceName(),
-                Toast.LENGTH_SHORT).show();
+        DeviceInfoDialog infoDialog = new DeviceInfoDialog();
+        infoDialog.setViewModel(device);
+        infoDialog.show(getSupportFragmentManager(), "device_info");
     }
 
     /**
