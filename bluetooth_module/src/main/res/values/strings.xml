@@ -15,5 +15,6 @@
     <string name="device_info_dialog_details">Device Info</string>
     <string name="device_info_name">Device Name</string>
     <string name="device_info_address">Device address</string>
+    <string name="device_info_unnamed_name">Unnamed device</string>
     <string name="device_info_btn_confirm_text">Got It</string>
 </resources>

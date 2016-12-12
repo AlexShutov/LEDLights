@@ -230,6 +230,14 @@ public class ScanFragment extends DevicesFragment {
         DeviceInfoViewModel t = modelToShow;
         // add listener for selection tap and details button+
         addUserActionListeners(t);
+        // Some devices might have no device name (some Apple keyboards, etc.).
+        // In that case show name for 'unknown device'
+        if (t.getDeviceName() == null) {
+            Log.w(LOG_TAG, "Device name not specified for device with address: " +
+                    t.getDeviceAddress());
+            String nameUnknown = getString(R.string.device_info_unknown_name);
+            t.setDeviceName(nameUnknown);
+        }
         // and add it to the list on main thread
         Observable.defer(() -> Observable.just(t))
                 .subscribeOn(AndroidSchedulers.mainThread())
