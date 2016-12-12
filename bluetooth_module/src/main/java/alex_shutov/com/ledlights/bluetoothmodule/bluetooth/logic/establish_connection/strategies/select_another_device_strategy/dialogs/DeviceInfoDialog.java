@@ -1,4 +1,4 @@
-package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy;
+package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.dialogs;
 
 import android.app.Dialog;
 import android.content.DialogInterface;

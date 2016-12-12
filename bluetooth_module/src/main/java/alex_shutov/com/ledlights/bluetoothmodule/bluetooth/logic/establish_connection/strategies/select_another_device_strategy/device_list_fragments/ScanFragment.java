@@ -235,7 +235,7 @@ public class ScanFragment extends DevicesFragment {
         if (t.getDeviceName() == null) {
             Log.w(LOG_TAG, "Device name not specified for device with address: " +
                     t.getDeviceAddress());
-            String nameUnknown = getString(R.string.device_info_unknown_name);
+            String nameUnknown = getString(R.string.device_info_unnamed);
             t.setDeviceName(nameUnknown);
         }
         // and add it to the list on main thread

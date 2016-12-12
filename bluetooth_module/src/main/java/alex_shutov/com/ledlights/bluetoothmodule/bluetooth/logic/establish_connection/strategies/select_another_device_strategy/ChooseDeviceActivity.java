@@ -4,7 +4,6 @@ import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -18,7 +17,6 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.security.spec.RSAOtherPrimeInfo;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +28,9 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conne
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.device_list_fragments.HistoryDevicesFragment;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.device_list_fragments.PairedDevicesFragment;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.device_list_fragments.ScanFragment;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.dialogs.ConnectAttemptFailedDialog;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.dialogs.DeviceInfoDialog;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.events.ConnectionAttemptFailedEvent;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.events.PresenterInstanceEvent;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.mvp.AnotherDevicePresenter;
 import alex_shutov.com.ledlights.bluetoothmodule.databinding.ActivityPickDeviceBinding;
@@ -41,7 +42,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
  * Created by lodoss on 09/11/16.
  */
 public class ChooseDeviceActivity extends AppCompatActivity implements
-        DevicesFragment.UserActionListener {
+        DevicesFragment.UserActionListener, ConnectAttemptFailedDialog.ConnectionFailedDialogCallback {
     private static final String LOG_TAG = ChooseDeviceActivity.class.getSimpleName();
     public static final int FRAGMENT_HISTORY = 0;
     public static final int FRAGMENT_PAIRED = 1;
@@ -49,7 +50,6 @@ public class ChooseDeviceActivity extends AppCompatActivity implements
 
     private EventBus eventBus;
     private AnotherDevicePresenter presenter;
-
 
     /** Binding for this Activity. It is used for setting up TabLayout and ViewPager */
     private ActivityPickDeviceBinding activityBinding;
@@ -107,6 +107,25 @@ public class ChooseDeviceActivity extends AppCompatActivity implements
     }
 
     /**
+     * Remember device we could not to connect
+     */
+    private BtDevice notConnectedDevice;
+    /**
+     * If connection attempt fails, model inform presenter of that. Presenter, in turn,
+     * tell this View (Activity) show dialog, allowing user to deal with it, or try to connect again
+     * @param event
+     */
+    @Subscribe
+    public void onConnectionAttemptFailedEvent(ConnectionAttemptFailedEvent event) {
+        notConnectedDevice = event.getDevice();
+        DeviceInfoViewModel model =
+                ViewModelConverter.convertToViewModel(notConnectedDevice);
+        ConnectAttemptFailedDialog dialog = new ConnectAttemptFailedDialog();
+        dialog.setModel(model);
+        dialog.show(getSupportFragmentManager(), "connection_failed_dialog");
+    }
+
+    /**
      * Init all fragments once we have presenter reference
      */
     private void init() {
@@ -159,9 +178,35 @@ public class ChooseDeviceActivity extends AppCompatActivity implements
         infoDialog.show(getSupportFragmentManager(), "device_info");
     }
 
+
+
+
     /**
-     * Inherited from DevicesFragment.UserActionListener
+     * Inherited from ConnectAttemptFailedDialog.ConnectionFailedDialogCallback - methods,
+     * defining what to do if connection attempt failed
      */
+
+    /**
+     * User choose to get over with unsuccessful connection and decided to do something else
+     * (perhaps choose another device (or remove app)).
+     */
+    @Override
+    public void acceptFailure() {
+        Toast.makeText(this, "user accepted failure", Toast.LENGTH_SHORT).show();
+        presenter.onUserRefusedToPickDevice();
+    }
+
+    /**
+     * user decided to try again to connect to that device.
+     * Tell Presenter to connect and clear device reference.
+     */
+    @Override
+    public void retryToConnect() {
+        Toast.makeText(this, "retry to connect to device: " + notConnectedDevice.getDeviceName(),
+                Toast.LENGTH_SHORT).show();
+        presenter.onDeviceSelected(notConnectedDevice);
+        notConnectedDevice = null;
+    }
 
     /**
      * Adapter for tab layout

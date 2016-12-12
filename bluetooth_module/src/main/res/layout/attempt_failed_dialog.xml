@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
+        <import type="android.view.View"/>
+        <variable
+            name="model"
+            type="alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.databinding.DeviceInfoViewModel"
+            />
+    </data>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/blue_400">
+
+        <android.support.v7.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/af_message"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="10dp"
+            android:layout_centerHorizontal="true"
+            android:text="@string/connect_failed_text"
+            fontPath="fonts/open-sans/OpenSans-Light.ttf"
+            android:textSize="18sp"
+            android:textColor="?android:textColorPrimaryInverse"
+            />
+        <android.support.v7.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/af_device_name"
+            android:layout_below="@id/af_message"
+            android:layout_centerHorizontal="true"
+            android:text="@{model.deviceName}"
+            fontPath="fonts/open-sans/OpenSans-Light.ttf"
+            android:textSize="20sp"
+            android:textColor="?android:textColorPrimaryInverse"
+            />
+
+        <!--container for device kind indicators (history, paired)-->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/af_device_name"
+            android:id="@+id/af_indicators"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp"
+            android:layout_centerHorizontal="true"
+            >
+            <android.support.v7.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_device_from_history"
+                android:visibility="@{model.deviceFromHistory ? View.VISIBLE : View.GONE}"
+                />
+            <android.support.v7.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:src="@drawable/ic_paired_phone"
+                android:visibility="@{model.pairedDevice ? View.VISIBLE : View.GONE}"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/af_indicators"
+            android:layout_marginTop="20dp"
+            android:weightSum="2"
+            android:orientation="horizontal">
+            <android.support.v7.widget.AppCompatButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:id="@+id/af_btn_accept"
+                android:background="?colorPrimaryDark"
+                android:textColor="?android:textColorPrimaryInverse"
+                android:text="@string/connect_failed_accept"
+                />
+            <android.support.v7.widget.AppCompatButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:id="@+id/af_btn_try_again"
+                android:background="?colorPrimaryDark"
+                android:textColor="?android:textColorPrimaryInverse"
+                android:text="@string/connect_failed_try_again"
+                />
+        </LinearLayout>
+
+    </RelativeLayout>
+</layout>

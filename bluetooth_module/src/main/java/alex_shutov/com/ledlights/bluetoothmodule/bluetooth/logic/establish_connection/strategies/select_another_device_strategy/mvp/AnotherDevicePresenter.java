@@ -14,6 +14,7 @@ import java.util.TreeSet;
 
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.ChooseDeviceActivity;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.events.ConnectionAttemptFailedEvent;
 import alex_shutov.com.ledlights.hex_general.BasePresenter;
 import rx.Observable;
 import rx.Subscription;
@@ -167,6 +168,7 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
      */
     public void onUserRefusedToPickDevice(){
         Toast.makeText(context, "User refused to pick device", Toast.LENGTH_SHORT).show();
+        AnotherDeviceModel model = getModel();
     }
 
     /**
@@ -244,6 +246,17 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
         linkDeviceDiscovery =
                 Observable.defer(() -> task)
                         .subscribe(discoveredDeviceSource);
+    }
+
+    /**
+     * Show dialog, allowing to get over failure or try connecting again.
+     * @param device
+     */
+    public void suggestConnectingAgainAfterAttemptFailed(BtDevice device) {
+        Log.i(LOG_TAG, "Suggesting to retry or get over with it");
+        ConnectionAttemptFailedEvent event = new ConnectionAttemptFailedEvent();
+        event.setDevice(device);
+        getEventBus().post(event);
     }
 
     /**

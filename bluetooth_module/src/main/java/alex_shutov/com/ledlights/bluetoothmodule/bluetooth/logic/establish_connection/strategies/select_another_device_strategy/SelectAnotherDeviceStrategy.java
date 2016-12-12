@@ -9,6 +9,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.BluetoothChatService;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanAdapter;
@@ -38,7 +39,7 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
     @Inject
     AnotherDevicePresenter presenter;
 
-
+    private BtDevice selectedDevice;
 
     public SelectAnotherDeviceStrategy(){
         super();
@@ -86,14 +87,19 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
         Log.i(LOG_TAG, message);
     }
 
+    /**
+     * If app can't connect to device (perhaps, it doesn't support UUID, used in application, or,
+     * it is a unknown phone), show user dialog, allowing to agree with failure, or to try
+     * connecting again
+     */
     @Override
     protected void doOnConnectionAttemptFailed() {
         Log.w(LOG_TAG, "Connection attempt failed");
+        presenter.suggestConnectingAgainAfterAttemptFailed(selectedDevice);
     }
 
     /**
      * User tell this strategy to createPipeline working on establishing connection by this method.
-     *
      */
     @Override
     public void attemptToEstablishConnection() {
@@ -106,7 +112,6 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
     @Override
     public void stopConnecting() {
         cancelOngoingConnectionAttemptsAndDiscovery();
-
     }
 
     /**
@@ -194,9 +199,18 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
         Observable.just(device)
                 .subscribeOn(Schedulers.computation())
                 .subscribe(d -> {
+                    selectedDevice = device;
                     createPendingConnectTask(d);
-                    connectToDevice(d);
+                    // UI doesn't know UUID of new device, so we have to provide it.
+                    d.setDeviceUuIdSecure(getUUID(d));
+                    d.setDeviceUuIdInsecure(getUUID(d));
+                    connPort.connect(d);
                 });
+    }
+
+    @Override
+    public void onFailedToSelectAnotherDevice() {
+
     }
 
     /**
@@ -248,6 +262,18 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
         scanPort.stopDiscovery();
         connPort.stopConnecting();
         connPort.close();
+    }
+
+    /**
+     *  Each strategy need UUID for connecting to device. UI cannot provide UUID.
+     *  Application is supposed to be used with HC-05 modules, having known UUID;
+     * @param device
+     * @return
+     */
+    protected String getUUID(BtDevice device) {
+        Log.i(LOG_TAG, "Using UUID for HC-05 Bluetooth module");
+        String uuid = BluetoothChatService.HC_05_UUID.toString();
+        return uuid;
     }
 
     private void triggerUi() {

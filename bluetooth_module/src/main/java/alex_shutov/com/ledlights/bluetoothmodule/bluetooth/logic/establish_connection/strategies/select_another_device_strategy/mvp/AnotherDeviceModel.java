@@ -30,4 +30,11 @@ public interface AnotherDeviceModel extends BaseModel {
      */
     void connectToDevice(BtDevice device);
 
+    /**
+     * This method is called by Presenter if use refused to select another device, or,
+     * if user selected some devices but all connection attempts have failed and user gave
+     * up eventually
+     */
+    void onFailedToSelectAnotherDevice();
+
 }

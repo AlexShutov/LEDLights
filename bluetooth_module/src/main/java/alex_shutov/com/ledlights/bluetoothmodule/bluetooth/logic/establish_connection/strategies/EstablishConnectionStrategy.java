@@ -288,4 +288,5 @@ public abstract class EstablishConnectionStrategy extends BtAlgorithm
     public EstablishConnectionCallback getCallback() {
         return callback;
     }
+
 }
