@@ -11,7 +11,6 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.B
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtLogicCell;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.hex.BtStoragePort;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.BtUiDeviceSelectionInterface;
 import alex_shutov.com.ledlights.hex_general.CellDeployer;
 
 /**

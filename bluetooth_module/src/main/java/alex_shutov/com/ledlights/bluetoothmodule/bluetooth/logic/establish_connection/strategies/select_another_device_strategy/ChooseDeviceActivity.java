@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Toast;
 
@@ -17,11 +18,14 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.security.spec.RSAOtherPrimeInfo;
 import java.util.ArrayList;
 import java.util.List;
 
 import alex_shutov.com.ledlights.bluetoothmodule.R;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.databinding.DeviceInfoViewModel;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.databinding.ViewModelConverter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.device_list_fragments.DevicesFragment;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.device_list_fragments.HistoryDevicesFragment;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.device_list_fragments.PairedDevicesFragment;
@@ -29,21 +33,23 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conne
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.events.PresenterInstanceEvent;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.mvp.AnotherDevicePresenter;
 import alex_shutov.com.ledlights.bluetoothmodule.databinding.ActivityPickDeviceBinding;
+import rx.Observable;
+import rx.schedulers.Schedulers;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
  * Created by lodoss on 09/11/16.
  */
-public class ChooseDeviceActivity extends AppCompatActivity implements DevicesFragment.UserActionListener {
-
+public class ChooseDeviceActivity extends AppCompatActivity implements
+        DevicesFragment.UserActionListener {
     private static final String LOG_TAG = ChooseDeviceActivity.class.getSimpleName();
+    public static final int FRAGMENT_HISTORY = 0;
+    public static final int FRAGMENT_PAIRED = 1;
+    public static final int FRAGMENT_SCAN = 2;
 
     private EventBus eventBus;
     private AnotherDevicePresenter presenter;
 
-    public static final int FRAGMENT_HISTORY = 0;
-    public static final int FRAGMENT_PAIRED = 1;
-    public static final int FRAGMENT_SCAN = 2;
 
     /** Binding for this Activity. It is used for setting up TabLayout and ViewPager */
     private ActivityPickDeviceBinding activityBinding;
@@ -75,6 +81,14 @@ public class ChooseDeviceActivity extends AppCompatActivity implements DevicesFr
     protected void onPostResume() {
         super.onPostResume();
         eventBus.register(this);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            presenter.onUserRefusedToPickDevice();
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     /**
@@ -130,9 +144,12 @@ public class ChooseDeviceActivity extends AppCompatActivity implements DevicesFr
 
     @Override
     public void onDevicePicked(int fragmentType, DeviceInfoViewModel device) {
-        Toast.makeText(this, "Device picked: " + device.getDeviceName() + " " +
-                    device.getDeviceAddress(),
-                Toast.LENGTH_SHORT).show();
+        Log.i(LOG_TAG, "Device picked: " + device.getDeviceName() + " " +
+                device.getDeviceAddress());
+        Observable.defer(() -> Observable.just(device))
+                .subscribeOn(Schedulers.computation())
+                .map(vm -> ViewModelConverter.fromViewModel(vm))
+                .subscribe(d -> presenter.onDeviceSelected(d));
     }
 
     @Override

@@ -24,4 +24,10 @@ public interface AnotherDeviceModel extends BaseModel {
 
     void stopDiscovery();
 
+    /**
+     * Attempt connecting to given device.
+     * @param device
+     */
+    void connectToDevice(BtDevice device);
+
 }

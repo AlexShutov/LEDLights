@@ -95,7 +95,7 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm implements
 
     @Override
     public boolean isAttemptingToConnect() {
-        return false;
+        return currentStrategy.isAttemptingToConnect();
     }
 
     @Override
@@ -103,12 +103,21 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm implements
         currentStrategy.stopConnecting();
     }
 
+    /**
+     * Connect algorithm has two strategies - for selecting another device by UI and
+     * reconnecting to the last device. When app want to connect seamlessly, it is
+     * using 'reconnect' strategy and (in this case) 'anotherDeviceStrategy' for
+     * picking device by UI
+     */
     @Override
     public void selectDeviceByUi() {
         chooseStrategy(anotherDeviceStrategy);
         currentStrategy.selectDeviceByUi();
     }
 
+    /**
+     *  Connect to the last known device
+     */
     @Override
     public void attemptToEstablishConnection() {
         chooseStrategy(reconnectStrategy);

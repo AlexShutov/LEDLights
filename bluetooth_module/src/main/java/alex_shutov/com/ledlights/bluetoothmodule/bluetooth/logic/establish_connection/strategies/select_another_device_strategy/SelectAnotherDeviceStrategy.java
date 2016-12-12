@@ -28,7 +28,7 @@ import rx.subjects.PublishSubject;
  * Created by Alex on 11/7/2016.
  */
 public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
-        implements BtUiDeviceSelectionViewPartial, AnotherDeviceModel ,
+        implements AnotherDeviceModel ,
         BtScanPortListener {
     private static final String LOG_TAG = SelectAnotherDeviceStrategy.class.getSimpleName();
 
@@ -117,49 +117,6 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
 
 
     /**
-     * Inherited from BtUiDeviceSelectionViewPartial
-     */
-
-
-    /**
-     * User picked a device, but app isn't connected to it yet.
-     * Attempt to create connection to that device by using methods from base class.
-     * @param device
-     */
-    @Override
-    public void onUserChooseDevice(BtDevice device) {
-        Log.i(LOG_TAG, "onUserChooseDevice()" + ( device == null ? "" : device.getDeviceName()));
-    }
-
-    /**
-     * User refused to select device. suspend all activity, close Ui and notify callback about it
-     */
-    @Override
-    public void onCancelledByUser() {
-        Log.i(LOG_TAG, "onCancelledByUser()");
-        cancelOngoingConnectionAttemptsAndDiscovery();
-        EstablishConnectionCallback callback = getCallback();
-        if (null != callback) {
-            callback.onAttemptFailed();
-        }
-    }
-
-    /**
-     * Ui request to stop all activities with bluetooth. This method return Observable so Ui
-     * will know when it can proceed
-     * @return
-     */
-    @Override
-    public Observable<Boolean> stopBluetoothCommunication() {
-        return Observable.just("")
-                .subscribeOn(Schedulers.io())
-                .map(t -> {
-                    cancelOngoingConnectionAttemptsAndDiscovery();
-                    return true;
-                });
-    }
-
-    /**
      * Inherited from PortListener (ui port listener)
      */
 
@@ -229,6 +186,11 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
         scanPort.stopDiscovery();
     }
 
+
+    @Override
+    public void connectToDevice(BtDevice device) {
+
+    }
 
     /**
      * Inherited from BtScanPortListener

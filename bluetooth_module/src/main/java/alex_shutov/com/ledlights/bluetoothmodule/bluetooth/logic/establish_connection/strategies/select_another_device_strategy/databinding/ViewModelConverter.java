@@ -26,4 +26,17 @@ public class ViewModelConverter {
         return vm;
     }
 
+    /**
+     * Convert back from ViewModel (Ui use view model, presenter app model)
+     * @param viewModel
+     * @return
+     */
+    public static BtDevice fromViewModel(DeviceInfoViewModel viewModel) {
+        BtDevice device = new BtDevice();
+        device.setDeviceName(viewModel.getDeviceName());
+        device.setDeviceAddress(viewModel.getDeviceAddress());
+        device.setPaired(viewModel.isPairedDevice());
+        return device;
+    }
+
 }

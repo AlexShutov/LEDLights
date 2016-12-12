@@ -3,6 +3,7 @@ package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conn
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -159,6 +160,26 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
         refreshPairedDevices();
         queryDevicesFromAppHistory();
 
+    }
+
+    /**
+     * Method called by View when user press 'back' button to close Activity
+     */
+    public void onUserRefusedToPickDevice(){
+        Toast.makeText(context, "User refused to pick device", Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Called by View when user select device from history or a newly discovered
+     * device either.
+     * Once device is selected, tell Model to connect to it.
+     * @param device
+     */
+    public void onDeviceSelected(BtDevice device) {
+        // show popup message
+        AnotherDeviceModel model = getModel();
+        // tell model to connect to selected device
+        model.connectToDevice(device);
     }
 
     /**
