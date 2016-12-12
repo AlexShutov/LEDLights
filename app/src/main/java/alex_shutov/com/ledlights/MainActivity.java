@@ -101,8 +101,8 @@ public class MainActivity extends AppCompatActivity {
         btn = (Button) findViewById(R.id.btn_bt_accept);
         btn.setOnClickListener(v -> {
             btPort.close();
-            btPort.setUuidSecure(BluetoothChatService.MY_UUID_SECURE.toString());
-            btPort.setUuidInsecure(BluetoothChatService.MY_UUID_INSECURE.toString());
+            btPort.setUuidSecure(BluetoothChatService.HC_05_UUID.toString());
+            btPort.setUuidInsecure(BluetoothChatService.HC_05_UUID.toString());
             btPort.startListening();
         });
         // setup 'stop accept insecure' button

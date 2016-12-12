@@ -1,6 +1,7 @@
 package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,8 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
     private BtConnPort connPort;
     @Inject
     AnotherDevicePresenter presenter;
+
+
 
     public SelectAnotherDeviceStrategy(){
         super();
@@ -79,13 +82,13 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
      */
     @Override
     protected void doOnConnectionSuccessful(BtDevice device) {
-        Log.i(LOG_TAG, "Device successfully connected: " + device.getDeviceName());
+        String message = "Device successfully connected: " + device.getDeviceName();
+        Log.i(LOG_TAG, message);
     }
 
     @Override
     protected void doOnConnectionAttemptFailed() {
         Log.w(LOG_TAG, "Connection attempt failed");
-
     }
 
     /**
@@ -165,7 +168,6 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
     }
 
 
-
     @Override
     public Observable<BtDevice> discoverDevices() {
         Observable<BtDevice> task = Observable.just("")
@@ -189,7 +191,12 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
 
     @Override
     public void connectToDevice(BtDevice device) {
-
+        Observable.just(device)
+                .subscribeOn(Schedulers.computation())
+                .subscribe(d -> {
+                    createPendingConnectTask(d);
+                    connectToDevice(d);
+                });
     }
 
     /**
@@ -231,17 +238,17 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
      * Private logic methods
      */
 
-
     private void cancelOngoingConnectionAttemptsAndDiscovery() {
         Log.i(LOG_TAG, "Cancelling all Bluetooth activities before attempting to select another " +
                 "device");
+        // cancel ongoing connection attempts
+        if (isAttemptingToConnect()) {
+            cancelConnectionPendingRequest();
+        }
         scanPort.stopDiscovery();
         connPort.stopConnecting();
         connPort.close();
     }
-
-
-
 
     private void triggerUi() {
         presenter.showUiForSelectingAnotherBluetoothDevice();

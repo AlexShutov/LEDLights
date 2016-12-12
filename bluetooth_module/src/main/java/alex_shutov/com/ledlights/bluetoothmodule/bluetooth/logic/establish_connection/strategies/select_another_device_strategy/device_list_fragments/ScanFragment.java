@@ -15,7 +15,6 @@ import alex_shutov.com.ledlights.bluetoothmodule.R;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.ChooseDeviceActivity;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.databinding.DeviceInfoViewModel;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.databinding.ViewModelConverter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.mvp.AnotherDevicePresenter;
 import rx.Observable;
 import rx.Subscription;
@@ -165,7 +164,7 @@ public class ScanFragment extends DevicesFragment {
                             // we already processed that device in .onNext() on background
                             // thread ( see few lines above)
                         }, error -> {
-                            showPopup("Error occured during discovery: " + error.getMessage());
+                            showPopup("Error occurred during discovery: " + error.getMessage());
                         }, () -> {
                             onDiscoveryFinished();
                         });
@@ -194,6 +193,10 @@ public class ScanFragment extends DevicesFragment {
         }
     }
 
+    /**
+     * Transform device info to view model and show that view model in the list
+     * @param justDiscovered
+     */
     private void processDiscoveredDevice(BtDevice justDiscovered) {
         Log.i(LOG_TAG, "Processing discovered device: " + justDiscovered.getDeviceName() +
             " " + justDiscovered.getDeviceAddress());

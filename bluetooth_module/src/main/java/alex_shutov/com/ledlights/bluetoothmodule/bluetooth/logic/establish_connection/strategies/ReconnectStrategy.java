@@ -92,14 +92,12 @@ public class ReconnectStrategy extends EstablishConnectionStrategy {
         super.start();
     }
 
-
     @Override
     public void attemptToEstablishConnection() {
         Log.i(LOG_TAG, "attemptToEstablishConnection()");
         stopTask();
         pendingLastDeviceTask = Observable.defer(() -> getLastDeviceFromDbTask)
                 .observeOn(Schedulers.computation())
-
                 .subscribe(lastDeviceInfo -> {
                     Log.i(LOG_TAG, "Last connected device: " +
                             lastDeviceInfo.deviceInfo.getDeviceName());
@@ -136,7 +134,7 @@ public class ReconnectStrategy extends EstablishConnectionStrategy {
     protected void doOnConnectionAttemptFailed() {
         Log.i(LOG_TAG, "Connection attempt failed, perfforming action from 'reconnect' strategy");
         EstablishConnectionCallback callback = getCallback();
-        if (null != callback){
+        if (null != callback) {
             callback.onAttemptFailed();
         }
     }
@@ -170,6 +168,4 @@ public class ReconnectStrategy extends EstablishConnectionStrategy {
         connPort.stopConnecting();
         cancellFailureNotification();
     }
-
-
 }

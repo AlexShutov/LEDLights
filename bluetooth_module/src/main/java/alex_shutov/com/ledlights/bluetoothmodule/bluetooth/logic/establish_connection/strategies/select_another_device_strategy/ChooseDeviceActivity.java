@@ -54,7 +54,6 @@ public class ChooseDeviceActivity extends AppCompatActivity implements
     /** Binding for this Activity. It is used for setting up TabLayout and ViewPager */
     private ActivityPickDeviceBinding activityBinding;
 
-
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
@@ -150,6 +149,7 @@ public class ChooseDeviceActivity extends AppCompatActivity implements
                 .subscribeOn(Schedulers.computation())
                 .map(vm -> ViewModelConverter.fromViewModel(vm))
                 .subscribe(d -> presenter.onDeviceSelected(d));
+        
     }
 
     @Override
