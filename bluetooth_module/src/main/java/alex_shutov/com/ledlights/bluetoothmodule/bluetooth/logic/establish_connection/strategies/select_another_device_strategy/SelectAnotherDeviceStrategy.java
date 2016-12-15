@@ -23,6 +23,7 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conne
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.mvp.AnotherDeviceModel;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.mvp.AnotherDevicePresenter;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
@@ -78,13 +79,17 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
     /**
      * Callback, called whenever app is connected to another Bluetooth device. Connection
      * to device has to be initiated by createPendingConnectTask(BtDevice device) method in
-     * base class (EstablishConnectionStrategy)
+     * base class (EstablishConnectionStrategy).
+     * Notify external callback of success
      * @param device
      */
     @Override
     protected void doOnConnectionSuccessful(BtDevice device) {
         String message = "Device successfully connected: " + device.getDeviceName();
         Log.i(LOG_TAG, message);
+        // close Ui
+        presenter.hideUi();
+        getCallback().onConnectionEstablished(device);
     }
 
     /**
@@ -139,7 +144,6 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
         Log.i(LOG_TAG, "onCriticalFailure( portID: " + portID + ", error: " + e.getMessage());
     }
 
-
     /**
      * Inherited from AnotherDeviceModel
      */
@@ -193,7 +197,6 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
         scanPort.stopDiscovery();
     }
 
-
     @Override
     public void connectToDevice(BtDevice device) {
         Observable.just(device)
@@ -208,9 +211,15 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
                 });
     }
 
+    /**
+     * Close UI and infom outer listener of failure
+     */
     @Override
     public void onFailedToSelectAnotherDevice() {
-
+        // close Ui
+        presenter.hideUi();
+        // notify callback of a failure
+        getCallback().onAttemptFailed();
     }
 
     /**
@@ -277,8 +286,15 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
     }
 
     private void triggerUi() {
-        presenter.showUiForSelectingAnotherBluetoothDevice();
+        BtDisconnectDelayer delayLatch = new BtDisconnectDelayer(eventBus, connPort);
+        delayLatch.getEventSource()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(t -> {
+                    presenter.showUiForSelectingAnotherBluetoothDevice();
+                });
+        delayLatch.start();
     }
+
 }
 
 

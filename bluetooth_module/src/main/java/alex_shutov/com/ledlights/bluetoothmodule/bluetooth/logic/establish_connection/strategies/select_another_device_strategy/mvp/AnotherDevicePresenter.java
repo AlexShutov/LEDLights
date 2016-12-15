@@ -15,6 +15,7 @@ import java.util.TreeSet;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.ChooseDeviceActivity;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.events.ConnectionAttemptFailedEvent;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.events.HideDeviceSelectionUiEvent;
 import alex_shutov.com.ledlights.hex_general.BasePresenter;
 import rx.Observable;
 import rx.Subscription;
@@ -70,6 +71,13 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
         Intent startIntent = new Intent(context, ChooseDeviceActivity.class);
         startIntent.addFlags(FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(startIntent);
+    }
+
+    /**
+     * Close Activity for selecting device
+     */
+    public void hideUi() {
+        getEventBus().post(new HideDeviceSelectionUiEvent());
     }
 
     /**

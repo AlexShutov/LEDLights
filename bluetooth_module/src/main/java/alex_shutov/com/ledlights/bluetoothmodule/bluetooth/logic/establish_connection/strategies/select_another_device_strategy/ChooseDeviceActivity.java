@@ -31,6 +31,7 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conne
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.dialogs.ConnectAttemptFailedDialog;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.dialogs.DeviceInfoDialog;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.events.ConnectionAttemptFailedEvent;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.events.HideDeviceSelectionUiEvent;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.events.PresenterInstanceEvent;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.mvp.AnotherDevicePresenter;
 import alex_shutov.com.ledlights.bluetoothmodule.databinding.ActivityPickDeviceBinding;
@@ -125,6 +126,11 @@ public class ChooseDeviceActivity extends AppCompatActivity implements
         dialog.show(getSupportFragmentManager(), "connection_failed_dialog");
     }
 
+    @Subscribe
+    public void onHideDeviceSelectionUiEvent(HideDeviceSelectionUiEvent event) {
+        finish();
+    }
+
     /**
      * Init all fragments once we have presenter reference
      */
@@ -189,11 +195,13 @@ public class ChooseDeviceActivity extends AppCompatActivity implements
     /**
      * User choose to get over with unsuccessful connection and decided to do something else
      * (perhaps choose another device (or remove app)).
+     * Do nothing here, because user might choose another device from the same UI.
+     * On the other hand, if he or she decide to do nothing, Ui can be closed by pressing
+     * 'back' button
      */
     @Override
     public void acceptFailure() {
-        Toast.makeText(this, "user accepted failure", Toast.LENGTH_SHORT).show();
-        presenter.onUserRefusedToPickDevice();
+
     }
 
     /**

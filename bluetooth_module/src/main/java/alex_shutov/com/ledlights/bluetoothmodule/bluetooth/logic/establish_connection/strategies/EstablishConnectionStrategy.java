@@ -171,11 +171,17 @@ public abstract class EstablishConnectionStrategy extends BtAlgorithm
             Log.i(LOG_TAG, "Device connected ");
             connResultPipe.onNext(true);
         }
-        if (event.isGeneralCallbackFired && event.portState == IDLE){
-            Log.w(LOG_TAG, "Connection request rejected, adapter in IDLE state");
-            connResultPipe.onNext(false);
-        }
     }
+
+    /**
+     * Register for event, indicating that connection attempt failed
+     * @param failedEvent
+     */
+    @Subscribe
+    public void onConnectionFailedEvent(ArgumentConnectionFailedEvent failedEvent) {
+        connResultPipe.onNext(false);
+    }
+
 
     /**
      * Here is the tricky part - all three strategy need to connect to Bluetooth device at
@@ -268,8 +274,6 @@ public abstract class EstablishConnectionStrategy extends BtAlgorithm
                     }
                 });
     }
-
-
 
     /**
      * I assume here that failure notification process may take a while
