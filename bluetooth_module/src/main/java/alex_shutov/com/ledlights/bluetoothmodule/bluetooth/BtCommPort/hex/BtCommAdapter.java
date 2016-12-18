@@ -5,6 +5,7 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.CommInterf
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.hex_general.Adapter;
 import alex_shutov.com.ledlights.hex_general.PortInfo;
+import rx.Observable;
 
 /**
  * Created by lodoss on 12/10/16.
@@ -18,6 +19,10 @@ public class BtCommAdapter extends Adapter implements BtCommPort {
     public static CommInterface dummyCommInterface = new CommInterface() {
         @Override
         public void startConnection() {}
+        @Override
+        public Observable<Boolean> hasDeviceHistory() {
+            return null;
+        }
         @Override
         public void disconnect() {}
         @Override
@@ -98,6 +103,11 @@ public class BtCommAdapter extends Adapter implements BtCommPort {
     @Override
     public void startConnection() {
         decoree.startConnection();
+    }
+
+    @Override
+    public Observable<Boolean> hasDeviceHistory() {
+        return decoree.hasDeviceHistory();
     }
 
     @Override

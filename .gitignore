@@ -5234,3 +5234,4 @@ bluetooth_module/build/intermediates/res/merged/androidTest/debug/layout/device_
 bluetooth_module/build/intermediates/res/merged/debug/layout/device_details.xml
 bluetooth_module/build/intermediates/res/merged/release/layout/device_details.xml
 bluetooth_module/build/retrolambda/debugAndroidTest/alex_shutov/com/ledlights/bluetoothmodule/databinding/DeviceDetailsBinding.java
+bluetooth_module/build/

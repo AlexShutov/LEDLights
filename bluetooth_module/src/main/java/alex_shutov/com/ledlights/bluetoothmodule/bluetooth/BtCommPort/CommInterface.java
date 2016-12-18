@@ -1,6 +1,7 @@
 package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort;
 
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
+import rx.Observable;
 
 /**
  * Created by lodoss on 12/10/16.
@@ -25,6 +26,15 @@ public interface CommInterface  {
      * connection history.
      */
     void startConnection();
+
+    /**
+     * Check if phone have had any connected device before. Depending on that result UI will decide
+     * what action to use. If there is no connection history, application should alter UI in a way,
+     * allowing user to start selecting another device (from list of paired device, or discover
+     * anew). In case if LogicCell cannot connect to known device it will use mock algorithm
+     * for data transfer anyways.
+     */
+    Observable<Boolean> hasDeviceHistory();
 
     /**
      * User should be able to select another Bluetooth device by using UI

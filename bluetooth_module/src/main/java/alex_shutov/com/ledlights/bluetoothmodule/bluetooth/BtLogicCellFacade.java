@@ -5,6 +5,8 @@ import android.util.Log;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.CommInterface;
@@ -17,6 +19,7 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.hex.BtS
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionAlgorithm;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionCallback;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionDataProvider;
+import rx.Observable;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
@@ -170,6 +173,19 @@ public class BtLogicCellFacade implements CommInterface, EstablishConnectionData
     @Override
     public void selectAnotherDevice() {
        connecAlgorithm.selectDeviceByUi();
+    }
+
+    @Override
+    public Observable<Boolean> hasDeviceHistory() {
+        BtDeviceDao db = storagePort.getHistoryDatabase();
+        Observable<Boolean> task =
+        Observable.just(db)
+                .subscribeOn(Schedulers.io())
+                .map(database -> {
+                    List<BtDevice> devicesFormHistory = database.getDeviceHistory();
+                    return !devicesFormHistory.isEmpty();
+                });
+        return Observable.defer(() -> task);
     }
 
     @Override
