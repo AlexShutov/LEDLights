@@ -1,4 +1,4 @@
-package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.device_list_fragments;
+package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.select_another_device_strategy.device_list_fragments;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
@@ -19,13 +19,12 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.List;
 
 import alex_shutov.com.ledlights.bluetoothmodule.R;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.ListOfDevicesAdapter;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.databinding.DeviceInfoViewModel;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.databinding.DevicePickerViewModel;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.events.PresenterInstanceEvent;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.mvp.AnotherDevicePresenter;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.mvp.AnotherDeviceView;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.select_another_device_strategy.ListOfDevicesAdapter;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.select_another_device_strategy.databinding.DeviceInfoViewModel;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.select_another_device_strategy.databinding.DevicePickerViewModel;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.select_another_device_strategy.events.PresenterInstanceEvent;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.select_another_device_strategy.mvp.AnotherDevicePresenter;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.select_another_device_strategy.mvp.AnotherDeviceView;
 import alex_shutov.com.ledlights.bluetoothmodule.databinding.DeviceListBinding;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;

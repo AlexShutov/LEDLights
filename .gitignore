@@ -3993,9 +3993,9 @@ bluetooth_module/build/intermediates/classes/androidTest/debug/android/databindi
 bluetooth_module/build/intermediates/classes/androidTest/debug/android/databinding/DataBindingComponent.java
 bluetooth_module/build/intermediates/classes/androidTest/debug/android/databinding/DynamicUtil.class
 bluetooth_module/build/intermediates/classes/androidTest/debug/android/databinding/DynamicUtil.java
-bluetooth_module/build/intermediates/classes/androidTest/debug/android/databinding/generated/callback/OnClickListener$Listener.class
-bluetooth_module/build/intermediates/classes/androidTest/debug/android/databinding/generated/callback/OnClickListener.class
-bluetooth_module/build/intermediates/classes/androidTest/debug/android/databinding/generated/callback/OnClickListener.java
+bluetooth_module/build/intermediates/classes/androidTest/debug/android/databinding/generated/reconnectCallback/OnClickListener$Listener.class
+bluetooth_module/build/intermediates/classes/androidTest/debug/android/databinding/generated/reconnectCallback/OnClickListener.class
+bluetooth_module/build/intermediates/classes/androidTest/debug/android/databinding/generated/reconnectCallback/OnClickListener.java
 bluetooth_module/build/intermediates/classes/androidTest/debug/android/databinding/layouts/DataBindingInfo.class
 bluetooth_module/build/intermediates/classes/androidTest/debug/com/android/databinding/library/R$id.class
 bluetooth_module/build/intermediates/classes/androidTest/debug/com/android/databinding/library/R.class
@@ -5139,9 +5139,9 @@ bluetooth_module/build/retrolambda/debugAndroidTest/android/databinding/DataBind
 bluetooth_module/build/retrolambda/debugAndroidTest/android/databinding/DataBindingComponent.java
 bluetooth_module/build/retrolambda/debugAndroidTest/android/databinding/DynamicUtil.class
 bluetooth_module/build/retrolambda/debugAndroidTest/android/databinding/DynamicUtil.java
-bluetooth_module/build/retrolambda/debugAndroidTest/android/databinding/generated/callback/OnClickListener$Listener.class
-bluetooth_module/build/retrolambda/debugAndroidTest/android/databinding/generated/callback/OnClickListener.class
-bluetooth_module/build/retrolambda/debugAndroidTest/android/databinding/generated/callback/OnClickListener.java
+bluetooth_module/build/retrolambda/debugAndroidTest/android/databinding/generated/reconnectCallback/OnClickListener$Listener.class
+bluetooth_module/build/retrolambda/debugAndroidTest/android/databinding/generated/reconnectCallback/OnClickListener.class
+bluetooth_module/build/retrolambda/debugAndroidTest/android/databinding/generated/reconnectCallback/OnClickListener.java
 bluetooth_module/build/retrolambda/debugAndroidTest/android/databinding/layouts/DataBindingInfo.class
 bluetooth_module/build/retrolambda/debugAndroidTest/com/android/databinding/library/R$id.class
 bluetooth_module/build/retrolambda/debugAndroidTest/com/android/databinding/library/R.class

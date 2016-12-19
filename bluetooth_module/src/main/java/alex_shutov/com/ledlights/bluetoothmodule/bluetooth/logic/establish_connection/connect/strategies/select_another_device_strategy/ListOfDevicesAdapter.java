@@ -1,4 +1,4 @@
-package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy;
+package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.select_another_device_strategy;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import alex_shutov.com.ledlights.bluetoothmodule.R;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.databinding.DeviceInfoViewModel;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.select_another_device_strategy.databinding.DeviceInfoViewModel;
 import alex_shutov.com.ledlights.bluetoothmodule.databinding.DeviceInfoBinding;
 
 /**

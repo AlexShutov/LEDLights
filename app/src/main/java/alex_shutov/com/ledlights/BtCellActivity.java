@@ -64,8 +64,9 @@ public class BtCellActivity extends Activity {
             }
 
             @Override
-            public void onReconnected(boolean isSameDevice) {
-                Log.i(LOG_TAG, "onReconnected(), is same device? " + isSameDevice);
+            public void onReconnected(BtDevice btDevice) {
+                Log.i(LOG_TAG, "onReconnected()");
+
             }
 
             @Override

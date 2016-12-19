@@ -11,7 +11,7 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.bluetoo
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.BtAlgorithm;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.DataProvider;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionCallbackReactive.CallbackSubscriptionManager;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.EstablishConnectionStrategy;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.EstablishConnectionStrategy;
 
 /**
  * Created by Alex on 10/26/2016.
@@ -126,9 +126,8 @@ public class ConnectionManagerImpl extends BtAlgorithm implements
         currentStrategy.attemptToEstablishConnection();
     }
 
-    @Override
-    public void setCallback(ConnectionManagerCallback callback) {
-        this.callback = callback;
+    public void setCallback(ConnectionManagerCallback reconnectCallback) {
+        this.callback = reconnectCallback;
     }
 
     public BtDevice getConnectedDevice() {

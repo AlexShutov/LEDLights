@@ -54,7 +54,7 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
     @Inject
     public ReconnectManager reconnectManager;
 
-    public BtLogicCellFacade(BtPortAdapterCreator diComponent){
+    public BtLogicCellFacade(BtPortAdapterCreator diComponent) {
         this.diComponent = diComponent;
         connectedDevice = null;
     }
@@ -113,13 +113,29 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
         diComponent.injectBtLogicCellFacade(this);
 
         reconnectManager.setDecoreeManager(connectManager);
+        // setup callback for reconnection
+        reconnectManager.setReconnectCallback(device -> {
+            String msg = "Device reconnected: ";
+            Log.i(LOG_TAG, device == null ? msg : msg +
+                    device.getDeviceName());
+            // save device info
+            BtLogicCellFacade.this.connectedDevice = device;
+            // select data transfer algorithm
+            // TODO:
+
+            // Inform app of reconnection event.
+            commFeedback.onReconnected(device);
+        });
+        // setup connection callback
         reconnectManager.setCallback(new ConnectionManagerCallback() {
             @Override
             public void onConnectionEstablished(BtDevice connectedDevice) {
                 String msg = "Connection established with device ";
                 Log.i(LOG_TAG, connectedDevice == null ? msg : msg +
                         connectedDevice.getDeviceName());
+
                 BtLogicCellFacade.this.connectedDevice = connectedDevice;
+                // select data transfer algorithm
                 commFeedback.onConnectionStarted(connectedDevice);
             }
 

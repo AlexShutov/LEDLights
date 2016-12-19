@@ -56,7 +56,7 @@ public class BtCommAdapter extends Adapter implements BtCommPort {
         }
 
         @Override
-        public void onReconnected(boolean isSameDevice) {
+        public void onReconnected(BtDevice btDevice) {
 
         }
 

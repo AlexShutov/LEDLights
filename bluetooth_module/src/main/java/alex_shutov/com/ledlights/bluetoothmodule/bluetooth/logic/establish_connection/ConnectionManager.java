@@ -24,5 +24,5 @@ public interface ConnectionManager {
 
     void selectDeviceByUi();
 
-    public void setCallback(ConnectionManagerCallback callback);
+    public void setCallback(ConnectionManagerCallback reconnectCallback);
 }

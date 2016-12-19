@@ -10,7 +10,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true">
 
-        <activity android:name=".bluetooth.logic.establish_connection.strategies.select_another_device_strategy.ChooseDeviceActivity"></activity>
+        <activity android:name=".bluetooth.logic.establish_connection.connect.select_another_device_strategy.ChooseDeviceActivity"></activity>
 
     </application>
 

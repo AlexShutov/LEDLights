@@ -9,7 +9,7 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtConnectorModule;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtScannerModule;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtStorageModule;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtPresenterModule;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.SelectAnotherDeviceStrategy;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.select_another_device_strategy.SelectAnotherDeviceStrategy;
 import alex_shutov.com.ledlights.hex_general.PortAdapterCreator;
 import alex_shutov.com.ledlights.hex_general.di.SystemModule;
 import dagger.Component;

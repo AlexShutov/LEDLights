@@ -17,16 +17,23 @@ import rx.schedulers.Schedulers;
 
 /**
  * ReconnectManager is a decorator for ConnectionManager, which purpose is to intercept
- * callback events from decoree and modify those events in some way. For example, assume
+ * reconnectCallback events from decoree and modify those events in some way. For example, assume
  * that user asked to ConnectionManager to connect to some Bluetooth device. But, that device
  * is unavailable and ConnectionManager could not connect to it. onConnectAttemptFailed()
- * method is called on callback by ConnectionManager. That ReconnectManager decorator has
+ * method is called on reconnectCallback by ConnectionManager. That ReconnectManager decorator has
  * to intercept that event and try to connect again after some time (second or two).
  * If that attempt fail too, manager might try again after some time (perhaps, exponential
  * back off). Finally, if attempt limit is reached, ReconnectManager inform appp by
- * calling decorated callback.
+ * calling decorated reconnectCallback.
  */
 public class ReconnectManager implements ConnectionManager, ConnectionManagerCallback {
+    public interface ReconnectCallback {
+        /**
+         * Inform that device is reconnected after loss of connection
+         * @param device
+         */
+        void onDeviceReconnected(BtDevice device);
+    }
     private static final String LOG_TAG = ReconnectManager.class.getSimpleName();
     // number of reconnect attempts before failure
     private static final int DEFAULT_ATTEMPT_LIMIT = 3;
@@ -49,6 +56,8 @@ public class ReconnectManager implements ConnectionManager, ConnectionManagerCal
     private boolean isOnPause;
     // active if reconnect attempt is pending
     private Subscription retryDelayConnection;
+    // feedback to app
+    private ReconnectCallback reconnectCallback;
 
     /**
      * Called by wrapping entity whenever connection to device is lost.
@@ -118,10 +127,11 @@ public class ReconnectManager implements ConnectionManager, ConnectionManagerCal
     public void onConnectionEstablished(BtDevice connectedDevice) {
         if (!isOnPause) {
             deactivate();
+            reconnectCallback.onDeviceReconnected(connectedDevice);
         } else {
             isOnPause = false;
+            decoreeCallback.onConnectionEstablished(connectedDevice);
         }
-        decoreeCallback.onConnectionEstablished(connectedDevice);
     }
 
     /**
@@ -178,7 +188,7 @@ public class ReconnectManager implements ConnectionManager, ConnectionManagerCal
 
     /**
      * When application set decorated manager, this retry manager need to intercept callbacks
-     * from that manager. To do so, it stores original callback and set itself as callback to
+     * from that manager. To do so, it stores original reconnectCallback and set itself as reconnectCallback to
      * decorated manager.
      * @param decoreeManager
      */
@@ -187,9 +197,8 @@ public class ReconnectManager implements ConnectionManager, ConnectionManagerCal
         this.decoreeManager.setCallback(this);
     }
 
-    @Override
-    public void setCallback(ConnectionManagerCallback callback) {
-        this.decoreeCallback = callback;
+    public void setCallback(ConnectionManagerCallback reconnectCallback) {
+        this.decoreeCallback = reconnectCallback;
     }
 
     public int getAttemptLimit() {
@@ -214,6 +223,10 @@ public class ReconnectManager implements ConnectionManager, ConnectionManagerCal
 
     public void setReconnectDelayTimeUnit(TimeUnit reconnectDelayTimeUnit) {
         this.reconnectDelayTimeUnit = reconnectDelayTimeUnit;
+    }
+
+    public void setReconnectCallback(ReconnectCallback reconnectCallback) {
+        this.reconnectCallback = reconnectCallback;
     }
 
     /**

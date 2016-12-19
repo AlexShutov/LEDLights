@@ -32,8 +32,8 @@ public class BtCommPortLogListener implements BtCommPortListener{
     }
 
     @Override
-    public void onReconnected(boolean isSameDevice) {
-        Log.w(LOG_TAG, "onReconnected(" + isSameDevice + ")");
+    public void onReconnected(BtDevice btDevice) {
+        Log.w(LOG_TAG, "onReconnected()");
     }
 
     @Override

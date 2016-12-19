@@ -6,7 +6,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import javax.inject.Singleton;
 
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.mvp.AnotherDevicePresenter;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.select_another_device_strategy.mvp.AnotherDevicePresenter;
 import dagger.Module;
 import dagger.Provides;
 

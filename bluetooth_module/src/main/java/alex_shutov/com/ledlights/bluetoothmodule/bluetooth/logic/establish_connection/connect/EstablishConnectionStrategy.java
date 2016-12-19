@@ -1,4 +1,4 @@
-package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies;
+package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect;
 
 import android.util.Log;
 
@@ -286,8 +286,8 @@ public abstract class EstablishConnectionStrategy extends BtAlgorithm
         }
     }
 
-    public void setCallback(ConnectionManagerCallback callback) {
-        this.callback = callback;
+    public void setCallback(ConnectionManagerCallback reconnectCallback) {
+        this.callback = reconnectCallback;
     }
 
     public ConnectionManagerCallback getCallback() {

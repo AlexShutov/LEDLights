@@ -42,9 +42,8 @@ public interface CommFeedbackInterface {
      * Bluetooth logic cell fires this callback if device were connected and connection were
      * lost by some reason, but, cell have managed to reconnect to this device.
      * This can happen if Motorcycle's module is cut from power.
-     * @param isSameDevice
      */
-    void onReconnected(boolean isSameDevice);
+    void onReconnected(BtDevice btDevice);
 
     /**
      * Tell app that connection to previously connected device were lost and
