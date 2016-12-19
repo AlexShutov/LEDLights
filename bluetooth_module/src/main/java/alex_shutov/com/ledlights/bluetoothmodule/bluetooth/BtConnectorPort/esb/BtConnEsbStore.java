@@ -31,9 +31,10 @@ public class BtConnEsbStore extends EsbEventStore {
 
     public static class ArgumentMessageReadEvent {
         public byte[] message;
-        int messageSize;
+        public int messageSize;
     }
 
+    // Posted on EventBust when message is sent
     public static class ArgumentMessageSentEvent {
         // tag class, nothing to pass
     }

@@ -1,6 +1,6 @@
 package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort;
 
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.transfer_data.TransferManager;
 import rx.Observable;
 
 /**
@@ -19,7 +19,7 @@ import rx.Observable;
  *
  *
  */
-public interface CommInterface  {
+public interface CommInterface extends TransferManager {
     /**
      * Initiate connection with whatever device Bluetooth cell has connection with, or
      * dummy device, if Bluetooth is turned off or there is no available devices from
@@ -54,12 +54,5 @@ public interface CommInterface  {
      * @return
      */
     boolean isDeviceConnected();
-
-    /**
-     * Send some data to connected Bluetooth device. Result of this operation will be
-     * delivered to output port either by onDataSent() or onDataSendFailed() methods.
-     * @param data
-     */
-    void sendData(byte[] data);
 
 }

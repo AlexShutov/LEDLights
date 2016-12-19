@@ -6,6 +6,8 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.common.primitives.Bytes;
+
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommPortListener;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
@@ -18,6 +20,7 @@ public class BtCellActivity extends Activity {
     private static final String LOG_TAG = BtCellActivity.class.getSimpleName();
     Button btnStart;
     Button btnCloseConnection;
+    Button btnSendData;
     TextView tvPrint;
     LEDApplication app;
     BtLogicCell btCell;
@@ -40,6 +43,13 @@ public class BtCellActivity extends Activity {
         btnCloseConnection.setOnClickListener(v -> {
             closeConnection();
         });
+        btnSendData = (Button) findViewById(R.id.abc_btn_send);
+        btnSendData.setOnClickListener(v -> {
+            String hello = "Hello!";
+            byte[] bytes = hello.getBytes();
+            btCell.getBtCommPort().sendData(bytes);
+        });
+
 
         btCell.setBtCommPortListener(new BtCommPortListener() {
             @Override
@@ -61,6 +71,11 @@ public class BtCellActivity extends Activity {
             @Override
             public void onDataSendFailed() {
                 Log.i(LOG_TAG, "onDataSendFailed()");
+            }
+
+            @Override
+            public void receiveData(byte[] data) {
+                Log.i(LOG_TAG, "Activity: Data received");
             }
 
             @Override

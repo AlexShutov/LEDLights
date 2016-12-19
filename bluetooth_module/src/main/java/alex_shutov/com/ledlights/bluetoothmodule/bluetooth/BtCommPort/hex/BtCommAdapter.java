@@ -56,6 +56,11 @@ public class BtCommAdapter extends Adapter implements BtCommPort {
         }
 
         @Override
+        public void receiveData(byte[] data) {
+
+        }
+
+        @Override
         public void onReconnected(BtDevice btDevice) {
 
         }

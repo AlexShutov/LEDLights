@@ -5,6 +5,7 @@ package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort;
  */
 
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.transfer_data.TransferManagerFeedback;
 
 /**
  * External output port for Bluetooth logic cell.
@@ -12,7 +13,7 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
  * as well as changes in connection state (if device was reconnected after loss of connection,
  * if bluetooth cell is using dummy source right now due to lack of actual device)
  */
-public interface CommFeedbackInterface {
+public interface CommFeedbackInterface extends TransferManagerFeedback {
 
     /**
      * Called as response to request to createPipeline connection from input port.
@@ -28,15 +29,6 @@ public interface CommFeedbackInterface {
      */
     void onConnectionFailed();
 
-    /**
-     * Tell app that data sent - result of .sendData() method
-     */
-    void onDataSent();
-
-    /**
-     * Tell app that data sending failed - result of .sendData() method.
-     */
-    void onDataSendFailed();
 
     /**
      * Bluetooth logic cell fires this callback if device were connected and connection were

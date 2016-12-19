@@ -9,6 +9,11 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conne
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.EstablishConnectionStrategy;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.strategies.ReconnectStrategy;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.select_another_device_strategy.SelectAnotherDeviceStrategy;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.transfer_data.TransferManager;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.transfer_data.TransferManagerBase;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.transfer_data.TransferManagerFeedback;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.transfer_data.TransferManagerImpl;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.transfer_data.TransferManagerMock;
 import dagger.Module;
 import dagger.Provides;
 
@@ -63,5 +68,29 @@ public class BtAlgorithmicModule {
         EstablishConnectionCallbackReactive callbackWrapper =
                 new EstablishConnectionCallbackReactive();
         return callbackWrapper;
+    }
+
+    /**
+     * Create stup, used when app has no connection to device (for robustness)
+     * @return
+     */
+    @Provides
+    @Singleton
+    @Named("TransferManagerMock")
+    TransferManagerBase provideMockTransferManager() {
+        TransferManagerMock m = new TransferManagerMock();
+        return m;
+    }
+
+    /**
+     * Create actual implementation of data transfer manager.
+     * @return
+     */
+    @Provides
+    @Singleton
+    @Named("TransferManagerImplementation")
+    TransferManagerBase provideTransferManagerImplementation() {
+        TransferManagerImpl m = new TransferManagerImpl();
+        return m;
     }
 }

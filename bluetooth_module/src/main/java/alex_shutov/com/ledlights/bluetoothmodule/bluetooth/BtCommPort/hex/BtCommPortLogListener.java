@@ -32,6 +32,11 @@ public class BtCommPortLogListener implements BtCommPortListener{
     }
 
     @Override
+    public void receiveData(byte[] data) {
+
+    }
+
+    @Override
     public void onReconnected(BtDevice btDevice) {
         Log.w(LOG_TAG, "onReconnected()");
     }

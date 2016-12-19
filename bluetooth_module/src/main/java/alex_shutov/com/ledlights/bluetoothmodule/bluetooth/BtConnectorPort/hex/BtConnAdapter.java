@@ -218,7 +218,11 @@ public class BtConnAdapter extends Adapter implements BtConnPort {
 
     @Override
     public void writeBytes(byte[] out) {
+        // send data
         btService.write(out);
+        // and inform listener of it
+        BtConnPortListener listener = (BtConnPortListener) getPortListener();
+        listener.onMessageSent();
     }
 
     /**

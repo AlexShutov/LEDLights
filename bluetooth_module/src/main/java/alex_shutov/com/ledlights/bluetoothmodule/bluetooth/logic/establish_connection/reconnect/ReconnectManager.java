@@ -125,13 +125,18 @@ public class ReconnectManager implements ConnectionManager, ConnectionManagerCal
      */
     @Override
     public void onConnectionEstablished(BtDevice connectedDevice) {
-        if (!isOnPause) {
-            deactivate();
-            reconnectCallback.onDeviceReconnected(connectedDevice);
-        } else {
-            isOnPause = false;
-            decoreeCallback.onConnectionEstablished(connectedDevice);
-        }
+        // notify listener in background
+        Observable.defer(() -> Observable.just(""))
+                .subscribeOn(Schedulers.computation())
+                .subscribe(t -> {
+                    if (!isOnPause) {
+                        deactivate();
+                        reconnectCallback.onDeviceReconnected(connectedDevice);
+                    } else {
+                        isOnPause = false;
+                        decoreeCallback.onConnectionEstablished(connectedDevice);
+                    }
+                });
     }
 
     /**
