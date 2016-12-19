@@ -8,7 +8,7 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.DataProvider;
 /**
  * Created by Alex on 10/27/2016.
  */
-public interface EstablishConnectionDataProvider extends DataProvider {
+public interface ConnectionManagerDataProvider extends DataProvider {
 
     /**
      * Manages connection to device, needed of coarse

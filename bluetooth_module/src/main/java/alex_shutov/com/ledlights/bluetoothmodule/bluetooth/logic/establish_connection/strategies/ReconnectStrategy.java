@@ -5,8 +5,8 @@ import android.util.Log;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.DataProvider;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionCallback;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionDataProvider;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.ConnectionManagerCallback;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.ConnectionManagerDataProvider;
 import rx.Observable;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
@@ -68,7 +68,7 @@ public class ReconnectStrategy extends EstablishConnectionStrategy {
     protected void getDependenciesFromFacade(DataProvider dataProvider) {
         // it is a MUST
         super.getDependenciesFromFacade(dataProvider);
-        EstablishConnectionDataProvider provider = (EstablishConnectionDataProvider) dataProvider;
+        ConnectionManagerDataProvider provider = (ConnectionManagerDataProvider) dataProvider;
         connPort = provider.provideBtConnPort();
     }
 
@@ -133,7 +133,7 @@ public class ReconnectStrategy extends EstablishConnectionStrategy {
     @Override
     protected void doOnConnectionAttemptFailed() {
         Log.i(LOG_TAG, "Connection attempt failed, perfforming action from 'reconnect' strategy");
-        EstablishConnectionCallback callback = getCallback();
+        ConnectionManagerCallback callback = getCallback();
         if (null != callback) {
             callback.onAttemptFailed();
         }

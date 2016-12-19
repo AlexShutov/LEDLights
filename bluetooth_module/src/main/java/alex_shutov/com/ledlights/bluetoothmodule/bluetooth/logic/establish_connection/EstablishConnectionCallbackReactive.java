@@ -1,7 +1,5 @@
 package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection;
 
-import android.view.textservice.SpellCheckerInfo;
-
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import rx.Observable;
 import rx.Subscription;
@@ -15,7 +13,7 @@ import rx.subjects.PublishSubject;
 /**
  * Transforms callback into set of pipelines, emitting events.
  */
-public class EstablishConnectionCallbackReactive implements EstablishConnectionCallback {
+public class EstablishConnectionCallbackReactive implements ConnectionManagerCallback {
 
     public static class CallbackSubscriptionManager {
         public Subscription successSubscription;

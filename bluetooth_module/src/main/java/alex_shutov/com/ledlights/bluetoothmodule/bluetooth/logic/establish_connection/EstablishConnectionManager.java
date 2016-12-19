@@ -22,14 +22,14 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conne
  *  external port demands it, or when connection was lost by some reason (perhaps, lost of power
  *  on the other end).
  */
-public class EstablishConnectionAlgorithm extends BtAlgorithm implements
-        EstablishConnection {
-    private static final String LOG_TAG = EstablishConnectionAlgorithm.class.getSimpleName();
-    private EstablishConnectionDataProvider dataProvider;
+public class EstablishConnectionManager extends BtAlgorithm implements
+        ConnectionManager {
+    private static final String LOG_TAG = EstablishConnectionManager.class.getSimpleName();
+    private ConnectionManagerDataProvider dataProvider;
     /**
      * Used to notify caller about results of algorithms (success or failure)
      */
-    private EstablishConnectionCallback callback;
+    private ConnectionManagerCallback callback;
 
     /**
      * Currently connected device - result of this algorithm
@@ -54,9 +54,9 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm implements
     private EstablishConnectionCallbackReactive currentStrategyCallbackWrapper;
     private CallbackSubscriptionManager currentStrategySubscriptions;
 
-    public EstablishConnectionAlgorithm(EstablishConnectionStrategy reconnectStrategy,
-                                        EstablishConnectionStrategy anotherDeviceStrategy,
-                                        EstablishConnectionCallbackReactive callbackWrapper) {
+    public EstablishConnectionManager(EstablishConnectionStrategy reconnectStrategy,
+                                      EstablishConnectionStrategy anotherDeviceStrategy,
+                                      EstablishConnectionCallbackReactive callbackWrapper) {
         this.reconnectStrategy = reconnectStrategy;
         this.anotherDeviceStrategy = anotherDeviceStrategy;
         currentStrategyCallbackWrapper = callbackWrapper;
@@ -83,7 +83,7 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm implements
 
     @Override
     protected void getDependenciesFromFacade(DataProvider dp) {
-        dataProvider = (EstablishConnectionDataProvider) dp;
+        dataProvider = (ConnectionManagerDataProvider) dp;
         // get connection history database
         deviceDatabase = dataProvider.provideHistoryDatabase();
         eventBus = dataProvider.provideEventBus();
@@ -92,7 +92,7 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm implements
     }
 
     /**
-     * Inherited from EstablishConnection
+     * Inherited from ConnectionManager
      */
 
     @Override
@@ -126,7 +126,7 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm implements
         currentStrategy.attemptToEstablishConnection();
     }
 
-    public void setCallback(EstablishConnectionCallback callback) {
+    public void setCallback(ConnectionManagerCallback callback) {
         this.callback = callback;
     }
 
@@ -173,7 +173,7 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm implements
                 currentStrategyCallbackWrapper.getConnectedSource()
                         .subscribe(connectedDevice -> {
                             Log.i(LOG_TAG, "device reconnected(): " + connectedDevice.getDeviceName());
-                            EstablishConnectionAlgorithm.this.connectedDevice = connectedDevice;
+                            EstablishConnectionManager.this.connectedDevice = connectedDevice;
                             if (null != callback){
                                 callback.onConnectionEstablished(connectedDevice);
                             }
@@ -182,15 +182,15 @@ public class EstablishConnectionAlgorithm extends BtAlgorithm implements
                 currentStrategyCallbackWrapper.getFailureSource()
                         .subscribe(t -> {
                             Log.w(LOG_TAG, "Connection attempt have failed");
-                            EstablishConnectionAlgorithm.this.connectedDevice = connectedDevice;
                             if (null != callback){
-                                callback.onConnectionEstablished(connectedDevice);
+                                callback.onAttemptFailed();
                             }
                         });
         currentStrategySubscriptions.unsupportedOperationSubscription =
                 currentStrategyCallbackWrapper.getUnsupportedOperationSource()
                         .subscribe(t -> {
                             Log.i(LOG_TAG, "This is an unsupported operation");
+                            callback.onUnsupportedOperation();
                         });
     }
 

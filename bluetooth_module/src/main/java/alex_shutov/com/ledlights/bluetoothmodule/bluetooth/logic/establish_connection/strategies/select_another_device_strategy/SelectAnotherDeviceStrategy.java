@@ -1,7 +1,6 @@
 package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +15,7 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtS
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanPortListener;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.DataProvider;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionCallback;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionDataProvider;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.ConnectionManagerDataProvider;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.EstablishConnectionStrategy;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.events.PresenterInstanceEvent;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.mvp.AnotherDeviceModel;
@@ -70,7 +68,7 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
     @Override
     protected void getDependenciesFromFacade(DataProvider dataProvider) {
         super.getDependenciesFromFacade(dataProvider);
-        EstablishConnectionDataProvider partsProvider = (EstablishConnectionDataProvider) dataProvider;
+        ConnectionManagerDataProvider partsProvider = (ConnectionManagerDataProvider) dataProvider;
         scanPort = partsProvider.provideBtScanPort();
         connPort = partsProvider.provideBtConnPort();
         partsProvider.provideDiComponent().injectSelectAnotherDeviceStrategy(this);
@@ -89,7 +87,6 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
         Log.i(LOG_TAG, message);
         // close Ui
         presenter.hideUi();
-        getCallback().onConnectionEstablished(device);
     }
 
     /**

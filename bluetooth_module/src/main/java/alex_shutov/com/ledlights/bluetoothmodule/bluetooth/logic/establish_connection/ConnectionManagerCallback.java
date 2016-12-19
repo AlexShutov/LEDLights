@@ -7,10 +7,10 @@ package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conn
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 
 /**
- * Interface for notifying logic, external to EstablishConnectionAlgorithm,
+ * Interface for notifying logic, external to EstablishConnectionManager,
  * that connection is established or connection attempt have failed.
  */
-public interface EstablishConnectionCallback {
+public interface ConnectionManagerCallback {
 
     /**
      * Bluetooth subsystem successefully connected to some device:

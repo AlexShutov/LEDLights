@@ -9,7 +9,8 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.bluetooth_devices.dao.BtDeviceDao;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.BtAlgorithm;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.DataProvider;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnection;import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionCallback;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.ConnectionManager;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.ConnectionManagerCallback;
 import rx.Observable;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
@@ -22,9 +23,9 @@ import static alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPor
  * Created by Alex on 11/5/2016.
  */
 public abstract class EstablishConnectionStrategy extends BtAlgorithm
-        implements EstablishConnection {
+        implements ConnectionManager {
     private static final String LOG_TAG = EstablishConnectionStrategy.class.getSimpleName();
-    private static EstablishConnectionCallback stubCallback = new EstablishConnectionCallback() {
+    private static ConnectionManagerCallback stubCallback = new ConnectionManagerCallback() {
         @Override
         public void onConnectionEstablished(BtDevice conenctedDevice) {}
         @Override
@@ -32,7 +33,7 @@ public abstract class EstablishConnectionStrategy extends BtAlgorithm
         @Override
         public void onUnsupportedOperation() {}
     };
-    private EstablishConnectionCallback callback;
+    private ConnectionManagerCallback callback;
     /**
      * We need to listen for ESB's events for successful connection or connection failure
      */
@@ -109,7 +110,7 @@ public abstract class EstablishConnectionStrategy extends BtAlgorithm
         return pipe;
     }
     /**
-     * Inherited from EstablishConnection interface - actual interface implementation
+     * Inherited from ConnectionManager interface - actual interface implementation
      */
 
     /**
@@ -224,7 +225,7 @@ public abstract class EstablishConnectionStrategy extends BtAlgorithm
                     // save device we just connected to as last connected device into history db.
                     updateLastConnectedDeviceRecord(connectedDevice);
                     // tell callback that connection is established
-                    EstablishConnectionCallback callback = getCallback();
+                    ConnectionManagerCallback callback = getCallback();
                     if (null != callback){
                         callback.onConnectionEstablished(connectedDevice);
                     }
@@ -285,11 +286,11 @@ public abstract class EstablishConnectionStrategy extends BtAlgorithm
         }
     }
 
-    public void setCallback(EstablishConnectionCallback callback) {
+    public void setCallback(ConnectionManagerCallback callback) {
         this.callback = callback;
     }
 
-    public EstablishConnectionCallback getCallback() {
+    public ConnectionManagerCallback getCallback() {
         return callback;
     }
 

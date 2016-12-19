@@ -3,7 +3,7 @@ package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionAlgorithm;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionManager;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionCallbackReactive;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.EstablishConnectionStrategy;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.ReconnectStrategy;
@@ -19,12 +19,12 @@ public class BtAlgorithmicModule {
 
     @Provides
     @Singleton
-    EstablishConnectionAlgorithm provideEstablishConnectionAlgorithm(
+    EstablishConnectionManager provideEstablishConnectionAlgorithm(
             @Named("ReconnectStrategy") EstablishConnectionStrategy reconnect,
             @Named("AnotherDeviceStrategy") EstablishConnectionStrategy anotherDevice,
             EstablishConnectionCallbackReactive currentStrategyWrapper){
-        EstablishConnectionAlgorithm algorithm =
-                new EstablishConnectionAlgorithm(reconnect, anotherDevice,
+        EstablishConnectionManager algorithm =
+                new EstablishConnectionManager(reconnect, anotherDevice,
                         currentStrategyWrapper);
         return algorithm;
     }

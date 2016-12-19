@@ -16,9 +16,9 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.B
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.bluetooth_devices.dao.BtDeviceDao;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.hex.BtStoragePort;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionAlgorithm;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionCallback;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionDataProvider;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.ConnectionManagerDataProvider;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionManager;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.ConnectionManagerCallback;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
@@ -26,7 +26,7 @@ import rx.subjects.PublishSubject;
 /**
  * Created by Alex on 11/6/2016.
  */
-public class BtLogicCellFacade implements CommInterface, EstablishConnectionDataProvider {
+public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataProvider {
     private static final String LOG_TAG = BtLogicCellFacade.class.getSimpleName();
     /**
      * DI component, responsible for creating all objects
@@ -49,7 +49,7 @@ public class BtLogicCellFacade implements CommInterface, EstablishConnectionData
      * Algorithms:
      */
     @Inject
-    public EstablishConnectionAlgorithm connecAlgorithm;
+    public EstablishConnectionManager connectManager;
 
     public BtLogicCellFacade(BtPortAdapterCreator diComponent){
         this.diComponent = diComponent;
@@ -72,7 +72,7 @@ public class BtLogicCellFacade implements CommInterface, EstablishConnectionData
 
 
     /**
-     * Inherited from EstablishConnectionDataProvider
+     * Inherited from ConnectionManagerDataProvider
      */
 
     @Override
@@ -109,7 +109,7 @@ public class BtLogicCellFacade implements CommInterface, EstablishConnectionData
         Log.i(LOG_TAG, "onInitialized()");
         diComponent.injectBtLogicCellFacade(this);
 
-        connecAlgorithm.setCallback(new EstablishConnectionCallback() {
+        connectManager.setCallback(new ConnectionManagerCallback() {
             @Override
             public void onConnectionEstablished(BtDevice connectedDevice) {
                 String msg = "Connection established with device ";
@@ -130,7 +130,7 @@ public class BtLogicCellFacade implements CommInterface, EstablishConnectionData
                 commFeedback.onConnectionFailed();
             }
         });
-        connecAlgorithm.init(this);
+        connectManager.init(this);
         // createPipeline receiving ESB events
         connectionLostEventSource.asObservable()
                 .observeOn(Schedulers.computation())
@@ -153,7 +153,7 @@ public class BtLogicCellFacade implements CommInterface, EstablishConnectionData
     @Override
     public void startConnection() {
         Log.i(LOG_TAG, "startConnection()");
-        connecAlgorithm.attemptToEstablishConnection();
+        connectManager.attemptToEstablishConnection();
     }
 
     @Override
@@ -172,7 +172,7 @@ public class BtLogicCellFacade implements CommInterface, EstablishConnectionData
      */
     @Override
     public void selectAnotherDevice() {
-       connecAlgorithm.selectDeviceByUi();
+       connectManager.selectDeviceByUi();
     }
 
     @Override
@@ -202,4 +202,10 @@ public class BtLogicCellFacade implements CommInterface, EstablishConnectionData
     public void setCommFeedback(BtCommPortListener commFeedback) {
         this.commFeedback = commFeedback;
     }
+
+    private void initializeConnectManager() {
+
+    }
+
+
 }
