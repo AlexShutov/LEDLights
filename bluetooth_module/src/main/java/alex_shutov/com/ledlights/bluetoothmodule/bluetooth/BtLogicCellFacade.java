@@ -17,8 +17,9 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtS
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.bluetooth_devices.dao.BtDeviceDao;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.hex.BtStoragePort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.ConnectionManagerDataProvider;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionManager;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.ConnectionManagerImpl;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.ConnectionManagerCallback;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.reconnect.ReconnectManager;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
@@ -49,7 +50,9 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
      * Algorithms:
      */
     @Inject
-    public EstablishConnectionManager connectManager;
+    public ConnectionManagerImpl connectManager;
+    @Inject
+    public ReconnectManager reconnectManager;
 
     public BtLogicCellFacade(BtPortAdapterCreator diComponent){
         this.diComponent = diComponent;
@@ -109,7 +112,8 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
         Log.i(LOG_TAG, "onInitialized()");
         diComponent.injectBtLogicCellFacade(this);
 
-        connectManager.setCallback(new ConnectionManagerCallback() {
+        reconnectManager.setDecoreeManager(connectManager);
+        reconnectManager.setCallback(new ConnectionManagerCallback() {
             @Override
             public void onConnectionEstablished(BtDevice connectedDevice) {
                 String msg = "Connection established with device ";
@@ -136,6 +140,7 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
                 .observeOn(Schedulers.computation())
                 .subscribe(t -> {
                     Log.i(LOG_TAG, "Connection lost");
+                    reconnectManager.onConnectionLost();
                 });
         eventBus.register(this);
     }

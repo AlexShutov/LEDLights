@@ -10,7 +10,7 @@ package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conn
  * - connect to last device,
  * - connect to device from history,
  * - run UI, discover all devices and let user choose one (last resort, optional)
- * EstablishConnectionManager implement that interface, too and it has all
+ * ConnectionManagerImpl implement that interface, too and it has all
  * strategies in it.
  *
  */
@@ -23,4 +23,6 @@ public interface ConnectionManager {
     void stopConnecting();
 
     void selectDeviceByUi();
+
+    public void setCallback(ConnectionManagerCallback callback);
 }

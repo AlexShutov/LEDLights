@@ -22,9 +22,9 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conne
  *  external port demands it, or when connection was lost by some reason (perhaps, lost of power
  *  on the other end).
  */
-public class EstablishConnectionManager extends BtAlgorithm implements
+public class ConnectionManagerImpl extends BtAlgorithm implements
         ConnectionManager {
-    private static final String LOG_TAG = EstablishConnectionManager.class.getSimpleName();
+    private static final String LOG_TAG = ConnectionManagerImpl.class.getSimpleName();
     private ConnectionManagerDataProvider dataProvider;
     /**
      * Used to notify caller about results of algorithms (success or failure)
@@ -54,9 +54,9 @@ public class EstablishConnectionManager extends BtAlgorithm implements
     private EstablishConnectionCallbackReactive currentStrategyCallbackWrapper;
     private CallbackSubscriptionManager currentStrategySubscriptions;
 
-    public EstablishConnectionManager(EstablishConnectionStrategy reconnectStrategy,
-                                      EstablishConnectionStrategy anotherDeviceStrategy,
-                                      EstablishConnectionCallbackReactive callbackWrapper) {
+    public ConnectionManagerImpl(EstablishConnectionStrategy reconnectStrategy,
+                                 EstablishConnectionStrategy anotherDeviceStrategy,
+                                 EstablishConnectionCallbackReactive callbackWrapper) {
         this.reconnectStrategy = reconnectStrategy;
         this.anotherDeviceStrategy = anotherDeviceStrategy;
         currentStrategyCallbackWrapper = callbackWrapper;
@@ -126,6 +126,7 @@ public class EstablishConnectionManager extends BtAlgorithm implements
         currentStrategy.attemptToEstablishConnection();
     }
 
+    @Override
     public void setCallback(ConnectionManagerCallback callback) {
         this.callback = callback;
     }
@@ -173,7 +174,7 @@ public class EstablishConnectionManager extends BtAlgorithm implements
                 currentStrategyCallbackWrapper.getConnectedSource()
                         .subscribe(connectedDevice -> {
                             Log.i(LOG_TAG, "device reconnected(): " + connectedDevice.getDeviceName());
-                            EstablishConnectionManager.this.connectedDevice = connectedDevice;
+                            ConnectionManagerImpl.this.connectedDevice = connectedDevice;
                             if (null != callback){
                                 callback.onConnectionEstablished(connectedDevice);
                             }

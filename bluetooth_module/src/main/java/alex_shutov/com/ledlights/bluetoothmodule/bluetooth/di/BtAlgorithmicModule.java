@@ -3,8 +3,9 @@ package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionManager;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.ConnectionManagerImpl;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionCallbackReactive;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.reconnect.ReconnectManager;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.EstablishConnectionStrategy;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.ReconnectStrategy;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.strategies.select_another_device_strategy.SelectAnotherDeviceStrategy;
@@ -19,14 +20,21 @@ public class BtAlgorithmicModule {
 
     @Provides
     @Singleton
-    EstablishConnectionManager provideEstablishConnectionAlgorithm(
+    ConnectionManagerImpl provideEstablishConnectionAlgorithm(
             @Named("ReconnectStrategy") EstablishConnectionStrategy reconnect,
             @Named("AnotherDeviceStrategy") EstablishConnectionStrategy anotherDevice,
             EstablishConnectionCallbackReactive currentStrategyWrapper){
-        EstablishConnectionManager algorithm =
-                new EstablishConnectionManager(reconnect, anotherDevice,
+        ConnectionManagerImpl algorithm =
+                new ConnectionManagerImpl(reconnect, anotherDevice,
                         currentStrategyWrapper);
         return algorithm;
+    }
+
+    @Provides
+    @Singleton
+    ReconnectManager provideReconnectManager(){
+        ReconnectManager reconnectManager = new ReconnectManager();
+        return reconnectManager;
     }
 
     /**
