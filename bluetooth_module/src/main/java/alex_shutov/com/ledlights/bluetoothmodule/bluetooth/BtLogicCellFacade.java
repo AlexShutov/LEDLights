@@ -177,7 +177,7 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
      */
     @Override
     public void selectAnotherDevice() {
-       connectManager.selectDeviceByUi();
+       reconnectManager.selectDeviceByUi();
     }
 
     @Override

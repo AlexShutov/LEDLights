@@ -1,6 +1,5 @@
 package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic;
 
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtLogicCellFacade;
 
 /**
  * Created by Alex on 10/26/2016.

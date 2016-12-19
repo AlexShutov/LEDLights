@@ -29,7 +29,7 @@ import rx.subjects.PublishSubject;
  * Created by Alex on 11/7/2016.
  */
 public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
-        implements AnotherDeviceModel ,
+        implements AnotherDeviceModel,
         BtScanPortListener {
     private static final String LOG_TAG = SelectAnotherDeviceStrategy.class.getSimpleName();
 
@@ -58,7 +58,7 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
         super.start();
         // register this strategy as a view in Presenter
         presenter.attachModel(this);
-        // send reference to presenter in sticjy event so View can get it at any time
+        // send reference to presenter in sticky event so View can get it at any time
         PresenterInstanceEvent event = new PresenterInstanceEvent();
         event.setPresenter(presenter);
         eventBus.removeStickyEvent(PresenterInstanceEvent.class);

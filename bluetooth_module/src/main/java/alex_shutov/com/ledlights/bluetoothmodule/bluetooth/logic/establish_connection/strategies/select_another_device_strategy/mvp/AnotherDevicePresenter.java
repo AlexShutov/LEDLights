@@ -177,6 +177,7 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
     public void onUserRefusedToPickDevice(){
         Toast.makeText(context, "User refused to pick device", Toast.LENGTH_SHORT).show();
         AnotherDeviceModel model = getModel();
+        model.onFailedToSelectAnotherDevice();
     }
 
     /**
