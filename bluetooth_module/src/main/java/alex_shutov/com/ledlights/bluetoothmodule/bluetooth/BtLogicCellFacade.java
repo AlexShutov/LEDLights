@@ -164,10 +164,10 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
     @Override
     public void disconnect() {
         Log.i(LOG_TAG, "disconnect()");
-        if (isDeviceConnected()){
+        reconnectManager.stopConnecting();
+        if (isDeviceConnected()) {
             Log.i(LOG_TAG, "Device is connected: " + connectedDevice.getDeviceName() +
                 ", disconnecting");
-            connPort.close();
         }
     }
 

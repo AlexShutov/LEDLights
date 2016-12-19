@@ -44,7 +44,8 @@ public class ReconnectManager implements ConnectionManager, ConnectionManagerCal
     private int currentAttemptCount;
     // if manager is active right now. It may not if user want to select device manually.
     private boolean isActive;
-
+    // manager can be put on pause if user want to select device manually or connection is no
+    // longer needed
     private boolean isOnPause;
     // active if reconnect attempt is pending
     private Subscription retryDelayConnection;
@@ -87,12 +88,13 @@ public class ReconnectManager implements ConnectionManager, ConnectionManagerCal
     }
 
     /**
-     * Stop all currently active connection attempts and deactivate this manager
+     * Stop all currently active connection attempts and deactivate this manager.
+     * Put this manager on pause if user want to disconnect from device.
      */
     @Override
     public void stopConnecting() {
         deactivate();
-        isOnPause = false;
+        isOnPause = true;
         decoreeManager.stopConnecting();
     }
 
@@ -108,7 +110,7 @@ public class ReconnectManager implements ConnectionManager, ConnectionManagerCal
      */
 
     /**
-     * Connection established successfully, no need in retying. Deactivate this manager  and
+     * Connection established successfully, no need in retying. Deactivate this manager and
      * reset its state
      * @param connectedDevice
      */

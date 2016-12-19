@@ -17,6 +17,7 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtLogicCell;
 public class BtCellActivity extends Activity {
     private static final String LOG_TAG = BtCellActivity.class.getSimpleName();
     Button btnStart;
+    Button btnCloseConnection;
     TextView tvPrint;
     LEDApplication app;
     BtLogicCell btCell;
@@ -34,6 +35,10 @@ public class BtCellActivity extends Activity {
         btCell = app.getCell();
         btnStart.setOnClickListener(v -> {
             startPolling();
+        });
+        btnCloseConnection = (Button) findViewById(R.id.abc_btn_close_connection);
+        btnCloseConnection.setOnClickListener(v -> {
+            closeConnection();
         });
 
         btCell.setBtCommPortListener(new BtCommPortListener() {
@@ -89,6 +94,10 @@ public class BtCellActivity extends Activity {
     private void startPolling(){
         BtCommPort commPort = btCell.getBtCommPort();
         commPort.selectAnotherDevice();
+    }
+    private void closeConnection(){
+        BtCommPort commPort = btCell.getBtCommPort();
+        commPort.disconnect();
     }
 
 }
