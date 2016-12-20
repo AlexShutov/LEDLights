@@ -9,9 +9,9 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conne
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.EstablishConnectionStrategy;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.strategies.ReconnectStrategy;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.select_another_device_strategy.SelectAnotherDeviceStrategy;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.transfer_data.TransferManager;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.reconnect.ReconnectSchedulingStrategy;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.reconnect.strategies.FinitAttemptCountSameDelay;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.transfer_data.TransferManagerBase;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.transfer_data.TransferManagerFeedback;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.transfer_data.TransferManagerImpl;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.transfer_data.TransferManagerMock;
 import dagger.Module;
@@ -26,7 +26,7 @@ public class BtAlgorithmicModule {
     @Provides
     @Singleton
     ConnectionManagerImpl provideEstablishConnectionAlgorithm(
-            @Named("ReconnectStrategy") EstablishConnectionStrategy reconnect,
+            @Named("ReconnectSchedulingStrategy") EstablishConnectionStrategy reconnect,
             @Named("AnotherDeviceStrategy") EstablishConnectionStrategy anotherDevice,
             EstablishConnectionCallbackReactive currentStrategyWrapper){
         ConnectionManagerImpl algorithm =
@@ -35,6 +35,10 @@ public class BtAlgorithmicModule {
         return algorithm;
     }
 
+    /**
+     * Create and provide reconnect manager.
+     * @return
+     */
     @Provides
     @Singleton
     ReconnectManager provideReconnectManager(){
@@ -43,12 +47,25 @@ public class BtAlgorithmicModule {
     }
 
     /**
+     * Create instance of strategy, which will schedule connection attempts fixed number of
+     * times after the same delay
+     * @return
+     */
+    @Provides
+    @Singleton
+    @Named("FinitAttemptCountSameDelay")
+    ReconnectSchedulingStrategy provideFinitAttemptCountStrategy() {
+        ReconnectSchedulingStrategy strategy = new FinitAttemptCountSameDelay();
+        return strategy;
+    }
+
+    /**
      * Strategies for establishing connection
      */
 
     @Provides
     @Singleton
-    @Named("ReconnectStrategy")
+    @Named("ReconnectSchedulingStrategy")
     EstablishConnectionStrategy provideReconnectStrategy( ) {
         ReconnectStrategy reconnectStrategy = new ReconnectStrategy();
         return reconnectStrategy;

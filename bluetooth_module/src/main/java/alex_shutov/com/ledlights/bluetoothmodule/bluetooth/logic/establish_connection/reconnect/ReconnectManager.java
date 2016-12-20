@@ -6,8 +6,6 @@ package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conn
 
 import android.util.Log;
 
-import java.util.concurrent.TimeUnit;
-
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.ConnectionManager;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.ConnectionManagerCallback;
@@ -35,20 +33,14 @@ public class ReconnectManager implements ConnectionManager, ConnectionManagerCal
         void onDeviceReconnected(BtDevice device);
     }
     private static final String LOG_TAG = ReconnectManager.class.getSimpleName();
-    // number of reconnect attempts before failure
-    private static final int DEFAULT_ATTEMPT_LIMIT = 3;
-    // delay bettween reconnection attempts
-    private static final int DEFAULT_RECONNECT_DELAY = 1;
-    private static final TimeUnit DEFAULT_RECONNECT_TIME_UNITS = TimeUnit.SECONDS;
+
     private ConnectionManager decoreeManager;
     private ConnectionManagerCallback decoreeCallback;
+    /**
+     * Strategy, responsible for scheduling reconnection attempts.
+     */
+    private ReconnectSchedulingStrategy reconnectStrategy;
 
-    private int attemptLimit = DEFAULT_ATTEMPT_LIMIT;
-    // Reconnection delay
-    private int reconnectDelay = DEFAULT_RECONNECT_DELAY;
-    private TimeUnit reconnectDelayTimeUnit = DEFAULT_RECONNECT_TIME_UNITS;
-    // number of attempts made
-    private int currentAttemptCount;
     // if manager is active right now. It may not if user want to select device manually.
     private boolean isActive;
     // manager can be put on pause if user want to select device manually or connection is no
@@ -68,9 +60,11 @@ public class ReconnectManager implements ConnectionManager, ConnectionManagerCal
             activate();
             // start reconnect attempt after some delay
             suspendReconnectAttempt();
-            retryDelayConnection = startReconnectAttempt();
+            retryDelayConnection = reconnectStrategy.startReconnectAttempt();
         }
     }
+
+
 
     /**
      * Inherited from ConnectionManager
@@ -148,9 +142,9 @@ public class ReconnectManager implements ConnectionManager, ConnectionManagerCal
         // manager is active if connection was lost or app requested to establish connection
         // check if we not reached attempt count limit too.
         if (isActive && !isOnPause) {
-            if (currentAttemptCount < attemptLimit) {
+            if (reconnectStrategy.shouldContinue()) {
                  suspendReconnectAttempt();
-                 retryDelayConnection = startReconnectAttempt();
+                 retryDelayConnection = reconnectStrategy.startReconnectAttempt();
             } else {
                 deactivate();
                 decoreeCallback.onAttemptFailed();
@@ -172,22 +166,6 @@ public class ReconnectManager implements ConnectionManager, ConnectionManagerCal
     }
 
     /**
-     * Schedule reconnect attempt after some delay.
-     */
-    private Subscription startReconnectAttempt() {
-        currentAttemptCount++;
-        Observable<Boolean> task = Observable.just(true)
-                .subscribeOn(Schedulers.computation())
-                .delay(reconnectDelay, reconnectDelayTimeUnit);
-        Subscription s = Observable.defer(() -> task)
-                .subscribe(t -> {
-                    Log.i(LOG_TAG, "Trying to connect again (" + currentAttemptCount +  " time)");
-                    decoreeManager.attemptToEstablishConnection();
-                });
-        return s;
-    }
-
-    /**
      * Accessors
      */
 
@@ -202,41 +180,47 @@ public class ReconnectManager implements ConnectionManager, ConnectionManagerCal
         this.decoreeManager.setCallback(this);
     }
 
+    public ConnectionManager getDecoreeManager() {
+        return decoreeManager;
+    }
+
     public void setCallback(ConnectionManagerCallback reconnectCallback) {
         this.decoreeCallback = reconnectCallback;
     }
 
-    public int getAttemptLimit() {
-        return attemptLimit;
-    }
-
-    public void setAttemptLimit(int attemptLimit) {
-        this.attemptLimit = attemptLimit;
-    }
-
-    public int getReconnectDelay() {
-        return reconnectDelay;
-    }
-
-    public void setReconnectDelay(int reconnectDelay) {
-        this.reconnectDelay = reconnectDelay;
-    }
-
-    public TimeUnit getReconnectDelayTimeUnit() {
-        return reconnectDelayTimeUnit;
-    }
-
-    public void setReconnectDelayTimeUnit(TimeUnit reconnectDelayTimeUnit) {
-        this.reconnectDelayTimeUnit = reconnectDelayTimeUnit;
-    }
 
     public void setReconnectCallback(ReconnectCallback reconnectCallback) {
         this.reconnectCallback = reconnectCallback;
     }
 
+    // accessors for strategies, scheduling reconnect attempts.
+    public ReconnectSchedulingStrategy getReconnectStrategy() {
+        return reconnectStrategy;
+    }
+
     /**
-     * Own private methods
+     * It is more than just generated accessor - it set reference to this ReconnectManager
+     * within that strategy.
+     * We first turn off this manager if it is still active. This is important, because
+     * ReconnectManager store only Subscription to scheduled task, all actual data, related to
+     * reconnection attempt is stored within according strategy. If don't do so, strategy might
+     * try to access null reference to this ReconnectManager in the future.
+     * @param reconnectStrategy
      */
+    public void setReconnectStrategy(ReconnectSchedulingStrategy reconnectStrategy) {
+        if (isActive) {
+            deactivate();
+        }
+        // detach this ReconnectManager from previous strategy.
+        ReconnectSchedulingStrategy old = this.reconnectStrategy;
+        if (null != old) {
+            old.setBoundInstance(null);
+        }
+        // attach new strategy.
+        reconnectStrategy.setBoundInstance(this);
+        this.reconnectStrategy = reconnectStrategy;
+    }
+
 
     /**
      *
@@ -253,6 +237,7 @@ public class ReconnectManager implements ConnectionManager, ConnectionManagerCal
     private void activate() {
         Log.i(LOG_TAG, "Activating ReconnectManager");
         resetState();
+        reconnectStrategy.onRestarted();
         isActive = true;
     }
 
@@ -262,7 +247,7 @@ public class ReconnectManager implements ConnectionManager, ConnectionManagerCal
      */
     private void resetState() {
         Log.i(LOG_TAG, "Resetting state of ReconnectManager");
-        currentAttemptCount = 0;
+        reconnectStrategy.clearAttemptCounter();
         suspendReconnectAttempt();
     }
 

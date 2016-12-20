@@ -21,6 +21,7 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conne
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.ConnectionManagerImpl;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.ConnectionManagerCallback;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.reconnect.ReconnectManager;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.reconnect.ReconnectSchedulingStrategy;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.transfer_data.TransferManagerBase;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.transfer_data.TransferManagerFeedback;
 import rx.Observable;
@@ -48,8 +49,8 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
     public BtStoragePort storagePort;
 
     private BtCommPortListener commFeedback;
-
     private BtDevice connectedDevice;
+
     /**
      * Algorithms:
      */
@@ -59,6 +60,12 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
     // reconnect manager (if connection is lost)
     @Inject
     public ReconnectManager reconnectManager;
+    // strategies for scheduling reconnect attempts
+    @Inject
+    @Named("FinitAttemptCountSameDelay")
+    public ReconnectSchedulingStrategy reconnectFixedAttemptCountSameDelay;
+
+
     // connect source of 'connection lost' events to 'reconnect' manager
     private Subscription reconnectManagerConnectionLostSubscription;
 
@@ -200,10 +207,10 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
 
     }
 
-
     public void setCommFeedback(BtCommPortListener commFeedback) {
         this.commFeedback = commFeedback;
     }
+
 
 
     /**
@@ -241,6 +248,8 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
 
     private void setupConnectAndReconnectManagers() {
         reconnectManager.setDecoreeManager(connectManager);
+        // select strategy with fixed number of attempts by default.
+        reconnectManager.setReconnectStrategy(reconnectFixedAttemptCountSameDelay);
         // setup callback for reconnection
         reconnectManager.setReconnectCallback(device -> {
             String msg = "Device reconnected: ";
