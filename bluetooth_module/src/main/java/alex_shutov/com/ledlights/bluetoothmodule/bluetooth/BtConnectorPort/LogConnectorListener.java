@@ -28,7 +28,7 @@ public class LogConnectorListener implements BtConnPortListener {
 
     @Override
     public void onConnectionFailed() {
-        showMessage("Connection failed");
+//        showMessage("Connection failed");
         Log.i(LOG_TAG, "Connection failed");
     }
 
@@ -39,7 +39,7 @@ public class LogConnectorListener implements BtConnPortListener {
 
     @Override
     public void onStateConnected() {
-        showMessage("Connected");
+//        showMessage("Connected");
         Log.i(LOG_TAG, "Connected");
     }
 
@@ -47,20 +47,20 @@ public class LogConnectorListener implements BtConnPortListener {
     public void onStateConnecting() {
         String m = "Connecting";
         Log.i(LOG_TAG, m);
-        showMessage(m);
+//        showMessage(m);
     }
 
     @Override
     public void onStateListening() {
         String m = "listening for connection";
         Log.i(LOG_TAG, m);
-        showMessage(m);
+//        showMessage(m);
     }
 
     @Override
     public void onStateIdle() {
         String m = "Bt doing nothing right now";
-        showMessage(m);
+//        showMessage(m);
         Log.i(LOG_TAG, m);
     }
 
@@ -68,7 +68,7 @@ public class LogConnectorListener implements BtConnPortListener {
     public void onMessageRead(byte[] message, int messageSize) {
         String msg = new String(message,0,  messageSize);
         String m = "Received " + messageSize + " bytes: " + msg;
-        showMessage(m);
+//        showMessage(m);
         Log.i(LOG_TAG, m);
     }
 
@@ -76,7 +76,7 @@ public class LogConnectorListener implements BtConnPortListener {
     public void onMessageSent() {
         String m = "Message sent";
         Log.i(LOG_TAG, m);
-        showMessage(m);
+//        showMessage(m);
     }
 
     @Override
@@ -86,13 +86,13 @@ public class LogConnectorListener implements BtConnPortListener {
         String m = "device connected: " +btDevice.getDeviceName() + " " + btDevice.getDeviceAddress() +
                 " " + uuid + " " + btDevice.getDeviceDescription();
         Log.i(LOG_TAG, m);
-        showMessage(m);
+//        showMessage(m);
     }
 
     @Override
     public void onConnectionLost() {
         String m = "Connection lost";
-        showMessage(m);
+//        showMessage(m);
         Log.i(LOG_TAG, m);
     }
 
@@ -100,14 +100,14 @@ public class LogConnectorListener implements BtConnPortListener {
     public void onPortReady(int portID) {
         String m = "Port is ready: " + portID;
         Log.i(LOG_TAG, m);
-        showMessage(m);
+//        showMessage(m);
     }
 
     @Override
     public void onCriticalFailure(int portID, Exception e) {
         String m = "Critical failure has occured on port: " + portID ;
         Log.i(LOG_TAG, m);
-        showMessage(m);
+//        showMessage(m);
     }
 
 }

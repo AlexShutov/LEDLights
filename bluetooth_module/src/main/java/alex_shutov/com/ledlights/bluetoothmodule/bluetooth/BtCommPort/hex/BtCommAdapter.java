@@ -69,11 +69,6 @@ public class BtCommAdapter extends Adapter implements BtCommPort {
         public void onDummyDeviceSelected() {
 
         }
-
-        @Override
-        public void onReconnectAttemptFailed() {
-
-        }
     };
 
     public BtCommAdapter(){

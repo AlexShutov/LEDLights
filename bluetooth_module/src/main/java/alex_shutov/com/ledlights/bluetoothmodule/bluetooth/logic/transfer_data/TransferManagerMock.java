@@ -41,5 +41,7 @@ public class TransferManagerMock extends TransferManagerBase {
     @Override
     public void sendData(byte[] data) {
         Log.w(LOG_TAG, "Attempting to send data via mock transfer manager");
+        // consider data being sent
+        getFeedback().onDataSent();
     }
 }

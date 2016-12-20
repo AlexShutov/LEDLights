@@ -8,6 +8,9 @@ import org.greenrobot.eventbus.Subscribe;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.DataProvider;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.ConnectionManagerDataProvider;
+import rx.Observable;
+import rx.Subscription;
+import rx.schedulers.Schedulers;
 
 import static alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.esb.BtConnEsbStore.*;
 
@@ -49,12 +52,14 @@ public class TransferManagerImpl extends TransferManagerBase {
 
     @Override
     public void sendData(byte[] data) {
-
+        connPort.writeBytes(data);
     }
 
     @Subscribe
     public void onDataSent(ArgumentMessageSentEvent event) {
         // inform listener that data package sent successfully
+        TransferManagerFeedback feedback = getFeedback();
+        feedback.onDataSent();
     }
 
 

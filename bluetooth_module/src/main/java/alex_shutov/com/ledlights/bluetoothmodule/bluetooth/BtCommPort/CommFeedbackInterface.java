@@ -47,9 +47,4 @@ public interface CommFeedbackInterface extends TransferManagerFeedback {
      */
     void onDummyDeviceSelected();
 
-    /**
-     * Notify app, that attempt to re-establish lost connection has failed.
-     */
-    void onReconnectAttemptFailed();
-
 }

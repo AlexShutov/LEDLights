@@ -47,11 +47,6 @@ public class BtCommPortLogListener implements BtCommPortListener{
     }
 
     @Override
-    public void onReconnectAttemptFailed() {
-        Log.w(LOG_TAG, "onReconnectAttemptFailed()");
-    }
-
-    @Override
     public void onPortReady(int portID) {
         Log.w(LOG_TAG, "onPortReady(" + portID + ")");
     }

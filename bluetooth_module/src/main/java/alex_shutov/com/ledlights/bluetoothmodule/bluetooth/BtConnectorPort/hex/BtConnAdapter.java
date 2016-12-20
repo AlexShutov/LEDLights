@@ -205,7 +205,7 @@ public class BtConnAdapter extends Adapter implements BtConnPort {
 
     @Override
     public void stopConnecting() {
-        if (btService.getState() != BluetoothChatService.STATE_CONNECTING){
+        if (btService.getState() != BluetoothChatService.STATE_CONNECTING) {
             Log.w(LOG_TAG, "can't cancel connection because device isn't connecting");
             return;
         }
@@ -225,24 +225,15 @@ public class BtConnAdapter extends Adapter implements BtConnPort {
         listener.onMessageSent();
     }
 
-    /**
-     * Verify that all bt device's
-     * @return
-     */
-    private boolean checkDeviceParameters(){
-        return true;
-    }
-
-    private void setDeviceAttributes(BtDevice device){
+    private void setDeviceAttributes(BtDevice device) {
         boolean isSecure = device.isSecureOperation();
-
         setNameSecure(device.getDeviceName());
         setNameInsecure(device.getDeviceName());
         setUuidSecure(device.getDeviceUuIdSecure());
         setUuidInsecure(device.getDeviceUuIdInsecure());
     }
 
-    private class DispatcherHandler extends Handler{
+    private class DispatcherHandler extends Handler {
 
         public DispatcherHandler(Looper looper) {
             super(looper);

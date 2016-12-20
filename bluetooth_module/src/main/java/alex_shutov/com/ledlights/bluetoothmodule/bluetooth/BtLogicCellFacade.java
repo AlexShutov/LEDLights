@@ -212,7 +212,17 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
 
     @Override
     public void sendData(byte[] data) {
-
+        currentTransferManager.sendData(data);
+        Observable<byte[]> sendTask =
+                Observable.just(data)
+                .subscribeOn(Schedulers.io());
+        Observable.defer(() -> sendTask)
+                .subscribe(arg -> {
+                    // send data and switch strategies synchronously
+                    synchronized (transferManagerSelectionLock) {
+                        currentTransferManager.sendData(arg);
+                    }
+            });
     }
 
     public void setCommFeedback(BtCommPortListener commFeedback) {
@@ -286,10 +296,17 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
         }
     };
 
+    /**
+     * By default application try to connect to device infinite number of times. It is
+     * acceptable, because Bluetooth require not much power and it will not affect battery life
+     * even if user forget to close app.
+     * Application idea presume, that user will turn this app off when he or she will tire of
+     * riding.
+     */
     private void setupConnectAndReconnectManagers() {
         reconnectManager.setDecoreeManager(connectManager);
-        // select strategy with fixed number of attempts by default.
-        reconnectManager.setReconnectStrategy(reconnectIndefinitelyStrategy);
+        // select strategy, always trying to connect by default.
+        selectRetryIndefinitelyStrategy();
         // setup callback for reconnection
         reconnectManager.setReconnectCallback(device -> {
             String msg = "Device reconnected: ";
@@ -298,8 +315,7 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
             // save device info
             BtLogicCellFacade.this.connectedDevice = device;
             // select data transfer algorithm
-            // TODO:
-
+            handleNewConnectionByTransferManager(device);
             // Inform app of reconnection event.
             commFeedback.onReconnected(device);
         });
@@ -333,17 +349,24 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
     private TransferManagerFeedback transferManagerFeedback = new TransferManagerFeedback() {
         @Override
         public void onDataSent() {
-
+            Log.i(LOG_TAG, "Data sent");
+            // inform feedback interface of successful data sending
+            // do it in background
+            Observable.defer(() -> Observable.just(true))
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(t -> {
+                        commFeedback.onDataSent();
+                    });
         }
 
         @Override
         public void onDataSendFailed() {
-
+            Log.i(LOG_TAG, "Data sending failed");
         }
 
         @Override
         public void receiveData(byte[] data) {
-
+            Log.i(LOG_TAG, "Data received: " + data);
         }
     };
 
@@ -386,6 +409,10 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
         }
         currentTransferManager = transferManagerMock;
         transferManagerMock.init(this);
+        // inform external listener that mock transfer manager is selected
+        if (null != commFeedback) {
+            commFeedback.onDummyDeviceSelected();
+        }
     }
 
     /**

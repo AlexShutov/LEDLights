@@ -6,10 +6,15 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.concurrent.TimeUnit;
+
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommPortListener;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtLogicCell;
+import rx.Observable;
+import rx.Subscription;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Alex on 10/20/2016.
@@ -25,6 +30,8 @@ public class BtCellActivity extends Activity {
     private void showMessage(String msg){
         tvPrint.setText(msg);
     }
+
+    private Subscription sendingSubscription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,9 +50,28 @@ public class BtCellActivity extends Activity {
         });
         btnSendData = (Button) findViewById(R.id.abc_btn_send);
         btnSendData.setOnClickListener(v -> {
-            String hello = "Hello!";
-            byte[] bytes = hello.getBytes();
-            btCell.getBtCommPort().sendData(bytes);
+//            String hello = "Hello!";
+//            byte[] bytes = hello.getBytes();
+//            btCell.getBtCommPort();
+            if (sendingSubscription != null && !sendingSubscription.isUnsubscribed()) {
+                sendingSubscription.unsubscribe();
+                sendingSubscription = null;
+            }
+            sendingSubscription =
+                    Observable.interval(1, TimeUnit.SECONDS)
+                            .map(cnt -> {
+                                if (cnt % 2 == 0) {
+                                    sendColorToDevice(255, 0, 0);
+                                } else {
+                                    sendColorToDevice(0, 0, 255);
+                                }
+                                return cnt;
+                            })
+                            .subscribe(cnt -> {
+
+                            }, error -> {
+
+                            });
         });
 
         btCell.setBtCommPortListener(new BtCommPortListener() {
@@ -87,11 +113,6 @@ public class BtCellActivity extends Activity {
             }
 
             @Override
-            public void onReconnectAttemptFailed() {
-                Log.i(LOG_TAG, "onReconnectAttemptFailed()");
-            }
-
-            @Override
             public void onPortReady(int portID) {
                 Log.i(LOG_TAG, "onPortReady(), id: " + portID);
             }
@@ -112,5 +133,28 @@ public class BtCellActivity extends Activity {
         BtCommPort commPort = btCell.getBtCommPort();
         commPort.disconnect();
     }
+
+    private void sendColorToDevice(int red, int green, int blue) {
+        Observable.defer(() -> Observable.just(""))
+                .subscribeOn(Schedulers.computation())
+                .map(t -> {
+                    byte[] bytes = new byte[7];
+                    bytes[0] = '!';
+                    bytes[1] = 0;
+                    bytes[2] = 3;
+                    bytes[3] = '\n';
+                    bytes[4] = (byte) red;
+                    bytes[5] = (byte) green;
+                    bytes[6] = (byte) blue;
+                    return bytes;
+                })
+                .observeOn(Schedulers.io())
+                .subscribe(d -> {
+                    BtCommPort commPort = btCell.getBtCommPort();
+                    commPort.sendData(d);
+                });
+    }
+
+
 
 }

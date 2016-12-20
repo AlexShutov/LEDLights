@@ -75,7 +75,9 @@ public class BtConnListenerEsbReceiveMapper extends EsbMapper {
 
     @Subscribe(threadMode = ThreadMode.POSTING)
     public void onMessageReadEvent(ArgumentMessageReadEvent event){
-        listener.onMessageRead(event.message, event.messageSize);
+        if (null != listener) {
+            listener.onMessageRead(event.message, event.messageSize);
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.POSTING)

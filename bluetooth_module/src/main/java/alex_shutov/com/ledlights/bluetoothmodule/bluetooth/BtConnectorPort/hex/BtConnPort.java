@@ -62,7 +62,8 @@ public interface BtConnPort extends Port {
 
     /**
      * send some data via Bluetooth device (receiving side is
-     * handled in BtConnPortListener)
+     * handled in BtConnPortListener).
+     * Send data array on background thread
      * @param out
      */
     void writeBytes(byte[] out);
