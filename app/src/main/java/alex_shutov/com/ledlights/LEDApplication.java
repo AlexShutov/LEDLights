@@ -1,6 +1,7 @@
 package alex_shutov.com.ledlights;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.multidex.MultiDexApplication;
 import android.widget.Toast;
 
@@ -11,6 +12,7 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.B
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtLogicCell;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.hex.BtStoragePort;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.service.BtCellService;
 import alex_shutov.com.ledlights.hex_general.CellDeployer;
 
 /**
@@ -20,65 +22,72 @@ public class LEDApplication extends MultiDexApplication{
     private static final String LOG_TAG = LEDApplication.class.getSimpleName();
 
 
-    BtConnPort connPort;
-    BtScanPort scanPort;
-    BtStoragePort dbPort;
+//    BtConnPort connPort;
+//    BtScanPort scanPort;
+//    BtStoragePort dbPort;
 
-    CellDeployer btCellDeployer;
-    BtLogicCell cell;
+//    CellDeployer btCellDeployer;
+//    BtLogicCell cell;
 
-    void initCell(){
-        // create cell deployer
-        btCellDeployer = new BtCellDeployer(this);
-        // create new logic cell
-        cell = new BtLogicCell();
-        // deploy this cell- create and createObjects ports, connect ports to the cell
-        btCellDeployer.deploy(cell);
-
-        Context context = ((BtLogicCell) cell).getContext();
-        String msg = context == null ? "Context is null" : "Context is not null, DI work";
-        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
-    }
+//    void initCell(){
+//        // create cell deployer
+//        btCellDeployer = new BtCellDeployer(this);
+//        // create new logic cell
+//        cell = new BtLogicCell();
+//        // deploy this cell- create and createObjects ports, connect ports to the cell
+//        btCellDeployer.deploy(cell);
+//
+//        Context context = ((BtLogicCell) cell).getContext();
+//        String msg = context == null ? "Context is null" : "Context is not null, DI work";
+//        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+//    }
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        initCell();
+        Intent startIntent = new Intent(this, BtCellService.class);
+        startService(startIntent);
 
-        scanPort = cell.getBtScanPort();
-        connPort = cell.getBtConnPort();
-        dbPort = cell.getBtStoragePort();
+//        initCell();
+
+//        scanPort = cell.getBtScanPort();
+//        connPort = cell.getBtConnPort();
+//        dbPort = cell.getBtStoragePort();
     }
 
     @Override
     public void onTerminate() {
-        cell.suspend();
+//        cell.suspend();
+        Intent startIntent = new Intent(this, BtCellService.class);
+        stopService(startIntent);
         super.onTerminate();
     }
 
-
-
-    private UUID uuidFromResource(int resId){
+    private UUID uuidFromResource(int resId) {
         String id = getResources().getString(resId);
         return UUID.fromString(id);
     }
 
     public BtConnPort getBtConnPort() {
-        return connPort;
+//        return connPort;
+        return null;
     }
 
     public BtScanPort getBtScanPort(){
-        return scanPort;
+//        return scanPort;
+        return null;
     }
 
     public BtStoragePort getDbPort() {
-        return dbPort;
+//        return dbPort;
+        return null;
     }
 
 
     public BtLogicCell getCell() {
-        return cell;
+//        return cell;
+        return null;
     }
 
 
