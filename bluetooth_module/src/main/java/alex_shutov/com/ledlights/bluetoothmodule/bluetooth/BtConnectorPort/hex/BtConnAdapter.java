@@ -220,9 +220,6 @@ public class BtConnAdapter extends Adapter implements BtConnPort {
     public void writeBytes(byte[] out) {
         // send data
         btService.write(out);
-        // and inform listener of it
-        BtConnPortListener listener = (BtConnPortListener) getPortListener();
-        listener.onMessageSent();
     }
 
     private void setDeviceAttributes(BtDevice device) {

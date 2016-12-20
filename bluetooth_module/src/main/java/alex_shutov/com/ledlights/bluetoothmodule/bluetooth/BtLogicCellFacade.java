@@ -114,7 +114,6 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
         connectionLostEventSource.onNext(true);
     }
 
-
     /**
      * Inherited from ConnectionManagerDataProvider
      */
@@ -212,7 +211,6 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
 
     @Override
     public void sendData(byte[] data) {
-        currentTransferManager.sendData(data);
         Observable<byte[]> sendTask =
                 Observable.just(data)
                 .subscribeOn(Schedulers.io());

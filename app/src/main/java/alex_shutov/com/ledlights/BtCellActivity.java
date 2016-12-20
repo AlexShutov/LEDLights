@@ -6,12 +6,17 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import java.util.concurrent.TimeUnit;
 
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommPortListener;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.esb.BtConnEsbStore;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtLogicCell;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.transfer_data.TransferManagerFeedback;
 import rx.Observable;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
@@ -33,6 +38,8 @@ public class BtCellActivity extends Activity {
 
     private Subscription sendingSubscription;
 
+    int count = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,17 +60,18 @@ public class BtCellActivity extends Activity {
 //            String hello = "Hello!";
 //            byte[] bytes = hello.getBytes();
 //            btCell.getBtCommPort();
+
             if (sendingSubscription != null && !sendingSubscription.isUnsubscribed()) {
                 sendingSubscription.unsubscribe();
                 sendingSubscription = null;
             }
             sendingSubscription =
-                    Observable.interval(1, TimeUnit.SECONDS)
+                    Observable.interval(20, TimeUnit.MILLISECONDS)
                             .map(cnt -> {
                                 if (cnt % 2 == 0) {
-                                    sendColorToDevice(255, 0, 0);
+                                    sendColorToDevice(0, 0, 0);
                                 } else {
-                                    sendColorToDevice(0, 0, 255);
+                                    sendColorToDevice(255, 255, 255);
                                 }
                                 return cnt;
                             })
@@ -72,6 +80,7 @@ public class BtCellActivity extends Activity {
                             }, error -> {
 
                             });
+
         });
 
         btCell.setBtCommPortListener(new BtCommPortListener() {
@@ -154,7 +163,4 @@ public class BtCellActivity extends Activity {
                     commPort.sendData(d);
                 });
     }
-
-
-
 }
