@@ -11,6 +11,7 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conne
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.select_another_device_strategy.SelectAnotherDeviceStrategy;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.reconnect.ReconnectSchedulingStrategy;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.reconnect.strategies.FinitAttemptCountSameDelay;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.reconnect.strategies.RetryIndefinetely;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.transfer_data.TransferManagerBase;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.transfer_data.TransferManagerImpl;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.transfer_data.TransferManagerMock;
@@ -47,6 +48,10 @@ public class BtAlgorithmicModule {
     }
 
     /**
+     * Strategies for reconnect manager.
+     */
+
+    /**
      * Create instance of strategy, which will schedule connection attempts fixed number of
      * times after the same delay
      * @return
@@ -59,6 +64,19 @@ public class BtAlgorithmicModule {
         return strategy;
     }
 
+    /**
+     * Create strategy, which will be trying to connect indefinetely until device is connected or
+     * user decide to stop trying.
+     * @return
+     */
+    @Provides
+    @Singleton
+    @Named("RetryIndefinetely")
+    ReconnectSchedulingStrategy provideRetryIndefinetelyStrategy() {
+        ReconnectSchedulingStrategy strategy = new RetryIndefinetely();
+        return strategy;
+    }
+    
     /**
      * Strategies for establishing connection
      */

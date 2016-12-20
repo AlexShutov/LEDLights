@@ -2,10 +2,13 @@ package alex_shutov.com.ledlights.bluetoothmodule.bluetooth;
 
 import android.util.Log;
 
+import com.google.repacked.kotlin.internal.LowPriorityInOverloadResolution;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -19,9 +22,10 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.bluetoo
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.hex.BtStoragePort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.ConnectionManagerDataProvider;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.ConnectionManagerImpl;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.ConnectionManagerCallback;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.reconnect.ReconnectManager;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.ConnectionManagerCallback;import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.reconnect.ReconnectManager;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.reconnect.ReconnectSchedulingStrategy;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.reconnect.strategies.FinitAttemptCountSameDelay;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.reconnect.strategies.RetryIndefinetely;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.transfer_data.TransferManagerBase;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.transfer_data.TransferManagerFeedback;
 import rx.Observable;
@@ -61,10 +65,14 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
     @Inject
     public ReconnectManager reconnectManager;
     // strategies for scheduling reconnect attempts
+    // strategy, trying to connect fixed number of times with the same delay
     @Inject
     @Named("FinitAttemptCountSameDelay")
-    public ReconnectSchedulingStrategy reconnectFixedAttemptCountSameDelay;
-
+    public ReconnectSchedulingStrategy reconnectFixedAttemptCountSameDelayStrategy;
+    // strategy, trying to connect indefinetely with some fixed delay
+    @Inject
+    @Named("RetryIndefinetely")
+    public ReconnectSchedulingStrategy reconnectIndefinitelyStrategy;
 
     // connect source of 'connection lost' events to 'reconnect' manager
     private Subscription reconnectManagerConnectionLostSubscription;
@@ -212,6 +220,38 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
     }
 
 
+    /**
+     * Methods for changing parameters of retry strategies and selecting different
+     * reconnection scheduling strategy.
+     */
+
+    public void setupIndefineteAttemptsStrategy(int timeInterval, TimeUnit timeUnit) {
+        RetryIndefinetely strategy = (RetryIndefinetely) reconnectIndefinitelyStrategy;
+        strategy.setReconnectDelay(timeInterval);
+        strategy.setReconnectDelayTimeUnit(timeUnit);
+    }
+
+    public void setupFixAttemptsFixTimeStrategy(int numberOfAttempts, int timeInterval,
+                                         TimeUnit timeUnit) {
+        if (numberOfAttempts == 0) {
+            Log.w(LOG_TAG, "Number of attempts can not be 0, using 1 instead");
+            numberOfAttempts = 1;
+        }
+        FinitAttemptCountSameDelay strategy =
+                (FinitAttemptCountSameDelay) reconnectFixedAttemptCountSameDelayStrategy;
+        strategy.setAttemptLimit(numberOfAttempts);
+        strategy.setReconnectDelay(timeInterval);
+        strategy.setReconnectDelayTimeUnit(timeUnit);
+    }
+
+    public void selectRetryIndefinitelyStrategy() {
+        reconnectManager.setReconnectStrategy(reconnectIndefinitelyStrategy);
+    }
+
+    public void selectFixNUmberOfAttemptsFixedTimeStrategy() {
+        reconnectManager.setReconnectStrategy(reconnectFixedAttemptCountSameDelayStrategy);
+    }
+
 
     /**
      * Initialization methods
@@ -249,7 +289,7 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
     private void setupConnectAndReconnectManagers() {
         reconnectManager.setDecoreeManager(connectManager);
         // select strategy with fixed number of attempts by default.
-        reconnectManager.setReconnectStrategy(reconnectFixedAttemptCountSameDelay);
+        reconnectManager.setReconnectStrategy(reconnectIndefinitelyStrategy);
         // setup callback for reconnection
         reconnectManager.setReconnectCallback(device -> {
             String msg = "Device reconnected: ";

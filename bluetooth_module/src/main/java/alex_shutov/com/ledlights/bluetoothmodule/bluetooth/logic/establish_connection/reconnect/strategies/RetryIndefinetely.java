@@ -13,60 +13,60 @@ import rx.schedulers.Schedulers;
  * Created by lodoss on 20/12/16.
  */
 
-public class FinitAttemptCountSameDelay extends ReconnectSchedulingStrategy {
-    private static final String LOG_TAG = FinitAttemptCountSameDelay.class.getSimpleName();
+/**
+ * Strategy, which will try to connect over and over and over again until connection is established.
+ */
+public class RetryIndefinetely extends ReconnectSchedulingStrategy {
+    private static final String LOG_TAG = RetryIndefinetely.class.getSimpleName();
 
-    // number of reconnect attempts before failure
-    private static final int DEFAULT_ATTEMPT_LIMIT = 3;
     // delay between reconnection attempts
-    private static final int DEFAULT_RECONNECT_DELAY = 5;
+    // By default wait 10 seconds and then try to connect again
+    private static final int DEFAULT_RECONNECT_DELAY = 10;
     private static final TimeUnit DEFAULT_RECONNECT_TIME_UNITS = TimeUnit.SECONDS;
 
-    private int attemptLimit = DEFAULT_ATTEMPT_LIMIT;
     // Reconnection delay
     private int reconnectDelay = DEFAULT_RECONNECT_DELAY;
     private TimeUnit reconnectDelayTimeUnit = DEFAULT_RECONNECT_TIME_UNITS;
-    // number of attempts made
-    private int currentAttemptCount;
 
+    /**
+     * Here is no state to be cleared.
+     */
     @Override
-    public void onRestarted() {
-    }
+    public void onRestarted() {}
 
+    /**
+     * This strategy doesn't count attempts
+     */
     @Override
     public void clearAttemptCounter() {
-        currentAttemptCount = 0;
-    }
-
-    @Override
-    public boolean shouldContinue() {
-        return currentAttemptCount < attemptLimit;
     }
 
     /**
-     * Schedule reconnect attempt after some delay.
+     * This strategy will run indefinitely.
+     * @return
+     */
+    @Override
+    public boolean shouldContinue() {
+        return true;
+    }
+
+    /**
+     * Schedule another attempt.
+     * @return
      */
     @Override
     public Subscription startReconnectAttempt() {
-        currentAttemptCount++;
         Observable<Boolean> task = Observable.just(true)
                 .subscribeOn(Schedulers.computation())
                 .delay(reconnectDelay, reconnectDelayTimeUnit);
         Subscription s = Observable.defer(() -> task)
                 .subscribe(t -> {
-                    Log.i(LOG_TAG, "Trying to connect again (" + currentAttemptCount +  " time)");
+                    Log.i(LOG_TAG, "Attempting to connect again.");
                     getDecoreeManager().attemptToEstablishConnection();
                 });
         return s;
     }
 
-    public int getAttemptLimit() {
-        return attemptLimit;
-    }
-
-    public void setAttemptLimit(int attemptLimit) {
-        this.attemptLimit = attemptLimit;
-    }
 
     public int getReconnectDelay() {
         return reconnectDelay;
@@ -83,5 +83,4 @@ public class FinitAttemptCountSameDelay extends ReconnectSchedulingStrategy {
     public void setReconnectDelayTimeUnit(TimeUnit reconnectDelayTimeUnit) {
         this.reconnectDelayTimeUnit = reconnectDelayTimeUnit;
     }
-
 }

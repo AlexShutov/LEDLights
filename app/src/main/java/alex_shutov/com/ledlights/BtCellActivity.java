@@ -6,8 +6,6 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.google.common.primitives.Bytes;
-
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommPortListener;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
@@ -49,7 +47,6 @@ public class BtCellActivity extends Activity {
             byte[] bytes = hello.getBytes();
             btCell.getBtCommPort().sendData(bytes);
         });
-
 
         btCell.setBtCommPortListener(new BtCommPortListener() {
             @Override
