@@ -56,7 +56,7 @@ public class BtCommAdapter extends Adapter implements BtCommPort {
         }
 
         @Override
-        public void receiveData(byte[] data) {
+        public void receiveData(byte[] data, int size) {
 
         }
 

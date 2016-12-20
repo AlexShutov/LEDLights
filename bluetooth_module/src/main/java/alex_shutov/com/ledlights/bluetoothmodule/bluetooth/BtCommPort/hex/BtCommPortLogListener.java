@@ -32,7 +32,7 @@ public class BtCommPortLogListener implements BtCommPortListener{
     }
 
     @Override
-    public void receiveData(byte[] data) {
+    public void receiveData(byte[] data, int size) {
 
     }
 

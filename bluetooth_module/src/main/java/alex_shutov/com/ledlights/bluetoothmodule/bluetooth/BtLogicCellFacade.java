@@ -1,8 +1,8 @@
 package alex_shutov.com.ledlights.bluetoothmodule.bluetooth;
 
 import android.util.Log;
+import android.util.Pair;
 
-import com.google.repacked.kotlin.internal.LowPriorityInOverloadResolution;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -260,7 +260,6 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
         reconnectManager.setReconnectStrategy(reconnectFixedAttemptCountSameDelayStrategy);
     }
 
-
     /**
      * Initialization methods
      */
@@ -274,7 +273,6 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
             String msg = "Connection established with device ";
             Log.i(LOG_TAG, connectedDevice == null ? msg : msg +
                     connectedDevice.getDeviceName());
-
             BtLogicCellFacade.this.connectedDevice = connectedDevice;
             // select real data transfer manager first
             handleNewConnectionByTransferManager(connectedDevice);
@@ -363,8 +361,15 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
         }
 
         @Override
-        public void receiveData(byte[] data) {
-            Log.i(LOG_TAG, "Data received: " + data);
+        public void receiveData(byte[] data, int size) {
+            Log.i(LOG_TAG, "Data received: " + data + " size: " + size);
+            Pair<byte[], Integer> msgRead = new Pair<>(data, size);
+            // Inform feedback interface of received message in background
+            Observable.defer(() -> Observable.just(msgRead))
+                    .subscribeOn(Schedulers.computation())
+                    .subscribe(pair -> {
+                        commFeedback.receiveData(pair.first, pair.second);
+                    });
         }
     };
 

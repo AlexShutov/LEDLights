@@ -13,10 +13,8 @@ import java.util.concurrent.TimeUnit;
 
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommPortListener;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.esb.BtConnEsbStore;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtLogicCell;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.transfer_data.TransferManagerFeedback;
 import rx.Observable;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
@@ -106,7 +104,7 @@ public class BtCellActivity extends Activity {
             }
 
             @Override
-            public void receiveData(byte[] data) {
+            public void receiveData(byte[] data, int size) {
                 Log.i(LOG_TAG, "Activity: Data received");
             }
 

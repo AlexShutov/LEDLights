@@ -16,6 +16,12 @@ public interface TransferManagerFeedback {
      */
     void onDataSendFailed();
 
-    void receiveData(byte[] data);
+    /**
+     * Process received data chunk
+     * @param data array, containing received data chunk. Can be buffer larger than
+     *             actual data
+     * @param size size of data payload
+     */
+    void receiveData(byte[] data, int size);
 
 }
