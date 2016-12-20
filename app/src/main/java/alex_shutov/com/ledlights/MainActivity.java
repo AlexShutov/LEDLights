@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String NAME_MY_PHONE = "Desire C";
 
     // test hc05 adapter address
-    private static final String ADDRESS_HC_05 = "98:D3:31:20:A0:08";
+    private static final String ADDRESS_HC_05 = "98:D3:31:FC:2B:23";
 
     LEDApplication app;
 
