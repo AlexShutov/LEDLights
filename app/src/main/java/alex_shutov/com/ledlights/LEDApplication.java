@@ -1,19 +1,15 @@
 package alex_shutov.com.ledlights;
 
-import android.content.Context;
 import android.content.Intent;
 import android.support.multidex.MultiDexApplication;
-import android.widget.Toast;
 
 import java.util.UUID;
 
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCellDeployer;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtLogicCell;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.hex.BtStoragePort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.service.BtCellService;
-import alex_shutov.com.ledlights.hex_general.CellDeployer;
 
 /**
  * Created by lodoss on 30/06/16.
