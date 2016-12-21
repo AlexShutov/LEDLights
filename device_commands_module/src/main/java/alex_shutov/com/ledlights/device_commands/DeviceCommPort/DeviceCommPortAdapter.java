@@ -1,10 +1,11 @@
 package alex_shutov.com.ledlights.device_commands.DeviceCommPort;
 
+import android.renderscript.Script;
+import android.util.Log;
+
+import alex_shutov.com.ledlights.device_commands.DeviceCommPort.response.ResponseParser;
 import alex_shutov.com.ledlights.hex_general.Adapter;
 import alex_shutov.com.ledlights.hex_general.PortInfo;
-import rx.Observable;
-import rx.schedulers.Schedulers;
-import rx.subjects.PublishSubject;
 
 /**
  * Created by lodoss on 21/12/16.
@@ -15,8 +16,11 @@ import rx.subjects.PublishSubject;
  */
 public class DeviceCommPortAdapter extends Adapter implements DeviceCommPort {
 
-    private PublishSubject<byte[]> responsePipe;
-    private PublishSubject<Boolean> sendPipe;
+    private ResponseParser responseParser;
+
+    public DeviceCommPortAdapter(ResponseParser responseParser) {
+        this.responseParser = responseParser;
+    }
 
     @Override
     public PortInfo getPortInfo() {
@@ -28,8 +32,7 @@ public class DeviceCommPortAdapter extends Adapter implements DeviceCommPort {
 
     @Override
     public void initialize() {
-        responsePipe = PublishSubject.create();
-        sendPipe = PublishSubject.create();
+
     }
 
     /**
@@ -38,21 +41,20 @@ public class DeviceCommPortAdapter extends Adapter implements DeviceCommPort {
 
     @Override
     public void onDataSent() {
-        sendPipe.onNext(true);
+        Log.i("iosjoif", "oijsdofi");
     }
 
+    /**
+     * Parse response from device and give result to callback
+     * @param response
+     */
     @Override
     public void onResponse(byte[] response) {
-        responsePipe.onNext(response);
+        boolean isCommandAcceptedByDevice = responseParser.isOperationSuccessful(response);
+        Log.i("oisdjfios", String.valueOf(isCommandAcceptedByDevice));
     }
 
-    public Observable<byte[]> getResponsePipe() {
-        return responsePipe.asObservable();
-    }
 
-    public Observable<Boolean> getSendPipe() {
-        return sendPipe.asObservable();
-    }
 
 }
 

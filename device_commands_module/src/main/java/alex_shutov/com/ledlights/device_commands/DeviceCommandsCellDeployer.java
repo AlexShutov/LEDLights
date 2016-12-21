@@ -4,6 +4,7 @@ import javax.inject.Inject;
 
 import alex_shutov.com.ledlights.device_commands.DeviceCommPort.DeviceCommPortAdapter;
 import alex_shutov.com.ledlights.device_commands.di.CellModule;
+import alex_shutov.com.ledlights.device_commands.di.CommPortModule;
 import alex_shutov.com.ledlights.hex_general.CellDeployer;
 import alex_shutov.com.ledlights.hex_general.LogicCell;
 import alex_shutov.com.ledlights.hex_general.PortAdapterCreator;
@@ -29,8 +30,10 @@ public class DeviceCommandsCellDeployer extends CellDeployer {
     protected PortAdapterCreator createPortCreator() {
         // create di modules
         CellModule cellModule = new CellModule();
+        CommPortModule commPortModule = new CommPortModule();
         PortAdapterCreator creator = DaggerDeviceCommandsPortAdapterCreator.builder()
                 .cellModule(cellModule)
+                .commPortModule(commPortModule)
                 .build();
         return creator;
     }
