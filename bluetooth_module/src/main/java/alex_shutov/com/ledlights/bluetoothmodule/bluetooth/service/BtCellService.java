@@ -38,7 +38,6 @@ public class BtCellService extends Service {
     private BtCellDeployer cellDeployer;
     // Binder, given to connecting entity
 
-
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {

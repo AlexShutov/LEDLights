@@ -1,4 +1,4 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'me.tatarka.retrolambda'
 
@@ -7,7 +7,6 @@ android {
     buildToolsVersion "23.0.2"
 
     defaultConfig {
-        applicationId "alex_shutov.com.ledlights"
         minSdkVersion 14
         targetSdkVersion 22
         versionCode 1
@@ -20,14 +19,15 @@ android {
         }
     }
 
-    dataBinding {
-        enabled = true
-    }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    dataBinding {
+        enabled = true
+    }
+
 }
 
 repositories {
@@ -37,36 +37,26 @@ repositories {
 }
 
 
-
 dependencies {
-
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.0.1'
-    compile 'com.android.support:design:23.1.1'
-    compile 'com.android.support:support-v4:23.0.1'
-
-    // Multidex support, because we project has more than one modules
-    compile 'com.android.support:multidex:1.0.0'
-
-    compile ('com.android.support:recyclerview-v7:23.0.1'){
+    compile project(':hexframework')
+    compile('com.android.support:recyclerview-v7:23.0.1') {
         exclude group: 'com.android.support', module: 'support-v4'
     }
     // Multidex support, because we project has more than one modules
     compile 'com.android.support:multidex:1.0.0'
-
     //Reactive / event-based programing
     compile 'io.reactivex:rxjava:1.0.13'
     compile 'io.reactivex:rxandroid:0.25.0'
     compile 'org.greenrobot:eventbus:3.0.0'
-
     //DI
     compile 'com.google.dagger:dagger:2.0'
+    testCompile 'com.google.dagger:dagger:2.0'
     apt 'com.google.dagger:dagger-compiler:2.0'
     provided 'org.glassfish:javax.annotation:10.0-b28'
+    compile 'io.realm:realm-android:0.84.1'
 
-    compile project(path: ':bluetooth_module')
-    compile project(':device_commands_module')
-    compile project (':hexframework')
 
 }

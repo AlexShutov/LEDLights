@@ -17,6 +17,9 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtComm
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtLogicCell;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.service.BtCellService;
+import alex_shutov.com.ledlights.device_commands.DeviceCommPort.DeviceCommPort;
+import alex_shutov.com.ledlights.device_commands.DeviceCommandsCellDeployer;
+import alex_shutov.com.ledlights.device_commands.DeviceCommandsLogicCell;
 import rx.Observable;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
@@ -33,16 +36,17 @@ public class BtCellActivity extends Activity {
     TextView tvPrint;
     LEDApplication app;
 
+    int count = 0;
 
     private BtLogicCell btCell;
-
     private void showMessage(String msg){
         tvPrint.setText(msg);
     }
-
     private Subscription sendingSubscription;
 
-    int count = 0;
+    private DeviceCommandsLogicCell commCell;
+    private DeviceCommandsCellDeployer commCellDeployer;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,25 +70,30 @@ public class BtCellActivity extends Activity {
         btnSendData = (Button) findViewById(R.id.abc_btn_send);
         btnSendData.setOnClickListener(v -> {
 
-            if (sendingSubscription != null && !sendingSubscription.isUnsubscribed()) {
-                sendingSubscription.unsubscribe();
-                sendingSubscription = null;
+//            if (sendingSubscription != null && !sendingSubscription.isUnsubscribed()) {
+//                sendingSubscription.unsubscribe();
+//                sendingSubscription = null;
+//            }
+//            sendingSubscription =
+//                    Observable.interval(20, TimeUnit.MILLISECONDS)
+//                            .map(cnt -> {
+//                                if (cnt % 2 == 0) {
+//                                    sendColorToDevice(0, 0, 0);
+//                                } else {
+//                                    sendColorToDevice(255, 255, 255);
+//                                }
+//                                return cnt;
+//                            })
+//                            .subscribe(cnt -> {
+//
+//                            }, error -> {
+//
+//                            });
+            if (count++ % 2 == 0) {
+                sendColorToDevice(0, 0, 0);
+            } else {
+                sendColorToDevice(255, 255, 255);
             }
-            sendingSubscription =
-                    Observable.interval(20, TimeUnit.MILLISECONDS)
-                            .map(cnt -> {
-                                if (cnt % 2 == 0) {
-                                    sendColorToDevice(0, 0, 0);
-                                } else {
-                                    sendColorToDevice(255, 255, 255);
-                                }
-                                return cnt;
-                            })
-                            .subscribe(cnt -> {
-
-                            }, error -> {
-
-                            });
         });
     }
 
@@ -171,6 +180,8 @@ public class BtCellActivity extends Activity {
             @Override
             public void onDataSent() {
                 Log.i(LOG_TAG, "onDataSent()");
+                DeviceCommPort commPort = commCell.getCommPort();
+                commPort.onDataSent();
             }
 
             @Override
@@ -181,12 +192,13 @@ public class BtCellActivity extends Activity {
             @Override
             public void receiveData(byte[] data, int size) {
                 Log.i(LOG_TAG, "Activity: Data received");
+                DeviceCommPort commPort = commCell.getCommPort();
+                commPort.onResponse(data);
             }
 
             @Override
             public void onReconnected(BtDevice btDevice) {
                 Log.i(LOG_TAG, "onReconnected()");
-
             }
 
             @Override
@@ -207,6 +219,9 @@ public class BtCellActivity extends Activity {
         };
         btCell.setBtCommPortListener(commListener);
 
-    }
+        commCell = new DeviceCommandsLogicCell();
+        commCellDeployer = new DeviceCommandsCellDeployer();
+        commCellDeployer.deploy(commCell);
 
+    }
 }

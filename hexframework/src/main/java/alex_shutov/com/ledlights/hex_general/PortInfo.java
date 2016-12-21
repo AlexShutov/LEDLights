@@ -5,11 +5,14 @@ package alex_shutov.com.ledlights.hex_general;
  */
 public class PortInfo {
 
+    // ports for Bluetooth module
     public static final int PORT_BLUETOOTH_CONNECTOR = 1;
     public static final int PORT_BLUETOOTH_SCANNER = 2;
     public static final int PORT_BLUETOOTH_STORAGE = 3;
     public static final int PORT_BLUETOOTH_UI_PORT = 4;
     public static final int PORT_BLUETOOTH_EXTERNAL_INTERFACE = 5;
+    // ports for 'Device commands' module
+    public static final int PORT_DEVICE_COMMANDS_COMM = 6;
 
     /**
      * we may want to assign numbers to ports
