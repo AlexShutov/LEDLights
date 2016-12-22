@@ -14,6 +14,9 @@ import alex_shutov.com.ledlights.device_commands.DeviceCommPort.DeviceCommPortLi
 import alex_shutov.com.ledlights.device_commands.DeviceCommPort.DeviceSender;
 import alex_shutov.com.ledlights.device_commands.main_logic.Command;
 import alex_shutov.com.ledlights.device_commands.main_logic.CommandExecutor;
+import alex_shutov.com.ledlights.device_commands.main_logic.commands.lights_sequence.LightsSequenceCommand;
+import alex_shutov.com.ledlights.device_commands.main_logic.commands.lights_sequence.models.Light;
+import alex_shutov.com.ledlights.device_commands.main_logic.commands.lights_sequence.models.LightsSequence;
 import alex_shutov.com.ledlights.device_commands.main_logic.serialization_general.CompositeSerializer;
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.change_color.ChangeColor;
 import alex_shutov.com.ledlights.hex_general.LogicCell;
@@ -89,26 +92,50 @@ public class DeviceCommandsLogicCell extends LogicCell implements CommandExecuto
 
     public void sendTestCommand() {
 
-        sendingSubscription =
-                    Observable.interval(30, TimeUnit.MILLISECONDS)
-                            .map(cnt -> {
-                                ChangeColor command = new ChangeColor();
-                                int color = Color.argb(0xff, r.nextInt(255), r.nextInt(255), r.nextInt(255));
-                                command.setColor(color);
-                                execute(command);
-                                return cnt;
-                            })
-                            .subscribe(cnt -> {
-
-                            }, error -> {
-
-                            });
-
+//        sendingSubscription =
+//                    Observable.interval(10, TimeUnit.SECONDS)
+//                            .map(cnt -> {
+////                                ChangeColor command = new ChangeColor();
+////                                int color = Color.argb(0xff, r.nextInt(255), r.nextInt(255), r.nextInt(255));
+////                                command.setColor(color);
+////                                execute(command);
+//                                playSequence();
+//                                return cnt;
+//                            })
+//                            .subscribe(cnt -> {
+//
+//                            }, error -> {
+//
+//                            });
 //        ChangeColor command = new ChangeColor();
 //        int color = Color.argb(0xff, r.nextInt(255), r.nextInt(255), r.nextInt(255));
 //        command.setColor(color);
 //        execute(command);
 
+        playSequence();
+    }
+
+
+    private void playSequence() {
+        LightsSequenceCommand command = new LightsSequenceCommand();
+        LightsSequence lightsSequence = new LightsSequence();
+        command.setLightsSequence(lightsSequence);
+
+        lightsSequence.setSmoothSwitching(true);
+        lightsSequence.setRepeating(true);
+
+        Light l;
+
+        l = new Light();
+        l.setColor(0xad2f0f);
+        l.setDuration(100);
+        lightsSequence.addLight(l);
+
+        l = new Light();
+        l.setColor(0x0f88ad);
+        l.setDuration(100);
+        lightsSequence.addLight(l);
+        execute(command);
     }
 
     /**

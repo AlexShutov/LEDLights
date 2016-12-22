@@ -18,8 +18,6 @@ public abstract class Command {
      * code of that command on device end. Those codes must be unique.
      */
 
-    private byte[] data;
-
     public abstract int getCommandCode();
 
     /**
@@ -27,17 +25,4 @@ public abstract class Command {
      * @return true if this is a foreground command
      */
     public abstract boolean isForegroundCommand();
-
-    // accessors
-
-    public byte[] getData() {
-        return data;
-    }
-
-    public void setData(byte[] data) {
-        this.data = data;
-    }
-
-
-
 }

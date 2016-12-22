@@ -7,6 +7,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import alex_shutov.com.ledlights.device_commands.main_logic.CommandExecutor;
+import alex_shutov.com.ledlights.device_commands.main_logic.commands.lights_sequence.serialization.LightsSequenceSerializer;
 import alex_shutov.com.ledlights.device_commands.main_logic.serialization_general.CommandSerializer;
 import alex_shutov.com.ledlights.device_commands.main_logic.serialization_general.CompositeSerializer;
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.change_color.serialization.ChangeColorSerializer;
@@ -50,7 +51,9 @@ public class CellModule {
         // add serializer for 'Change color' command
         ChangeColorSerializer changeColorSerializer = new ChangeColorSerializer();
         serializers.add(changeColorSerializer);
-
+        // add serializer for 'Lights sequence' command
+        LightsSequenceSerializer lightsSequenceSerializer = new LightsSequenceSerializer();
+        serializers.add(lightsSequenceSerializer);
 
         return serializers;
     }

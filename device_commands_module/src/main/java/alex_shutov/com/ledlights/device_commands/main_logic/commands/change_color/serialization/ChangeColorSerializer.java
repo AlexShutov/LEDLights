@@ -3,7 +3,6 @@ package alex_shutov.com.ledlights.device_commands.main_logic.commands.change_col
 import alex_shutov.com.ledlights.device_commands.main_logic.Command;
 import alex_shutov.com.ledlights.device_commands.main_logic.serialization_general.CommandSerializer;
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.change_color.ChangeColor;
-import alex_shutov.com.ledlights.device_commands.main_logic.commands.change_color.model.Color;
 import alex_shutov.com.ledlights.device_commands.main_logic.serialization_general.DataHeader;
 
 /**
@@ -16,12 +15,7 @@ public class ChangeColorSerializer extends CommandSerializer {
     public void serializeCommandDataPayload(Command command, byte[] buffer, int offset) {
         // cast to right command type
         ChangeColor changeColor = (ChangeColor) command;
-        // get color from command and convert it to device format
-        Color color = Color.fromSystemColor(changeColor.getColor());
-        // write command data to the buffer
-        buffer[offset + 0] = (byte) color.getRed();
-        buffer[offset + 1] = (byte) color.getGreen();
-        buffer[offset + 2] = (byte) color.getBlue();
+        writeColor(changeColor.getColor(), buffer, offset);
     }
 
     /**
@@ -39,7 +33,7 @@ public class ChangeColorSerializer extends CommandSerializer {
      * @return
      */
     @Override
-    public byte calculateDataPayloadSize() {
+    public byte calculateDataPayloadSize(Command command) {
         return 3;
     }
 

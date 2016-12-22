@@ -12,8 +12,6 @@ public class Color {
     private int green;
     private int blue;
 
-
-
     /**
      * create color from 'int' by using system Color class
      * @param color

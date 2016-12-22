@@ -16,7 +16,7 @@ public class CompositeSerializer extends CompositeExecutor {
     }
 
     /**
-     * We know that all executors here is of type CommandSerizlizer
+     * We know that all executors here is of type CommandSerializer
      * @param sender
      */
     public void setDeviceSender(DeviceSender sender) {
