@@ -18,6 +18,7 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtLogicCell;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.service.BtCellService;
 import alex_shutov.com.ledlights.device_commands.DeviceCommPort.DeviceCommPort;
+import alex_shutov.com.ledlights.device_commands.DeviceCommPort.DeviceCommPortListener;
 import alex_shutov.com.ledlights.device_commands.DeviceCommandsCellDeployer;
 import alex_shutov.com.ledlights.device_commands.DeviceCommandsLogicCell;
 import rx.Observable;
@@ -89,11 +90,8 @@ public class BtCellActivity extends Activity {
 //                            }, error -> {
 //
 //                            });
-            if (count++ % 2 == 0) {
-                sendColorToDevice(0, 0, 0);
-            } else {
-                sendColorToDevice(255, 255, 255);
-            }
+            commCell.sendTestCommand();
+
         });
     }
 
@@ -106,26 +104,7 @@ public class BtCellActivity extends Activity {
         commPort.disconnect();
     }
 
-    private void sendColorToDevice(int red, int green, int blue) {
-        Observable.defer(() -> Observable.just(""))
-                .subscribeOn(Schedulers.computation())
-                .map(t -> {
-                    byte[] bytes = new byte[7];
-                    bytes[0] = '!';
-                    bytes[1] = 0;
-                    bytes[2] = 3;
-                    bytes[3] = '\n';
-                    bytes[4] = (byte) red;
-                    bytes[5] = (byte) green;
-                    bytes[6] = (byte) blue;
-                    return bytes;
-                })
-                .observeOn(Schedulers.io())
-                .subscribe(d -> {
-                    BtCommPort commPort = btCell.getBtCommPort();
-                    commPort.sendData(d);
-                });
-    }
+
 
     @Override
     protected void onStart() {
@@ -164,7 +143,7 @@ public class BtCellActivity extends Activity {
 
 
     private void init() {
-        // TODO: Apply it to service Binder later
+        // connect command logic cell with bluetooth logic cell (forward)
         BtCommPortListener commListener = new BtCommPortListener() {
             @Override
             public void onConnectionStarted(BtDevice btDevice) {
@@ -222,6 +201,26 @@ public class BtCellActivity extends Activity {
         commCell = new DeviceCommandsLogicCell();
         commCellDeployer = new DeviceCommandsCellDeployer();
         commCellDeployer.deploy(commCell);
+
+        // connect command logic cell with bluetooth logic cell (backward)
+        commCell.setDeviceCommPortListener(new DeviceCommPortListener() {
+            @Override
+            public void sendData(byte[] data) {
+                btCell.getBtCommPort().sendData(data);
+            }
+
+            @Override
+            public void onPortReady(int portID) {
+
+            }
+
+            @Override
+            public void onCriticalFailure(int portID, Exception e) {
+
+            }
+        });
+
+
 
     }
 }

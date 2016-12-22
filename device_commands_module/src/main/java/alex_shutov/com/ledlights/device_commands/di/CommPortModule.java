@@ -3,8 +3,6 @@ package alex_shutov.com.ledlights.device_commands.di;
 import javax.inject.Singleton;
 
 import alex_shutov.com.ledlights.device_commands.DeviceCommPort.DeviceCommPortAdapter;
-import alex_shutov.com.ledlights.device_commands.DeviceCommPort.response.ResponseParser;
-import alex_shutov.com.ledlights.device_commands.DeviceCommPort.response.ResponseParserImpl;
 import dagger.Module;
 import dagger.Provides;
 
@@ -21,16 +19,9 @@ public class CommPortModule {
      */
     @Provides
     @Singleton
-    DeviceCommPortAdapter provideCommAdapter(ResponseParser responseParser) {
-        DeviceCommPortAdapter adapter = new DeviceCommPortAdapter(responseParser);
+    DeviceCommPortAdapter provideCommAdapter() {
+        DeviceCommPortAdapter adapter = new DeviceCommPortAdapter();
         return adapter;
-    }
-
-    @Provides
-    @Singleton
-    public ResponseParser provideResponseParser() {
-        ResponseParserImpl responseParser = new ResponseParserImpl();
-        return responseParser;
     }
 
 }
