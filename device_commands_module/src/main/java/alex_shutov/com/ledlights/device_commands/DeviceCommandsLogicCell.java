@@ -3,6 +3,7 @@ package alex_shutov.com.ledlights.device_commands;
 import android.graphics.Color;
 
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -13,10 +14,11 @@ import alex_shutov.com.ledlights.device_commands.DeviceCommPort.DeviceCommPortLi
 import alex_shutov.com.ledlights.device_commands.DeviceCommPort.DeviceSender;
 import alex_shutov.com.ledlights.device_commands.main_logic.Command;
 import alex_shutov.com.ledlights.device_commands.main_logic.CommandExecutor;
-import alex_shutov.com.ledlights.device_commands.main_logic.CompositeSerializer;
-import alex_shutov.com.ledlights.device_commands.main_logic.commands.ChangeColor;
+import alex_shutov.com.ledlights.device_commands.main_logic.serialization_general.CompositeSerializer;
+import alex_shutov.com.ledlights.device_commands.main_logic.commands.change_color.ChangeColor;
 import alex_shutov.com.ledlights.hex_general.LogicCell;
 import rx.Observable;
+import rx.Subscription;
 import rx.schedulers.Schedulers;
 
 /**
@@ -83,20 +85,29 @@ public class DeviceCommandsLogicCell extends LogicCell implements CommandExecuto
 
     int count = 0;
     Random r = new Random();
+    Subscription sendingSubscription;
 
     public void sendTestCommand() {
-//        if (count++ % 2 == 0) {
-//            sendColorToDevice(0, 0, 0);
-//        } else {
-//            sendColorToDevice(255, 255, 255);
-//        }
 
-        ChangeColor command = new ChangeColor();
+        sendingSubscription =
+                    Observable.interval(30, TimeUnit.MILLISECONDS)
+                            .map(cnt -> {
+                                ChangeColor command = new ChangeColor();
+                                int color = Color.argb(0xff, r.nextInt(255), r.nextInt(255), r.nextInt(255));
+                                command.setColor(color);
+                                execute(command);
+                                return cnt;
+                            })
+                            .subscribe(cnt -> {
 
-        int color = Color.argb(0xff, r.nextInt(255), r.nextInt(255), r.nextInt(255));
-        command.setColor(color);
+                            }, error -> {
 
-        execute(command);
+                            });
+
+//        ChangeColor command = new ChangeColor();
+//        int color = Color.argb(0xff, r.nextInt(255), r.nextInt(255), r.nextInt(255));
+//        command.setColor(color);
+//        execute(command);
 
     }
 

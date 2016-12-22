@@ -7,9 +7,9 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import alex_shutov.com.ledlights.device_commands.main_logic.CommandExecutor;
-import alex_shutov.com.ledlights.device_commands.main_logic.CommandSerializer;
-import alex_shutov.com.ledlights.device_commands.main_logic.CompositeSerializer;
-import alex_shutov.com.ledlights.device_commands.main_logic.commands.ChangeColorSerializer;
+import alex_shutov.com.ledlights.device_commands.main_logic.serialization_general.CommandSerializer;
+import alex_shutov.com.ledlights.device_commands.main_logic.serialization_general.CompositeSerializer;
+import alex_shutov.com.ledlights.device_commands.main_logic.commands.change_color.serialization.ChangeColorSerializer;
 import dagger.Module;
 import dagger.Provides;
 

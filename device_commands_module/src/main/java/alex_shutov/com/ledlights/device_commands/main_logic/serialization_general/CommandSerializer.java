@@ -1,11 +1,14 @@
-package alex_shutov.com.ledlights.device_commands.main_logic;
+package alex_shutov.com.ledlights.device_commands.main_logic.serialization_general;
 
 /**
  * Created by lodoss on 22/12/16.
  */
 
 import alex_shutov.com.ledlights.device_commands.DeviceCommPort.DeviceSender;
-import alex_shutov.com.ledlights.device_commands.main_logic.device_model.CommandHeader;
+import alex_shutov.com.ledlights.device_commands.main_logic.Command;
+import alex_shutov.com.ledlights.device_commands.main_logic.CommandExecutor;
+import alex_shutov.com.ledlights.device_commands.main_logic.serialization_general.CommandHeader;
+import alex_shutov.com.ledlights.device_commands.main_logic.serialization_general.DataHeader;
 
 /**
  * This is a base class for command serializer. Serializer know how to transform command to the
@@ -23,7 +26,7 @@ public abstract class CommandSerializer implements CommandExecutor {
      * @param command
      * @return
      */
-    public abstract void serializeCommand(Command command, byte[] buffer, int offset);
+    public abstract void serializeCommandDataPayload(Command command, byte[] buffer, int offset);
 
     /**
      * Command consist of a header, following by data block. In order to serialize command we
@@ -33,7 +36,14 @@ public abstract class CommandSerializer implements CommandExecutor {
      *  this method before allocating buffer.
      * @return
      */
-    public abstract byte calculateDataBlockSize();
+    public abstract byte calculateDataPayloadSize();
+
+    /**
+     * Create data header, used by this command and fill it in. This command is called
+     * during serialization
+     * @return
+     */
+    public abstract DataHeader createDataHeader(Command command);
 
     /**
      * Transform command to byte array and send it to device
@@ -41,19 +51,27 @@ public abstract class CommandSerializer implements CommandExecutor {
      */
     @Override
     public void execute(Command command) {
-        int payloadSize = calculateDataBlockSize();
+        int payloadSize = calculateDataPayloadSize();
         // 4 bytes for command header + size of data block
         int total_size = 4 + payloadSize;
         // allocate memory for command
         byte[] result = new byte[total_size];
         // create command header
-        CommandHeader header = new CommandHeader();
+        CommandHeader commandHeader = new CommandHeader();
         // set size of data block to command header
-        header.setDataSize(payloadSize);
-        header.setCommandCode(command.getCommandCode());
-        writeCommandHeader(header, result, 0);
-        // write the rest of command right after header (offset 4 bytes)
-        serializeCommand(command, result, 4);
+        commandHeader.setDataSize(payloadSize);
+        commandHeader.setCommandCode(command.getCommandCode());
+        writeCommandHeader(commandHeader, result, 0);
+        // command data goes  right after header (offset 4 bytes)
+        int currOffset = 4;
+        // create command header
+        DataHeader dataHeader = createDataHeader(command);
+        int headerSize = dataHeader.getHeaderSize();
+        dataHeader.writeToResult(result, currOffset);
+        // move current offset to data header size
+        currOffset += headerSize;
+        // now we can write the rest of command
+        serializeCommandDataPayload(command, result, currOffset);
         //  command is ready now, send it to device
         deviceSender.sendData(result);
     }

@@ -1,4 +1,4 @@
-package alex_shutov.com.ledlights.device_commands.main_logic.commands;
+package alex_shutov.com.ledlights.device_commands.main_logic.commands.change_color;
 
 import alex_shutov.com.ledlights.device_commands.main_logic.Command;
 

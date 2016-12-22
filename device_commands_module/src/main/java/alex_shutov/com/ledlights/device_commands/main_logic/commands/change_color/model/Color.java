@@ -1,4 +1,4 @@
-package alex_shutov.com.ledlights.device_commands.main_logic.device_model;
+package alex_shutov.com.ledlights.device_commands.main_logic.commands.change_color.model;
 
 /**
  * Created by lodoss on 22/12/16.
