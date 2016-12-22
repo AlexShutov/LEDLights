@@ -1,4 +1,4 @@
-package alex_shutov.com.ledlights.device_commands.device_commands;
+package alex_shutov.com.ledlights.device_commands.main_logic;
 
 /**
  * Created by lodoss on 22/12/16.

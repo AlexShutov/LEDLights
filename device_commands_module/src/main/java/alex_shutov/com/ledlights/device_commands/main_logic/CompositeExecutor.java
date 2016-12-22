@@ -1,4 +1,4 @@
-package alex_shutov.com.ledlights.device_commands.device_commands;
+package alex_shutov.com.ledlights.device_commands.main_logic;
 
 /**
  * Created by lodoss on 22/12/16.
@@ -19,7 +19,7 @@ public class CompositeExecutor implements CommandExecutor {
         Single,
         All
     }
-    private List<CommandExecutor> executors;
+    protected List<CommandExecutor> executors;
     private CompositeMode mode;
 
     public CompositeExecutor(){
@@ -41,7 +41,18 @@ public class CompositeExecutor implements CommandExecutor {
 
     @Override
     public void execute(Command command) {
-
+        // loop over all available executores
+        for (CommandExecutor e : executors) {
+            // check if executor support this type of command
+            if (e.canExecute(command)) {
+                e.execute(command);
+                // command is processed, check mode of this composite
+                if (mode == CompositeMode.Single) {
+                    // we're done
+                    return;
+                }
+            }
+        }
     }
 
     public CompositeMode getMode() {
@@ -55,13 +66,13 @@ public class CompositeExecutor implements CommandExecutor {
     /**
      * Assume that many threads can request execution at the same time.
      */
-    void clearAll() {
+    public void clearAll() {
         synchronized (this) {
             executors.clear();
         }
     }
 
-    void addExecutor(CommandExecutor executor) {
+    public void addExecutor(CommandExecutor executor) {
         synchronized (this) {
             executors.add(executor);
         }

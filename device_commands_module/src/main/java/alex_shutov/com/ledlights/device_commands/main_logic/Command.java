@@ -1,25 +1,32 @@
-package alex_shutov.com.ledlights.device_commands.device_commands;
+package alex_shutov.com.ledlights.device_commands.main_logic;
 
 /**
  * Created by lodoss on 22/12/16.
  */
-
-import java.util.Map;
 
 /**
  * Base class for all commands, supported by device. There is not too many commands and every
  * command has unique commands code (device firmware store command parsers in index array).
  * We can do that here too.
  * Other command parameters is defined in derived classes.
+ * Command can be background and foreground. Foreground means, that this command will be restored
+ * if another non- foreground command interrupt it. Example of foreground commands is
+ * 'change color'. Background commands are 'flash sequence', 'save to memory'.
  */
-public class Command {
+public abstract class Command {
     /**
      * code of that command on device end. Those codes must be unique.
      */
-    private int commandCode;
+
     private byte[] data;
 
+    public abstract int getCommandCode();
 
+    /**
+     * Should it be restored after interruption)
+     * @return true if this is a foreground command
+     */
+    public abstract boolean isForegroundCommand();
 
     // accessors
 
@@ -31,11 +38,6 @@ public class Command {
         this.data = data;
     }
 
-    public int getCommandCode() {
-        return commandCode;
-    }
 
-    public void setCommandCode(int commandCode) {
-        this.commandCode = commandCode;
-    }
+
 }

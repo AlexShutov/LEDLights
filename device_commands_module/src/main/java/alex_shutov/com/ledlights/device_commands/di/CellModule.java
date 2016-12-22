@@ -1,6 +1,19 @@
 package alex_shutov.com.ledlights.device_commands.di;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+import alex_shutov.com.ledlights.device_commands.main_logic.CommandExecutor;
+import alex_shutov.com.ledlights.device_commands.main_logic.CommandSerializer;
+import alex_shutov.com.ledlights.device_commands.main_logic.CompositeSerializer;
+import alex_shutov.com.ledlights.device_commands.main_logic.commands.ChangeColorSerializer;
 import dagger.Module;
+import dagger.Provides;
+
+import static alex_shutov.com.ledlights.device_commands.main_logic.CompositeExecutor.*;
 
 /**
  * Created by lodoss on 21/12/16.
@@ -14,5 +27,32 @@ import dagger.Module;
 @Module
 public class CellModule {
 
+    @Provides
+    @Singleton
+    @Named("CommandSerializationStore")
+    CompositeSerializer provideSerializationStore(
+                        @Named("Serializers") List<CommandSerializer> serializers) {
+        CompositeSerializer store = new CompositeSerializer();
+        // serializer use first fitting serializer
+        store.setMode(CompositeMode.Single);
+        store.clearAll();
+        for (CommandExecutor e : serializers) {
+            store.addExecutor(e);
+        }
+        return store;
+    }
+
+    @Provides
+    @Singleton
+    @Named("Serializers")
+    List<CommandSerializer> createAllSerializers() {
+        List<CommandSerializer> serializers = new ArrayList<>();
+        // add serializer for 'Change color' command
+        ChangeColorSerializer changeColorSerializer = new ChangeColorSerializer();
+        serializers.add(changeColorSerializer);
+
+
+        return serializers;
+    }
 
 }

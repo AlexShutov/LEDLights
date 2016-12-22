@@ -1,9 +1,20 @@
 package alex_shutov.com.ledlights.device_commands;
 
+import android.graphics.Color;
+
+import java.util.Random;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import alex_shutov.com.ledlights.device_commands.DeviceCommPort.DeviceCommPort;
 import alex_shutov.com.ledlights.device_commands.DeviceCommPort.DeviceCommPortAdapter;
 import alex_shutov.com.ledlights.device_commands.DeviceCommPort.DeviceCommPortListener;
 import alex_shutov.com.ledlights.device_commands.DeviceCommPort.DeviceSender;
+import alex_shutov.com.ledlights.device_commands.main_logic.Command;
+import alex_shutov.com.ledlights.device_commands.main_logic.CommandExecutor;
+import alex_shutov.com.ledlights.device_commands.main_logic.CompositeSerializer;
+import alex_shutov.com.ledlights.device_commands.main_logic.commands.ChangeColor;
 import alex_shutov.com.ledlights.hex_general.LogicCell;
 import rx.Observable;
 import rx.schedulers.Schedulers;
@@ -23,12 +34,20 @@ import rx.schedulers.Schedulers;
  *    this app is a good idea and worth buying details and soldering a device. To do so we need
  *    to emulate device workflow (UI will show changes in device state).
  */
-public class DeviceCommandsLogicCell extends LogicCell {
+public class DeviceCommandsLogicCell extends LogicCell implements CommandExecutor {
 
     private DeviceCommPortAdapter commPortAdapter;
     // Reference to interface for sending serialized command to connected device.
     // DeviceCommPortAdapter adapt this interface.
     private DeviceSender sendInterface;
+
+    /**
+     * This is a composite command executor, containing serializers for all commands.
+     */
+    @Inject
+    @Named("CommandSerializationStore")
+    CompositeSerializer serializationStore;
+
 
     /**
      * Initialize components, used in this logic cell in this method
@@ -38,6 +57,8 @@ public class DeviceCommandsLogicCell extends LogicCell {
         commPortAdapter.initialize();
         // use adapter to output port for sending data.
         sendInterface = commPortAdapter;
+        // connect serializers to device interface
+        serializationStore.setDeviceSender(sendInterface);
     }
 
     /**
@@ -61,14 +82,48 @@ public class DeviceCommandsLogicCell extends LogicCell {
     }
 
     int count = 0;
+    Random r = new Random();
 
     public void sendTestCommand() {
-        if (count++ % 2 == 0) {
-            sendColorToDevice(0, 0, 0);
-        } else {
-            sendColorToDevice(255, 255, 255);
-        }
+//        if (count++ % 2 == 0) {
+//            sendColorToDevice(0, 0, 0);
+//        } else {
+//            sendColorToDevice(255, 255, 255);
+//        }
+
+        ChangeColor command = new ChangeColor();
+
+        int color = Color.argb(0xff, r.nextInt(255), r.nextInt(255), r.nextInt(255));
+        command.setColor(color);
+
+        execute(command);
+
     }
+
+    /**
+     * This is a top- level entity, it can execute any command (or die trying :) )
+     * @param command
+     * @return
+     */
+    @Override
+    public boolean canExecute(Command command) {
+        return true;
+    }
+
+    @Override
+    public void execute(Command command) {
+        Observable.defer(() -> Observable.just(command))
+                .subscribeOn(Schedulers.io())
+                .subscribe(c -> {
+                    serializationStore.execute(c);
+                });
+    }
+
+    /**
+     * Inherited from CommandExecutor
+     */
+
+
 
     // accessors
 
