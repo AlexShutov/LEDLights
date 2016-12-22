@@ -3,6 +3,7 @@ package alex_shutov.com.ledlights.device_commands.main_logic.commands.change_col
 import alex_shutov.com.ledlights.device_commands.main_logic.Command;
 import alex_shutov.com.ledlights.device_commands.main_logic.serialization_general.CommandSerializer;
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.change_color.ChangeColor;
+import alex_shutov.com.ledlights.device_commands.main_logic.serialization_general.Constants;
 import alex_shutov.com.ledlights.device_commands.main_logic.serialization_general.DataHeader;
 
 /**
@@ -34,7 +35,7 @@ public class ChangeColorSerializer extends CommandSerializer {
      */
     @Override
     public byte calculateDataPayloadSize(Command command) {
-        return 3;
+        return Constants.COLOR_SERIALIZED_SIZE;
     }
 
     /**

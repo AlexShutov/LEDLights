@@ -17,6 +17,9 @@ import alex_shutov.com.ledlights.device_commands.main_logic.CommandExecutor;
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.lights_sequence.LightsSequenceCommand;
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.lights_sequence.models.Light;
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.lights_sequence.models.LightsSequence;
+import alex_shutov.com.ledlights.device_commands.main_logic.commands.strobe_sequence.StrobeSequenceCommand;
+import alex_shutov.com.ledlights.device_commands.main_logic.commands.strobe_sequence.model.StrobeFlash;
+import alex_shutov.com.ledlights.device_commands.main_logic.commands.strobe_sequence.model.StrobeSequence;
 import alex_shutov.com.ledlights.device_commands.main_logic.serialization_general.CompositeSerializer;
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.change_color.ChangeColor;
 import alex_shutov.com.ledlights.hex_general.LogicCell;
@@ -93,13 +96,14 @@ public class DeviceCommandsLogicCell extends LogicCell implements CommandExecuto
     public void sendTestCommand() {
 
 //        sendingSubscription =
-//                    Observable.interval(10, TimeUnit.SECONDS)
+//                    Observable.interval(30, TimeUnit.MILLISECONDS)
 //                            .map(cnt -> {
 ////                                ChangeColor command = new ChangeColor();
 ////                                int color = Color.argb(0xff, r.nextInt(255), r.nextInt(255), r.nextInt(255));
 ////                                command.setColor(color);
 ////                                execute(command);
-//                                playSequence();
+////                                playSequence();
+//                                switchFlash(count++ % 2 == 0);
 //                                return cnt;
 //                            })
 //                            .subscribe(cnt -> {
@@ -111,8 +115,9 @@ public class DeviceCommandsLogicCell extends LogicCell implements CommandExecuto
 //        int color = Color.argb(0xff, r.nextInt(255), r.nextInt(255), r.nextInt(255));
 //        command.setColor(color);
 //        execute(command);
-
-        playSequence();
+//        switchFlash(count++ % 2 == 0);
+        //playSequence();
+        playFlashSequence();
     }
 
 
@@ -122,21 +127,57 @@ public class DeviceCommandsLogicCell extends LogicCell implements CommandExecuto
         command.setLightsSequence(lightsSequence);
 
         lightsSequence.setSmoothSwitching(true);
-        lightsSequence.setRepeating(true);
+        lightsSequence.setRepeating(false);
 
         Light l;
 
         l = new Light();
         l.setColor(0xad2f0f);
-        l.setDuration(100);
-        lightsSequence.addLight(l);
-
-        l = new Light();
-        l.setColor(0x0f88ad);
-        l.setDuration(100);
+        l.setDuration(2000);
         lightsSequence.addLight(l);
         execute(command);
     }
+
+    private void switchFlash(boolean isOn) {
+        StrobeSequenceCommand command = new StrobeSequenceCommand();
+        StrobeSequence sequence = new StrobeSequence();
+        command.setSequence(sequence);
+        // setup sequence
+        sequence.setPermanent(true);
+        sequence.setOn(isOn);
+
+        execute(command);
+    }
+
+    private void playFlashSequence() {
+        StrobeSequenceCommand command = new StrobeSequenceCommand();
+        StrobeSequence sequence = new StrobeSequence();
+        command.setSequence(sequence);
+
+        sequence.setPermanent(false);
+        sequence.setOn(false);
+        sequence.setRepeat(count++ % 2 == 0);
+
+        StrobeFlash flash;
+
+        flash = new StrobeFlash();
+        flash.setTimeOn(10);
+        flash.setTimeOff(30);
+        sequence.addFlash(flash);
+
+        flash = new StrobeFlash();
+        flash.setTimeOn(20);
+        flash.setTimeOff(50);
+        sequence.addFlash(flash);
+
+        flash = new StrobeFlash();
+        flash.setTimeOn(50);
+        flash.setTimeOff(300);
+        sequence.addFlash(flash);
+
+        execute(command);
+    }
+
 
     /**
      * This is a top- level entity, it can execute any command (or die trying :) )
