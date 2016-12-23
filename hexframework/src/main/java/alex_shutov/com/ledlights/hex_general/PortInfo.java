@@ -13,6 +13,7 @@ public class PortInfo {
     public static final int PORT_BLUETOOTH_EXTERNAL_INTERFACE = 5;
     // ports for 'Device commands' module
     public static final int PORT_DEVICE_COMMANDS_COMM = 6;
+    public static final int PORT_DEVICE_CONTROL = 7;
 
     /**
      * we may want to assign numbers to ports
