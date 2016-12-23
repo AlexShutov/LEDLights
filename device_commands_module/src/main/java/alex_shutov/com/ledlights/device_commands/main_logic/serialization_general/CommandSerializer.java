@@ -48,11 +48,20 @@ public abstract class CommandSerializer implements CommandExecutor {
     public abstract DataHeader createDataHeader(Command command);
 
     /**
-     * Transform command to byte array and send it to device
+     * Narrow scope of command
      * @param command
      */
     @Override
     public void execute(Command command) {
+        execute(command, deviceSender);
+    }
+
+    /**
+     * Transform command to byte array and send it to device
+     * @param command
+     * @param sender
+     */
+    public void execute(Command command, DeviceSender sender) {
         // create command header
         CommandHeader commandHeader = new CommandHeader();
         // create data header
@@ -77,9 +86,8 @@ public abstract class CommandSerializer implements CommandExecutor {
         // now we can write the rest of command
         serializeCommandDataPayload(command, result, currOffset);
         //  command is ready now, send it to device
-        deviceSender.sendData(result);
+        sender.sendData(result);
     }
-
 
     /**
      * Specify sender - interfce to connected device.

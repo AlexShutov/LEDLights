@@ -1,6 +1,7 @@
 package alex_shutov.com.ledlights.device_commands.main_logic.serialization_general;
 
 import alex_shutov.com.ledlights.device_commands.DeviceCommPort.DeviceSender;
+import alex_shutov.com.ledlights.device_commands.main_logic.Command;
 import alex_shutov.com.ledlights.device_commands.main_logic.CommandExecutor;
 import alex_shutov.com.ledlights.device_commands.main_logic.CompositeExecutor;
 import alex_shutov.com.ledlights.device_commands.main_logic.serialization_general.CommandSerializer;
@@ -25,5 +26,15 @@ public class CompositeSerializer extends CompositeExecutor {
             s.setDeviceSender(sender);
         }
     }
+
+    public CommandSerializer getRightExecutor(Command command) throws IllegalArgumentException {
+        for (CommandExecutor e : executors) {
+            if (e.canExecute(command)) {
+                return (CommandSerializer) e;
+            }
+        }
+        throw new IllegalArgumentException("Unsupported command");
+    }
+
 
 }

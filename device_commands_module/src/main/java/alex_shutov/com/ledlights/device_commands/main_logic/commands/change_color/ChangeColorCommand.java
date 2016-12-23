@@ -6,7 +6,7 @@ import alex_shutov.com.ledlights.device_commands.main_logic.Command;
  * Created by lodoss on 22/12/16.
  */
 
-public class ChangeColor extends Command {
+public class ChangeColorCommand extends Command {
     // Color of LED
     private int color;
 

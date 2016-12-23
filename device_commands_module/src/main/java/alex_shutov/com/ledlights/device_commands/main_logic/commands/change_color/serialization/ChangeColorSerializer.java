@@ -1,8 +1,8 @@
 package alex_shutov.com.ledlights.device_commands.main_logic.commands.change_color.serialization;
 
 import alex_shutov.com.ledlights.device_commands.main_logic.Command;
+import alex_shutov.com.ledlights.device_commands.main_logic.commands.change_color.ChangeColorCommand;
 import alex_shutov.com.ledlights.device_commands.main_logic.serialization_general.CommandSerializer;
-import alex_shutov.com.ledlights.device_commands.main_logic.commands.change_color.ChangeColor;
 import alex_shutov.com.ledlights.device_commands.main_logic.serialization_general.Constants;
 import alex_shutov.com.ledlights.device_commands.main_logic.serialization_general.DataHeader;
 
@@ -15,7 +15,7 @@ public class ChangeColorSerializer extends CommandSerializer {
     @Override
     public void serializeCommandDataPayload(Command command, byte[] buffer, int offset) {
         // cast to right command type
-        ChangeColor changeColor = (ChangeColor) command;
+        ChangeColorCommand changeColor = (ChangeColorCommand) command;
         writeColor(changeColor.getColor(), buffer, offset);
     }
 
@@ -45,7 +45,7 @@ public class ChangeColorSerializer extends CommandSerializer {
      */
     @Override
     public boolean canExecute(Command command) {
-        return command instanceof ChangeColor;
+        return command instanceof ChangeColorCommand;
     }
 
 }
