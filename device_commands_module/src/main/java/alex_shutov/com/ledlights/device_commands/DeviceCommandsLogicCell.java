@@ -14,6 +14,7 @@ import alex_shutov.com.ledlights.device_commands.main_logic.CommandExecutor;
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.lights_sequence.LightsSequenceCommand;
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.lights_sequence.models.Light;
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.lights_sequence.models.LightsSequence;
+import alex_shutov.com.ledlights.device_commands.main_logic.commands.save_to_ee.SaveToEECommand;
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.strobe_sequence.StrobeSequenceCommand;
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.strobe_sequence.model.StrobeFlash;
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.strobe_sequence.model.StrobeSequence;
@@ -113,9 +114,9 @@ public class DeviceCommandsLogicCell extends LogicCell implements CommandExecuto
 //        execute(command);
 //        switchFlash(count++ % 2 == 0);
         //playSequence();
-        playFlashSequence();
+//        playFlashSequence();
+        testSaveCommand();
     }
-
 
     private void playSequence() {
         LightsSequenceCommand command = new LightsSequenceCommand();
@@ -172,6 +173,47 @@ public class DeviceCommandsLogicCell extends LogicCell implements CommandExecuto
         sequence.addFlash(flash);
 
         execute(command);
+    }
+
+    private void testSaveCommand() {
+        // generate foreground command
+        LightsSequenceCommand foregroundCommand = new LightsSequenceCommand();
+        LightsSequence lightsSequence = new LightsSequence();
+        foregroundCommand.setLightsSequence(lightsSequence);
+
+        lightsSequence.setSmoothSwitching(true);
+        lightsSequence.setRepeating(true);
+
+        Light l;
+
+        l = new Light();
+        l.setColor(0xad2f0f);
+        l.setDuration(2000);
+        lightsSequence.addLight(l);
+
+        // generate background command
+        StrobeSequenceCommand backgroundCommand = new StrobeSequenceCommand();
+        StrobeSequence sequence = new StrobeSequence();
+        backgroundCommand.setSequence(sequence);
+        sequence.setPermanent(false);
+        sequence.setOn(false);
+        sequence.setRepeat(true);
+
+        StrobeFlash flash;
+        flash = new StrobeFlash();
+        flash.setTimeOn(1000);
+        flash.setTimeOff(1000);
+        sequence.addFlash(flash);
+
+        SaveToEECommand saveCommand = new SaveToEECommand();
+        saveCommand.setForegroundCommand(foregroundCommand);
+        saveCommand.setBackgroundCommand(backgroundCommand);
+        saveCommand.setLoadCommand(false);
+        saveCommand.setEraseCell(false);
+        saveCommand.setCellIndex(0);
+
+        execute(saveCommand);
+
     }
 
 
