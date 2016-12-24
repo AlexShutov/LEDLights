@@ -1,5 +1,7 @@
 package alex_shutov.com.ledlights.device_commands;
 
+import android.graphics.Color;
+
 import java.util.Random;
 
 import javax.inject.Inject;
@@ -185,11 +187,20 @@ public class DeviceCommandsLogicCell extends LogicCell implements CommandExecuto
         lightsSequence.setRepeating(true);
 
         Light l;
-
         l = new Light();
-        l.setColor(0xad2f0f);
-        l.setDuration(2000);
+        l.setColor(Color.GREEN);
+        l.setDuration(200);
         lightsSequence.addLight(l);
+        l = new Light();
+        l.setColor(Color.RED);
+        l.setDuration(200);
+        lightsSequence.addLight(l);
+        l = new Light();
+        l.setColor(Color.BLUE);
+        l.setDuration(200);
+        lightsSequence.addLight(l);
+
+//        execute(foregroundCommand);
 
         // generate background command
         StrobeSequenceCommand backgroundCommand = new StrobeSequenceCommand();
@@ -205,15 +216,21 @@ public class DeviceCommandsLogicCell extends LogicCell implements CommandExecuto
         flash.setTimeOff(1000);
         sequence.addFlash(flash);
 
+//        execute(backgroundCommand);
+
         SaveToEECommand saveCommand = new SaveToEECommand();
         saveCommand.setForegroundCommand(foregroundCommand);
         saveCommand.setBackgroundCommand(backgroundCommand);
         saveCommand.setLoadCommand(false);
         saveCommand.setEraseCell(false);
-        saveCommand.setCellIndex(0);
+        saveCommand.setCellIndex(1);
 
         execute(saveCommand);
 
+        SaveToEECommand loadCommand = new SaveToEECommand();
+        loadCommand.setCellIndex(1);
+        loadCommand.setLoadCommand(true);
+        execute(loadCommand);
     }
 
 

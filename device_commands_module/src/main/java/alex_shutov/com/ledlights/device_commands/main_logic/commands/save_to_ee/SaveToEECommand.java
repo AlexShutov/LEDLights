@@ -25,7 +25,7 @@ public class SaveToEECommand extends Command {
     }
 
     /**
-     * Saving commands to flash memoty is a single run background command.
+     * Saving commands to flash memory is a single run background command.
      * @return
      */
     @Override

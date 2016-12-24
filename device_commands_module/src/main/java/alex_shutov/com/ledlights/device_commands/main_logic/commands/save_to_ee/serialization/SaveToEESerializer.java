@@ -15,12 +15,12 @@ public class SaveToEESerializer extends CommandSerializer {
 
     // store, which is used for getting access to right serializer
     private CompositeSerializer serializerStore;
-
     private DataSenderStorage deviceMockForWrappedCommand;
 
     // serialization results of foreground and background commands.
-    private byte[] foregroundCommandData;
-    private byte[] backgroundCommandData;
+    private byte[] fgCommandData;
+    private byte[] bgCommandData;
+
     int payloadSize;
 
     public SaveToEESerializer(CompositeSerializer serializer) {
@@ -62,20 +62,22 @@ public class SaveToEESerializer extends CommandSerializer {
     @Override
     public void serializeCommandDataPayload(Command command, byte[] buffer, int offset) {
         // write foreground command
-        if (null != foregroundCommandData) {
-            for (int i = 0; i < foregroundCommandData.length; ++i) {
-                buffer[offset + i] = foregroundCommandData[i];
+        if (null != fgCommandData) {
+            for (int i = 0; i < fgCommandData.length; ++i) {
+                buffer[offset + i] = fgCommandData[i];
             }
         }
-        offset += foregroundCommandData.length;
-        if (null != backgroundCommandData) {
-            for (int i = 0; i < backgroundCommandData.length; ++i) {
-                buffer[offset + i] = backgroundCommandData[i];
+        // if background command present
+        if (null != bgCommandData) {
+            // shift offset to length of foreground command
+            offset += fgCommandData.length;
+            for (int i = 0; i < bgCommandData.length; ++i) {
+                buffer[offset + i] = bgCommandData[i];
             }
         }
         // remove old serialization data
-        foregroundCommandData = null;
-        backgroundCommandData = null;
+        fgCommandData = null;
+        bgCommandData = null;
         payloadSize = 0;
     }
 
@@ -116,25 +118,48 @@ public class SaveToEESerializer extends CommandSerializer {
             // we serialize wrapped commands only for save commands.
             return;
         }
-        // process foreground command
+        // serialize foreground command
         Command foreground = c.getForegroundCommand();
-        CommandSerializer foregroundSerializer = serializerStore.getRightExecutor(foreground);
+        CommandSerializer fgSerializer = serializerStore.getRightExecutor(foreground);
         // serialize foreground command, result will be saved in mocked device
-        foregroundSerializer.execute(foreground, deviceMockForWrappedCommand, false);
-        foregroundCommandData = deviceMockForWrappedCommand.getSerializedCommand();
-        Command backgroundCommand = c.getBackgroundCommand();
-        if (null == backgroundCommand) {
-            // we're done here
+        fgSerializer.execute(foreground, deviceMockForWrappedCommand, false);
+        byte[] fgDataBlock = deviceMockForWrappedCommand.getSerializedCommand();
+        byte[] fgSerializationResult = appendIncomingCommandBlock(foreground, fgDataBlock);
+        fgCommandData = fgSerializationResult;
+
+        // don't check it for now, just stick to foreground command.
+        Command background = c.getBackgroundCommand();
+        if (null == background) {
+            // we're done here, set total data area size to size of foreground command
+            payloadSize = fgCommandData.length;
             return;
         }
         // serialize background command
-        CommandSerializer backgroundSerializer =
-                serializerStore.getRightExecutor(backgroundCommand);
-        backgroundSerializer.execute(backgroundCommand, deviceMockForWrappedCommand, false);
-        backgroundCommandData = deviceMockForWrappedCommand.getSerializedCommand();
-        // payload is a data for foreground and background command
-        payloadSize = foregroundCommandData.length + backgroundCommandData.length;
+        CommandSerializer bgSerializer = serializerStore.getRightExecutor(background);
+        // serialize background command, result will be saved in mocked device
+        bgSerializer.execute(background, deviceMockForWrappedCommand, false);
+        byte[] bgDataBlock = deviceMockForWrappedCommand.getSerializedCommand();
+        byte[] bgSerializationResult = appendIncomingCommandBlock(background, bgDataBlock);
+        bgCommandData = bgSerializationResult;
+        // total data block consist of foreground and background serialized commands
+        payloadSize = fgCommandData.length + bgCommandData.length;
     }
 
+    private byte[] appendIncomingCommandBlock(Command command, byte[] serializedDataBlock) {
+        IncomingCommand commandHeader = new IncomingCommand();
+        commandHeader.setCommandCode(command.getCommandCode());
+        // it is unused anyways
+        commandHeader.setPtrToDataBlock(0);
+        commandHeader.setDataBlockSize(serializedDataBlock.length);
+        int headerSize = commandHeader.getSerializedSize();
+        byte[] result = new byte[headerSize + serializedDataBlock.length];
+        // write header first
+        commandHeader.writeToBlock(result, 0);
+        // copy data block
+        for (int i = 0; i < serializedDataBlock.length; ++i) {
+            result[headerSize +  i] = serializedDataBlock[i];
+        }
+        return result;
+    }
 
 }
