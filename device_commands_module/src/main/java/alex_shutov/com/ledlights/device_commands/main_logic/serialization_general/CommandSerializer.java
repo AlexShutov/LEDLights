@@ -53,7 +53,7 @@ public abstract class CommandSerializer implements CommandExecutor {
      */
     @Override
     public void execute(Command command) {
-        execute(command, deviceSender);
+        execute(command, deviceSender, true);
     }
 
     /**
@@ -61,24 +61,28 @@ public abstract class CommandSerializer implements CommandExecutor {
      * @param command
      * @param sender
      */
-    public void execute(Command command, DeviceSender sender) {
+    public void execute(Command command, DeviceSender sender, boolean writeCommandHeader) {
         // create command header
         CommandHeader commandHeader = new CommandHeader();
         // create data header
         DataHeader dataHeader = createDataHeader(command);
         // compute total size of data block, size = sizeOf(dataHeader) + sizeOf(data)
         int dataSize = dataHeader.getHeaderSize() + calculateDataPayloadSize(command);
-        // 4 bytes for command header + size of data block
-        int total_size = 4 + dataSize;
+        // 4 bytes for command header + size of data block (if we write command header)
+        int total_size = dataSize;
+        if (writeCommandHeader) {
+            total_size += 4;
+        }
         // allocate memory for command
         byte[] result = new byte[total_size];
-
-        // set size of data block to command header
-        commandHeader.setDataSize(dataSize);
-        commandHeader.setCommandCode(command.getCommandCode());
-        writeCommandHeader(commandHeader, result, 0);
+        if (writeCommandHeader) {
+            // set size of data block to command header
+            commandHeader.setDataSize(dataSize);
+            commandHeader.setCommandCode(command.getCommandCode());
+            writeCommandHeader(commandHeader, result, 0);
+        }
         // command data goes  right after header (offset 4 bytes)
-        int currOffset = 4;
+        int currOffset =  writeCommandHeader ? 4 : 0;
         int headerSize = dataHeader.getHeaderSize();
         dataHeader.writeToResult(result, currOffset);
         // move current offset to data header size
@@ -98,7 +102,7 @@ public abstract class CommandSerializer implements CommandExecutor {
     }
 
     /**
-     * Write command header into result byte array starting from positiion 'offset' (= 0)
+     * Write command header into result byte array starting from position 'offset' (= 0)
      * @param header command header
      * @param block result byte array
      * @param offset offset of byte array (=0)
