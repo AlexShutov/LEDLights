@@ -10,7 +10,7 @@ import alex_shutov.com.ledlights.device_commands.main_logic.serialization_genera
  * Created by lodoss on 22/12/16.
  */
 
-public class CompositeSerializer extends CompositeExecutor {
+public class CompositeSerializer extends CompositeExecutor<CommandSerializer> {
 
     public CompositeSerializer() {
         super();
@@ -21,16 +21,15 @@ public class CompositeSerializer extends CompositeExecutor {
      * @param sender
      */
     public void setDeviceSender(DeviceSender sender) {
-        for (CommandExecutor e : executors) {
-            CommandSerializer s = (CommandSerializer) e;
+        for (CommandSerializer s : executors) {
             s.setDeviceSender(sender);
         }
     }
 
     public CommandSerializer getRightExecutor(Command command) throws IllegalArgumentException {
-        for (CommandExecutor e : executors) {
-            if (e.canExecute(command)) {
-                return (CommandSerializer) e;
+        for (CommandSerializer s : executors) {
+            if (s.canExecute(command)) {
+                return s;
             }
         }
         throw new IllegalArgumentException("Unsupported command");

@@ -1,16 +1,21 @@
 package alex_shutov.com.ledlights.device_commands.di;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import alex_shutov.com.ledlights.device_commands.main_logic.AnotherThreadDecorator;
 import alex_shutov.com.ledlights.device_commands.main_logic.CommandExecutor;
 import alex_shutov.com.ledlights.device_commands.main_logic.CompositeExecutor;
+import alex_shutov.com.ledlights.device_commands.main_logic.commands.change_color.emulation.ChangeColorEmulator;
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.lights_sequence.serialization.LightsSequenceSerializer;
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.save_to_ee.serialization.SaveToEESerializer;
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.strobe_sequence.serialization.StrobeSequenceSerializer;
-import alex_shutov.com.ledlights.device_commands.main_logic.serialization_general.CommandSerializer;
+import alex_shutov.com.ledlights.device_commands.main_logic.emulation_general.DeviceEmulationFrame;
+import alex_shutov.com.ledlights.device_commands.main_logic.emulation_general.EmulationExecutor;
 import alex_shutov.com.ledlights.device_commands.main_logic.serialization_general.CompositeSerializer;
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.change_color.serialization.ChangeColorSerializer;
 import dagger.Module;
@@ -55,15 +60,38 @@ public class CellModule {
     }
 
     /**
+     * Create and all executors, emulating real device. Those are used by emulator
+     * @return
+     */
+    @Provides
+    @Singleton
+    @Named("EmulationExecutors")
+    List<EmulationExecutor> createEmulationExecutors() {
+        List<EmulationExecutor> execs = new ArrayList<>();
+        // Create emulators:
+        // Change color command:
+        ChangeColorEmulator changeColorEmulator = new ChangeColorEmulator();
+        execs.add(changeColorEmulator);
+
+
+        return execs;
+    }
+
+    /**
      * Create command emulator, which will be customized in logic cell later on.
      * TODO: it is just empty composite executor because emulation isn't ready yet
      * @return
      */
     @Provides
     @Singleton
-    @Named("CommandEmulationExecutor")
-    CommandExecutor provideCommandEmulator() {
-        return new CompositeExecutor();
+    @Named("CommandEmulator")
+    DeviceEmulationFrame provideCommandEmulator(
+            @Named("EmulationExecutors") List<EmulationExecutor> execs) {
+        DeviceEmulationFrame emulator = new DeviceEmulationFrame();
+        for (EmulationExecutor e : execs) {
+            emulator.addExecutor(e);
+        }
+        return emulator;
     }
 
     /**
@@ -78,11 +106,11 @@ public class CellModule {
     @Named("CommandCellExecutor")
     CommandExecutor provideTopLevelExecutor(
             @Named("CommandSerializationStore") CompositeSerializer deviceExec,
-            @Named("CommandEmulationExecutor") CommandExecutor emulationExec) {
+            @Named("CommandEmulator") DeviceEmulationFrame emulator) {
         CompositeExecutor executor = new CompositeExecutor();
         // handle all incoming commands on another thread.
         executor.addExecutor(deviceExec);
-        executor.addExecutor(emulationExec);
+        executor.addExecutor(emulator);
         // put that composite executor into decorator for processing commands
         // in background
         AnotherThreadDecorator bgDecorator = new AnotherThreadDecorator();

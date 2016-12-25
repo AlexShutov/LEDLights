@@ -9,13 +9,14 @@ import javax.inject.Named;
 
 import alex_shutov.com.ledlights.device_commands.ControlPort.ControlPort;
 import alex_shutov.com.ledlights.device_commands.ControlPort.ControlPortAdapter;
+import alex_shutov.com.ledlights.device_commands.ControlPort.EmulationCallback;
 import alex_shutov.com.ledlights.device_commands.DeviceCommPort.DeviceCommPort;
 import alex_shutov.com.ledlights.device_commands.DeviceCommPort.DeviceCommPortAdapter;
 import alex_shutov.com.ledlights.device_commands.DeviceCommPort.DeviceCommPortListener;
 import alex_shutov.com.ledlights.device_commands.DeviceCommPort.DeviceSender;
 import alex_shutov.com.ledlights.device_commands.main_logic.Command;
 import alex_shutov.com.ledlights.device_commands.main_logic.CommandExecutor;
-import alex_shutov.com.ledlights.device_commands.main_logic.CompositeExecutor;
+import alex_shutov.com.ledlights.device_commands.main_logic.commands.change_color.ChangeColorCommand;
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.lights_sequence.LightsSequenceCommand;
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.lights_sequence.models.Light;
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.lights_sequence.models.LightsSequence;
@@ -23,6 +24,7 @@ import alex_shutov.com.ledlights.device_commands.main_logic.commands.save_to_ee.
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.strobe_sequence.StrobeSequenceCommand;
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.strobe_sequence.model.StrobeFlash;
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.strobe_sequence.model.StrobeSequence;
+import alex_shutov.com.ledlights.device_commands.main_logic.emulation_general.DeviceEmulationFrame;
 import alex_shutov.com.ledlights.device_commands.main_logic.serialization_general.CompositeSerializer;
 import alex_shutov.com.ledlights.hex_general.LogicCell;
 import rx.Observable;
@@ -45,6 +47,16 @@ import rx.schedulers.Schedulers;
  *    to emulate device workflow (UI will show changes in device state).
  */
 public class DeviceCommandsLogicCell extends LogicCell {
+    private EmulationCallback dummyEmulatedDevice = new EmulationCallback() {
+        @Override
+        public void onLEDColorChanged(int color) {}
+
+        @Override
+        public void onStrobeOn() {}
+
+        @Override
+        public void onStrobeOff() {}
+    };
 
     private DeviceCommPortAdapter commPortAdapter;
     private ControlPortAdapter controlPortAdapter;
@@ -60,8 +72,8 @@ public class DeviceCommandsLogicCell extends LogicCell {
     CompositeSerializer serializationStore;
 
     @Inject
-    @Named("CommandEmulationExecutor")
-    CommandExecutor deviceEmulator;
+    @Named("CommandEmulator")
+    DeviceEmulationFrame deviceEmulator;
 
     @Inject
     @Named("CommandCellExecutor")
@@ -75,6 +87,13 @@ public class DeviceCommandsLogicCell extends LogicCell {
         // initialize port adapters
         commPortAdapter.initialize();
         controlPortAdapter.initialize();
+
+        // initialize device emulator
+        deviceEmulator.init();
+        // connection adapter adapt external device emulation interface to
+        // used internally EmulatedDeviceControl interface, set it to device emulator.
+        deviceEmulator.setDevice(controlPortAdapter);
+
         // use adapter to output port for sending data.
         sendInterface = commPortAdapter;
         // connect serializers to device interface
@@ -83,6 +102,8 @@ public class DeviceCommandsLogicCell extends LogicCell {
         // set this logic cell as executor for control port after all real executors is
         // ready (serialization store and device emulator).
         controlPortAdapter.setExecutor(topLevelComposite);
+        // tell connection adapter that emulator control emulations.
+        controlPortAdapter.setEmulationControl(deviceEmulator);
     }
 
     /**
@@ -90,7 +111,8 @@ public class DeviceCommandsLogicCell extends LogicCell {
      */
     @Override
     public void suspend() {
-
+        // suspend device emulator
+        deviceEmulator.suspend();
     }
 
     /**
@@ -134,7 +156,15 @@ public class DeviceCommandsLogicCell extends LogicCell {
 //        switchFlash(count++ % 2 == 0);
         //playSequence();
 //        playFlashSequence();
-        testSaveCommand();
+//        testSaveCommand();
+            changeColor();
+    }
+
+    private void changeColor(){
+        ChangeColorCommand command = new ChangeColorCommand();
+        int color = Color.argb(0xff, r.nextInt(255), r.nextInt(255), r.nextInt(255));
+        command.setColor(color);
+        execute(command);
     }
 
     private void playSequence() {
@@ -287,6 +317,10 @@ public class DeviceCommandsLogicCell extends LogicCell {
 
     public void setControlPortAdapter(ControlPortAdapter controlPortAdapter) {
         this.controlPortAdapter = controlPortAdapter;
+    }
+
+    public void setEmulationCallback(EmulationCallback callback) {
+        controlPortAdapter.setCallback( null == callback ? dummyEmulatedDevice : callback);
     }
 
     /**

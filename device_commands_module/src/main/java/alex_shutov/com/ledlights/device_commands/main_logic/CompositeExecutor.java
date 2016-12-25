@@ -13,17 +13,17 @@ import java.util.List;
  * then stop process.
  * In second mode it offers command to all stored executors.
  */
-public class CompositeExecutor implements CommandExecutor {
+public class CompositeExecutor<T extends CommandExecutor> implements CommandExecutor {
     // the way, command should be processed
     public static enum CompositeMode {
         Single,
         All
     }
-    protected List<CommandExecutor> executors;
+    protected List<T> executors;
     private CompositeMode mode;
 
     public CompositeExecutor(){
-        mode = CompositeMode.Single;
+        mode = CompositeMode.All;
         executors = new ArrayList<>();
     }
 
@@ -31,7 +31,7 @@ public class CompositeExecutor implements CommandExecutor {
     @Override
     public boolean canExecute(Command command) {
         // find first executor, which support this kind of command
-        for (CommandExecutor executor : executors) {
+        for (T executor : executors) {
             if (executor.canExecute(command)) {
                 return true;
             }
@@ -42,7 +42,7 @@ public class CompositeExecutor implements CommandExecutor {
     @Override
     public void execute(Command command) {
         // loop over all available executores
-        for (CommandExecutor e : executors) {
+        for (T e : executors) {
             // check if executor support this type of command
             if (e.canExecute(command)) {
                 e.execute(command);
@@ -72,11 +72,13 @@ public class CompositeExecutor implements CommandExecutor {
         }
     }
 
-    public void addExecutor(CommandExecutor executor) {
+    public void addExecutor(T executor) {
         synchronized (this) {
             executors.add(executor);
         }
     }
 
-
+    protected List<T> getExecutors() {
+        return executors;
+    }
 }

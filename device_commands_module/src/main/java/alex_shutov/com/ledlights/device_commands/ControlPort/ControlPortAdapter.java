@@ -12,7 +12,6 @@ import alex_shutov.com.ledlights.hex_general.PortInfo;
  */
 
 public class ControlPortAdapter extends Adapter implements ControlPort , EmulatedDeviceControl {
-
     /**
      * Inherited from Port
      */

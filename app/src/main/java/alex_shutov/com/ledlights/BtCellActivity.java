@@ -4,11 +4,14 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.concurrent.TimeUnit;
 
@@ -17,6 +20,8 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtComm
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtLogicCell;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.service.BtCellService;
+import alex_shutov.com.ledlights.device_commands.ControlPort.ControlPortAdapter;
+import alex_shutov.com.ledlights.device_commands.ControlPort.EmulationCallback;
 import alex_shutov.com.ledlights.device_commands.DeviceCommPort.DeviceCommPort;
 import alex_shutov.com.ledlights.device_commands.DeviceCommPort.DeviceCommPortListener;
 import alex_shutov.com.ledlights.device_commands.DeviceCommandsCellDeployer;
@@ -36,6 +41,8 @@ public class BtCellActivity extends Activity {
     Button btnSendData;
     TextView tvPrint;
     LEDApplication app;
+    View emulationLed;
+    View emulationStrobe;
 
     int count = 0;
 
@@ -55,6 +62,9 @@ public class BtCellActivity extends Activity {
         setContentView(R.layout.activity_bt_cell);
         btnStart = (Button) findViewById(R.id.abc_btn_start);
         tvPrint = (TextView) findViewById(R.id.abc_tv_print);
+        emulationLed = (View) findViewById(R.id.abc_emulation_led);
+        emulationStrobe = (View) findViewById(R.id.abc_emulation_strobe);
+        emulationStrobe.setBackgroundColor(Color.BLACK);
 
 //        app = (LEDApplication) getApplication();
 //        btCell = app.getCell();
@@ -115,6 +125,8 @@ public class BtCellActivity extends Activity {
     @Override
     protected void onStop() {
         unbindService(mConnection);
+        commCell.suspend();
+        commCell.getControlPort().disableEmulation();
         super.onStop();
     }
 
@@ -197,10 +209,10 @@ public class BtCellActivity extends Activity {
             }
         };
         btCell.setBtCommPortListener(commListener);
-
         commCell = new DeviceCommandsLogicCell();
         commCellDeployer = new DeviceCommandsCellDeployer();
         commCellDeployer.deploy(commCell);
+
 
         // connect command logic cell with bluetooth logic cell (backward)
         commCell.setDeviceCommPortListener(new DeviceCommPortListener() {
@@ -220,7 +232,22 @@ public class BtCellActivity extends Activity {
             }
         });
 
+        commCell.setEmulationCallback(new EmulationCallback() {
+            @Override
+            public void onLEDColorChanged(int color) {
+                emulationLed.setBackgroundColor(color);
+            }
 
+            @Override
+            public void onStrobeOn() {
+                emulationStrobe.setBackgroundColor(Color.WHITE);
+            }
 
+            @Override
+            public void onStrobeOff() {
+                emulationStrobe.setBackgroundColor(Color.BLACK);
+            }
+        });
+        commCell.getControlPort().enableEmulation();
     }
 }

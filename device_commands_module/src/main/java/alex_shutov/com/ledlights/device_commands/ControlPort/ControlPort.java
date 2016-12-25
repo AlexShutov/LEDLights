@@ -1,6 +1,7 @@
 package alex_shutov.com.ledlights.device_commands.ControlPort;
 
 import alex_shutov.com.ledlights.device_commands.main_logic.CommandExecutor;
+import alex_shutov.com.ledlights.device_commands.main_logic.emulation_general.EmulatedDeviceControl;
 import alex_shutov.com.ledlights.hex_general.Port;
 
 /**
