@@ -2,7 +2,6 @@ package alex_shutov.com.ledlights.device_commands.main_logic.commands.save_to_ee
 
 import alex_shutov.com.ledlights.device_commands.main_logic.Command;
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.save_to_ee.SaveToEECommand;
-import alex_shutov.com.ledlights.device_commands.main_logic.commands.strobe_sequence.serialization.DataSenderStorage;
 import alex_shutov.com.ledlights.device_commands.main_logic.serialization_general.CommandSerializer;
 import alex_shutov.com.ledlights.device_commands.main_logic.serialization_general.CompositeSerializer;
 import alex_shutov.com.ledlights.device_commands.main_logic.serialization_general.DataHeader;
