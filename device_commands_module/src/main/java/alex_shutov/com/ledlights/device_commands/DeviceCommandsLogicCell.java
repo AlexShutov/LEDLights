@@ -7,12 +7,15 @@ import java.util.Random;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import alex_shutov.com.ledlights.device_commands.ControlPort.ControlPort;
+import alex_shutov.com.ledlights.device_commands.ControlPort.ControlPortAdapter;
 import alex_shutov.com.ledlights.device_commands.DeviceCommPort.DeviceCommPort;
 import alex_shutov.com.ledlights.device_commands.DeviceCommPort.DeviceCommPortAdapter;
 import alex_shutov.com.ledlights.device_commands.DeviceCommPort.DeviceCommPortListener;
 import alex_shutov.com.ledlights.device_commands.DeviceCommPort.DeviceSender;
 import alex_shutov.com.ledlights.device_commands.main_logic.Command;
 import alex_shutov.com.ledlights.device_commands.main_logic.CommandExecutor;
+import alex_shutov.com.ledlights.device_commands.main_logic.CompositeExecutor;
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.lights_sequence.LightsSequenceCommand;
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.lights_sequence.models.Light;
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.lights_sequence.models.LightsSequence;
@@ -41,9 +44,10 @@ import rx.schedulers.Schedulers;
  *    this app is a good idea and worth buying details and soldering a device. To do so we need
  *    to emulate device workflow (UI will show changes in device state).
  */
-public class DeviceCommandsLogicCell extends LogicCell implements CommandExecutor {
+public class DeviceCommandsLogicCell extends LogicCell {
 
     private DeviceCommPortAdapter commPortAdapter;
+    private ControlPortAdapter controlPortAdapter;
     // Reference to interface for sending serialized command to connected device.
     // DeviceCommPortAdapter adapt this interface.
     private DeviceSender sendInterface;
@@ -55,17 +59,30 @@ public class DeviceCommandsLogicCell extends LogicCell implements CommandExecuto
     @Named("CommandSerializationStore")
     CompositeSerializer serializationStore;
 
+    @Inject
+    @Named("CommandEmulationExecutor")
+    CommandExecutor deviceEmulator;
+
+    @Inject
+    @Named("CommandCellExecutor")
+    CommandExecutor topLevelComposite;
 
     /**
      * Initialize components, used in this logic cell in this method
      */
     @Override
     public void init() {
+        // initialize port adapters
         commPortAdapter.initialize();
+        controlPortAdapter.initialize();
         // use adapter to output port for sending data.
         sendInterface = commPortAdapter;
         // connect serializers to device interface
         serializationStore.setDeviceSender(sendInterface);
+
+        // set this logic cell as executor for control port after all real executors is
+        // ready (serialization store and device emulator).
+        controlPortAdapter.setExecutor(topLevelComposite);
     }
 
     /**
@@ -235,38 +252,41 @@ public class DeviceCommandsLogicCell extends LogicCell implements CommandExecuto
 
 
     /**
-     * This is a top- level entity, it can execute any command (or die trying :) )
-     * @param command
-     * @return
-     */
-    @Override
-    public boolean canExecute(Command command) {
-        return true;
-    }
-
-    @Override
-    public void execute(Command command) {
-        Observable.defer(() -> Observable.just(command))
-                .subscribeOn(Schedulers.io())
-                .subscribe(c -> {
-                    serializationStore.execute(c);
-                });
-    }
-
-    /**
      * Inherited from CommandExecutor
      */
 
 
+    /**
+     * This is test method for now. Just dispatch command to control port
+     * @param command
+     */
+    public void execute(Command command) {
+        getControlPort().execute(command);
+    }
 
     // accessors
 
+    /**
+     * Communication port
+     */
     public DeviceCommPort getCommPort() {
         return commPortAdapter;
     }
 
     public void setCommPortAdapter(DeviceCommPortAdapter commPortAdapter) {
         this.commPortAdapter = commPortAdapter;
+    }
+
+    /**
+     * Control port
+     */
+
+    public ControlPort getControlPort() {
+        return controlPortAdapter;
+    }
+
+    public void setControlPortAdapter(ControlPortAdapter controlPortAdapter) {
+        this.controlPortAdapter = controlPortAdapter;
     }
 
     /**
