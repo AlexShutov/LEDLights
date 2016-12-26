@@ -43,7 +43,6 @@ public class BtCellActivity extends Activity {
     Button btnStart;
     Button btnCloseConnection;
     Button btnSendData;
-    Button btnSequencePlayer;
     TextView tvPrint;
     LEDApplication app;
     View emulationLed;
@@ -106,10 +105,6 @@ public class BtCellActivity extends Activity {
 //
 //                            });
             commCell.sendTestCommand();
-        });
-        btnSequencePlayer = (Button) findViewById(R.id.abc_btn_test_interval);
-        btnSequencePlayer.setOnClickListener(v -> {
-            testSequencePlayer();
         });
     }
 
@@ -259,64 +254,5 @@ public class BtCellActivity extends Activity {
         commCell.getControlPort().enableEmulation();
     }
 
-    private IntervalSequencePlayer sequencePlayer;
-    private void testSequencePlayer() {
-        if (null != sequencePlayer) {
-            sequencePlayer.stop();
-        }
-        sequencePlayer = new IntervalSequencePlayer();
-        List<Long> intervals = new ArrayList<>();
-        intervals.add(20000l);
-        intervals.add(10000l);
-        sequencePlayer.setCallback(sequenceCallback);
-        boolean repeat = true;
-        sequencePlayer.startSequence(intervals, repeat);
 
-
-
-    }
-
-    private void showToast(String message){
-        Observable.defer(() -> Observable.just(message))
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(m -> Toast.makeText(this, m, Toast.LENGTH_SHORT).show());
-    }
-
-    private IntervalSequencePlayer.IntervalSequenceCallback sequenceCallback =
-            new IntervalSequencePlayer.IntervalSequenceCallback() {
-                @Override
-                public void onIntervalStarted(int intervalNo) {
-                    String msg = "Interval started: " + intervalNo;
-                    Log.i(LOG_TAG, msg);
-                    showToast(msg);
-                }
-
-                @Override
-                public void onIntevalEnded(int intervalNo) {
-                    String msg = "interval ended " + intervalNo;
-                    Log.i(LOG_TAG, msg);
-                    showToast(msg);
-                }
-
-                @Override
-                public void onSequenceStarted() {
-                    String msg = "Sequence started";
-                    Log.i(LOG_TAG, msg);
-                    showToast(msg);
-                }
-
-                @Override
-                public void onSequenceEnded() {
-                    String msg = "Sequence ended";
-                    Log.i(LOG_TAG, msg);
-                    showToast(msg);
-                }
-
-                @Override
-                public void onSequenceRestarted() {
-                    String msg = "Sequence restarted";
-                    Log.i(LOG_TAG, msg);
-                    showToast(msg);
-                }
-            };
 }

@@ -154,10 +154,9 @@ public class DeviceCommandsLogicCell extends LogicCell {
 //        command.setColor(color);
 //        execute(command);
 //        switchFlash(count++ % 2 == 0);
-        //playSequence();
+          playSequence();
 //        playFlashSequence();
 //        testSaveCommand();
-            changeColor();
     }
 
     private void changeColor(){
@@ -173,14 +172,20 @@ public class DeviceCommandsLogicCell extends LogicCell {
         command.setLightsSequence(lightsSequence);
 
         lightsSequence.setSmoothSwitching(true);
-        lightsSequence.setRepeating(false);
+        lightsSequence.setRepeating(true);
 
         Light l;
 
         l = new Light();
-        l.setColor(0xad2f0f);
-        l.setDuration(2000);
+        l.setColor(Color.RED);
+        l.setDuration(100);
         lightsSequence.addLight(l);
+
+        l = new Light();
+        l.setColor(Color.BLUE);
+        l.setDuration(100);
+        lightsSequence.addLight(l);
+
         execute(command);
     }
 

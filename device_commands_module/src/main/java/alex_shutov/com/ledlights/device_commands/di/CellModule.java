@@ -16,6 +16,7 @@ import alex_shutov.com.ledlights.device_commands.main_logic.commands.save_to_ee.
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.strobe_sequence.serialization.StrobeSequenceSerializer;
 import alex_shutov.com.ledlights.device_commands.main_logic.emulation_general.DeviceEmulationFrame;
 import alex_shutov.com.ledlights.device_commands.main_logic.emulation_general.EmulationExecutor;
+import alex_shutov.com.ledlights.device_commands.main_logic.emulation_general.interval_sequence.IntervalSequencePlayer;
 import alex_shutov.com.ledlights.device_commands.main_logic.serialization_general.CompositeSerializer;
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.change_color.serialization.ChangeColorSerializer;
 import dagger.Module;
@@ -59,40 +60,6 @@ public class CellModule {
         return store;
     }
 
-    /**
-     * Create and all executors, emulating real device. Those are used by emulator
-     * @return
-     */
-    @Provides
-    @Singleton
-    @Named("EmulationExecutors")
-    List<EmulationExecutor> createEmulationExecutors() {
-        List<EmulationExecutor> execs = new ArrayList<>();
-        // Create emulators:
-        // Change color command:
-        ChangeColorEmulator changeColorEmulator = new ChangeColorEmulator();
-        execs.add(changeColorEmulator);
-
-
-        return execs;
-    }
-
-    /**
-     * Create command emulator, which will be customized in logic cell later on.
-     * TODO: it is just empty composite executor because emulation isn't ready yet
-     * @return
-     */
-    @Provides
-    @Singleton
-    @Named("CommandEmulator")
-    DeviceEmulationFrame provideCommandEmulator(
-            @Named("EmulationExecutors") List<EmulationExecutor> execs) {
-        DeviceEmulationFrame emulator = new DeviceEmulationFrame();
-        for (EmulationExecutor e : execs) {
-            emulator.addExecutor(e);
-        }
-        return emulator;
-    }
 
     /**
      * Create top-level executor, to which this logic cell will be redirecting all commands.

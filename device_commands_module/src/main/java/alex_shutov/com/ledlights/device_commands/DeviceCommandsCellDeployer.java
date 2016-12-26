@@ -7,6 +7,7 @@ import alex_shutov.com.ledlights.device_commands.DeviceCommPort.DeviceCommPortAd
 import alex_shutov.com.ledlights.device_commands.di.CellModule;
 import alex_shutov.com.ledlights.device_commands.di.CommPortModule;
 import alex_shutov.com.ledlights.device_commands.di.ControlPortModule;
+import alex_shutov.com.ledlights.device_commands.di.EmulationModule;
 import alex_shutov.com.ledlights.hex_general.CellDeployer;
 import alex_shutov.com.ledlights.hex_general.LogicCell;
 import alex_shutov.com.ledlights.hex_general.PortAdapterCreator;
@@ -36,10 +37,12 @@ public class DeviceCommandsCellDeployer extends CellDeployer {
         CellModule cellModule = new CellModule();
         CommPortModule commPortModule = new CommPortModule();
         ControlPortModule controlPortModule = new ControlPortModule();
+        EmulationModule emulationModule = new EmulationModule();
         PortAdapterCreator creator = DaggerDeviceCommandsPortAdapterCreator.builder()
                 .cellModule(cellModule)
                 .commPortModule(commPortModule)
                 .controlPortModule(controlPortModule)
+                .emulationModule(emulationModule)
                 .build();
         return creator;
     }
