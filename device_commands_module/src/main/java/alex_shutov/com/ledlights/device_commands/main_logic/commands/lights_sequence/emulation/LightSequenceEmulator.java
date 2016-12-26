@@ -1,6 +1,8 @@
 package alex_shutov.com.ledlights.device_commands.main_logic.commands.lights_sequence.emulation;
 
 
+import android.graphics.Color;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,8 +40,6 @@ public class LightSequenceEmulator extends SequenceEmulator {
         boolean isLightSequenceCommand = command instanceof LightsSequenceCommand;
         return super.canExecute(command) || isLightSequenceCommand;
     }
-
-
 
     @Override
     protected void processActualCommand(Command command) {
@@ -86,16 +86,6 @@ public class LightSequenceEmulator extends SequenceEmulator {
 
     }
 
-    /**
-     * When sequence ends and will not repeat again, show light
-     * with neutral color
-     */
-    @Override
-    public void onSequenceEnded() {
-        if (!getSequencePlayer().isInRepeatMode()) {
-            setNeutralColor();
-        }
-    }
 
     @Override
     public void onSequenceRestarted() {
@@ -104,5 +94,18 @@ public class LightSequenceEmulator extends SequenceEmulator {
 
     // private methods
 
-
+    /**
+     * set some neutral color after emulation completes.
+     * If we don't do so, it will look like emulation is hanging.
+     * Assume that neutral color is a black color.
+     */
+    protected void setNeutralColor() {
+        EmulatedDeviceControl deviceControl = getLinkToEmulator().getDeviceControl();
+        Observable.defer(() -> Observable.just(deviceControl))
+                .subscribeOn(getUiThreadScheduler())
+                .subscribe(dc -> {
+                    int neutralColor = Color.BLACK;
+                    deviceControl.setColor(neutralColor);
+                });
+    }
 }

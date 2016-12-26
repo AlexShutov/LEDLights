@@ -5,6 +5,7 @@ import android.graphics.Color;
 import alex_shutov.com.ledlights.device_commands.main_logic.Command;
 import alex_shutov.com.ledlights.device_commands.main_logic.CommandExecutor;
 import rx.Observable;
+import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
 
 /**
@@ -19,6 +20,13 @@ public abstract class EmulationExecutor implements CommandExecutor {
      * not be repeated
      */
     private LinkToEmulator linkToEmulator;
+
+    /**
+     * Every emulator has to inform UI about changes in device state. It has to be usually
+     * done on main thread. But, by some reason, user may want to use different or the same
+     * thread (for example, for testing). This is scheduler, used for updating emulated device.
+     */
+    private Scheduler uiThreadScheduler;
 
     /**
      * Handle stop command here
@@ -66,6 +74,14 @@ public abstract class EmulationExecutor implements CommandExecutor {
         processActualCommand(command);
     }
 
+    public Scheduler getUiThreadScheduler() {
+        return uiThreadScheduler;
+    }
+
+    public void setUiThreadScheduler(Scheduler uiThreadScheduler) {
+        this.uiThreadScheduler = uiThreadScheduler;
+    }
+
     /**
      * Check if this is a stop command
      * @param command
@@ -75,18 +91,4 @@ public abstract class EmulationExecutor implements CommandExecutor {
         return command instanceof StopAllEmulatedCommands;
     }
 
-    /**
-     * set some neutral color after emulation completes.
-     * If we don't do so, it will look like emulation is hanging.
-     * Assume that neutral color is a black color.
-     */
-    protected void setNeutralColor() {
-        EmulatedDeviceControl deviceControl = getLinkToEmulator().getDeviceControl();
-        Observable.defer(() -> Observable.just(deviceControl))
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(dc -> {
-                    int neutralColor = Color.BLACK;
-                    deviceControl.setColor(neutralColor);
-                });
-    }
 }

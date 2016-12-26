@@ -5,6 +5,7 @@ package alex_shutov.com.ledlights.device_commands.main_logic.emulation_general;
  */
 
 import alex_shutov.com.ledlights.device_commands.main_logic.emulation_general.interval_sequence.IntervalSequencePlayer;
+import rx.Scheduler;
 
 /**
  * Base class for emulator, which depends on Sequence Player (light sequences and strobes)
@@ -36,6 +37,17 @@ public abstract class SequenceEmulator extends EmulationExecutor
         sequencePlayer.stop();
         // set neutral color. This is handy if device has no paused command
         resetToNeutralState();
+    }
+
+    /**
+     * When sequence ends and will not repeat again, show light
+     * with neutral color
+     */
+    @Override
+    public void onSequenceEnded() {
+        if (!getSequencePlayer().isInRepeatMode()) {
+            resetToNeutralState();
+        }
     }
 
     public IntervalSequencePlayer getSequencePlayer() {

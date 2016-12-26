@@ -155,7 +155,7 @@ public class DeviceCommandsLogicCell extends LogicCell {
 //        execute(command);
 //        switchFlash(count++ % 2 == 0);
           playSequence();
-//        playFlashSequence();
+          playFlashSequence();
 //        testSaveCommand();
     }
 
@@ -178,12 +178,12 @@ public class DeviceCommandsLogicCell extends LogicCell {
 
         l = new Light();
         l.setColor(Color.RED);
-        l.setDuration(100);
+        l.setDuration(500);
         lightsSequence.addLight(l);
 
         l = new Light();
         l.setColor(Color.BLUE);
-        l.setDuration(100);
+        l.setDuration(500);
         lightsSequence.addLight(l);
 
         execute(command);

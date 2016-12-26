@@ -8,11 +8,14 @@ import javax.inject.Singleton;
 
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.change_color.emulation.ChangeColorEmulator;
 import alex_shutov.com.ledlights.device_commands.main_logic.commands.lights_sequence.emulation.LightSequenceEmulator;
+import alex_shutov.com.ledlights.device_commands.main_logic.commands.strobe_sequence.emulation.StrobeSequenceEmulator;
 import alex_shutov.com.ledlights.device_commands.main_logic.emulation_general.DeviceEmulationFrame;
 import alex_shutov.com.ledlights.device_commands.main_logic.emulation_general.EmulationExecutor;
 import alex_shutov.com.ledlights.device_commands.main_logic.emulation_general.interval_sequence.IntervalSequencePlayer;
 import dagger.Module;
 import dagger.Provides;
+import rx.Scheduler;
+import rx.android.schedulers.AndroidSchedulers;
 
 /**
  * Created by Alex on 12/25/2016.
@@ -24,8 +27,15 @@ import dagger.Provides;
 @Module
 public class EmulationModule {
 
+    @Provides
+    @Singleton
+    @Named("EmulatedDeviceScheduler")
+    Scheduler provideSchedulerForEmulatedDeviceUpdate() {
+        return AndroidSchedulers.mainThread();
+    }
+
     /**
-     * Emulator for lisghts sequence executor and strobe executor use
+     * Emulator for light sequence executor and strobe executor use
      * SequencePlayer for emulating time intervals.
      * @return
      */
@@ -35,14 +45,37 @@ public class EmulationModule {
         return player;
     }
 
+    /**
+     * Construct emulator for sequence of colors.
+     * @param sequencePlayer
+     * @return
+     */
     @Provides
     @Singleton
     @Named("LightSequenceEmulator")
-    LightSequenceEmulator provideLightSequenceEmulator(IntervalSequencePlayer sequencePlayer) {
+    LightSequenceEmulator provideLightSequenceEmulator(
+            IntervalSequencePlayer sequencePlayer,
+            @Named("EmulatedDeviceScheduler") Scheduler deviceScheduler ) {
         LightSequenceEmulator emulator = new LightSequenceEmulator(sequencePlayer);
+        emulator.setUiThreadScheduler(deviceScheduler);
         return emulator;
     }
 
+    /**
+     * Construct emulator for sequence of strobe flashes
+     * @param sequencePlayer
+     * @return
+     */
+    @Provides
+    @Singleton
+    @Named("StrobeSequenceEmulator")
+    StrobeSequenceEmulator provideStrobeSequenceEmulator(
+            IntervalSequencePlayer sequencePlayer,
+            @Named("EmulatedDeviceScheduler") Scheduler deviceScheduler ) {
+        StrobeSequenceEmulator emulator = new StrobeSequenceEmulator(sequencePlayer);
+        emulator.setUiThreadScheduler(deviceScheduler);
+        return emulator;
+    }
 
     /**
      * Create and all executors, emulating real device. Those are used by emulator
@@ -52,7 +85,8 @@ public class EmulationModule {
     @Singleton
     @Named("EmulationExecutors")
     List<EmulationExecutor> createEmulationExecutors(
-            @Named("LightSequenceEmulator") LightSequenceEmulator lightSequenceEmulator) {
+            @Named("LightSequenceEmulator")  LightSequenceEmulator lightSequenceEmulator,
+            @Named("StrobeSequenceEmulator") StrobeSequenceEmulator strobeSequenceEmulator) {
         List<EmulationExecutor> execs = new ArrayList<>();
         // Create emulators:
         // Change color command:
@@ -60,6 +94,8 @@ public class EmulationModule {
         execs.add(changeColorEmulator);
         // Add LightSequence Executor
         execs.add(lightSequenceEmulator);
+        // Add emulator for strobe sequence
+        execs.add(strobeSequenceEmulator);
         return execs;
     }
 
