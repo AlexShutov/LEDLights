@@ -2,7 +2,7 @@ package alex_shutov.com.ledlights.device_commands;
 
 import javax.inject.Inject;
 
-import alex_shutov.com.ledlights.device_commands.ControlPort.ControlPortAdapter;
+import alex_shutov.com.ledlights.device_commands.ControlPort.DeviceControlPortAdapter;
 import alex_shutov.com.ledlights.device_commands.DeviceCommPort.DeviceCommPortAdapter;
 import alex_shutov.com.ledlights.device_commands.di.CellModule;
 import alex_shutov.com.ledlights.device_commands.di.CommPortModule;
@@ -25,7 +25,7 @@ public class DeviceCommandsCellDeployer extends CellDeployer {
     @Inject
     public DeviceCommPortAdapter commPortAdapter;
     @Inject
-    public ControlPortAdapter controlPortAdapter;
+    public DeviceControlPortAdapter controlPortAdapter;
 
     /**
      * Instantiate and setup DI component, which will create objects for this logic cell

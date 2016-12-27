@@ -2,7 +2,7 @@ package alex_shutov.com.ledlights.device_commands.di;
 
 import javax.inject.Singleton;
 
-import alex_shutov.com.ledlights.device_commands.ControlPort.ControlPortAdapter;
+import alex_shutov.com.ledlights.device_commands.ControlPort.DeviceControlPortAdapter;
 import dagger.Module;
 import dagger.Provides;
 
@@ -14,8 +14,8 @@ import dagger.Provides;
 public class ControlPortModule {
     @Provides
     @Singleton
-    ControlPortAdapter provideControlPortAdapter() {
-        ControlPortAdapter adapter = new ControlPortAdapter();
+    DeviceControlPortAdapter provideControlPortAdapter() {
+        DeviceControlPortAdapter adapter = new DeviceControlPortAdapter();
         return adapter;
     }
 

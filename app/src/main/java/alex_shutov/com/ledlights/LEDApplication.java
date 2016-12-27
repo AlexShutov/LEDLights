@@ -5,6 +5,7 @@ import android.support.multidex.MultiDexApplication;
 
 import java.util.UUID;
 
+import alex_shutov.com.ledlights.app_facade.AppHubService;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnPort;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtLogicCell;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtScanPort;
@@ -14,7 +15,7 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.service.BtCellService
 /**
  * Created by lodoss on 30/06/16.
  */
-public class LEDApplication extends MultiDexApplication{
+public class LEDApplication extends MultiDexApplication {
     private static final String LOG_TAG = LEDApplication.class.getSimpleName();
 
 
@@ -42,7 +43,7 @@ public class LEDApplication extends MultiDexApplication{
     public void onCreate() {
         super.onCreate();
 
-        Intent startIntent = new Intent(this, BtCellService.class);
+        Intent startIntent = new Intent(this, AppHubService.class);
         startService(startIntent);
 
 //        initCell();
