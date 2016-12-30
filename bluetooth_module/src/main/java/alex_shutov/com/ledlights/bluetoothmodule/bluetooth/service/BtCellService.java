@@ -7,9 +7,6 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCellDeployer;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommAdapter;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommPort;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommPortListener;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtLogicCell;
 
 /**
@@ -28,22 +25,9 @@ public class BtCellService extends Service {
     /**
      * Binder, providing reference to this Service instance
      */
-    /**
-     * First version of this binder returned access to entire Service. I did that for ease of
-     * cheching if it work with device. But, this breaks incapsulation - outer world should
-     * know nothing of what this service and logic cell consist of.
-     */
     public class BtCellBinder extends Binder {
-
-        public BtCommPort getBluetoothCommunicationPort() {
-            BtCommPort commPort = cell.getBtCommPort();
-            return commPort;
-        }
-
-        public void setCommPortListener(BtCommPortListener listener) {
-            // Only this Service know that port is BtCommAdapter
-            BtCommAdapter adapter = (BtCommAdapter) cell.getBtCommPort();
-            adapter.setPortListener(listener);
+        public BtCellService getService() {
+            return BtCellService.this;
         }
     }
     private static final String LOG_TAG = BtCellService.class.getSimpleName();
@@ -53,14 +37,14 @@ public class BtCellService extends Service {
     // DI component, responsible for creating all objects and deploying (initializing) that cell.
     private BtCellDeployer cellDeployer;
     // Binder, given to connecting entity
-    BtCellBinder binder;
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         createAndInitCell();
-        return binder;
+        return new BtCellBinder();
     }
+
 
     /**
      * Always start this service
@@ -81,6 +65,10 @@ public class BtCellService extends Service {
         super.onDestroy();
     }
 
+    public BtLogicCell getCell() {
+        return cell;
+    }
+
     /**
      * Cell is created when this Service is started. (or bound, depending on which called first).
      * It is unclear, which method will be called first - .startService() or .bind().
@@ -94,6 +82,8 @@ public class BtCellService extends Service {
         cellDeployer = new BtCellDeployer(this);
         cell = new BtLogicCell();
         cellDeployer.deploy(cell);
-        binder = new BtCellBinder();
     }
+
+
+
 }
