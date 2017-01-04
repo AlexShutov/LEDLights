@@ -9,10 +9,8 @@
         android:allowBackup="true"
         android:label="@string/app_name"
         android:supportsRtl="true">
-        <service android:name=".bluetooth.service.BtCellService"></service>
         <activity android:name=".bluetooth.logic.establish_connection.connect.select_another_device_strategy.ChooseDeviceActivity"></activity>
 
     </application>
-
 
 </manifest>
