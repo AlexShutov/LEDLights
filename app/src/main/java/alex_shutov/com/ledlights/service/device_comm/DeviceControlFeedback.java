@@ -14,6 +14,12 @@ public interface DeviceControlFeedback  {
     void onConnected(BtDevice device);
 
     /**
+     * When connection is established after connection loss
+     * @param device
+     */
+    void onReconnected(BtDevice device);
+
+    /**
      * Connection to bluetooth device is lost or attempt failed. In response app use
      * fake device.
      */

@@ -7,6 +7,7 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtComm
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex.BtCommPortListener;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtLogicCell;
+import alex_shutov.com.ledlights.device_commands.ControlPort.ControlPort;
 import alex_shutov.com.ledlights.device_commands.DeviceCommPort.DeviceCommPort;
 import alex_shutov.com.ledlights.device_commands.DeviceCommPort.DeviceCommPortListener;
 import alex_shutov.com.ledlights.device_commands.DeviceCommandsCellDeployer;
@@ -32,21 +33,21 @@ public class CommFacade implements DeviceControl {
     private BtCommPort btCommPort;
 
     /**
-     * Used for feedback to user
+     * Listener, used for Bluetooth feedback. It informs application about events (commands and
+     * bluetooth)
      */
     private DeviceControlFeedback controlFeedback;
 
-
-    /**
-     * Listener, used for Bluetooth feedback. It informs application about bluetooth events.
-     */
     /**
      * Listener, responding to events from Bluetooth cell.
      */
     private BtCommPortListener btCommPortListener = new BtCommPortListener() {
+
         @Override
         public void onConnectionStarted(BtDevice btDevice) {
-
+            if (null != controlFeedback) {
+                controlFeedback.onConnected(btDevice);
+            }
         }
 
         @Override
@@ -56,27 +57,39 @@ public class CommFacade implements DeviceControl {
 
         @Override
         public void onReconnected(BtDevice btDevice) {
-
+            if (null != controlFeedback) {
+                controlFeedback.onReconnected(btDevice);
+            }
         }
 
         @Override
         public void onDummyDeviceSelected() {
-
+            if (null != controlFeedback) {
+                controlFeedback.onDummyDeviceSelected();
+            }
         }
 
+        /**
+         * Data sent via bluetooth, inform command processing logic of that.
+         */
         @Override
         public void onDataSent() {
-
+            commandPort.onDataSent();
         }
 
         @Override
         public void onDataSendFailed() {
-
         }
 
+        /**
+         * Inform command port that we received response of sent command
+         * @param data array, containing received data chunk. Can be buffer larger than
+         *             actual data
+         * @param size size of data payload
+         */
         @Override
         public void receiveData(byte[] data, int size) {
-
+            commandPort.onResponse(data);
         }
 
         @Override
@@ -90,16 +103,22 @@ public class CommFacade implements DeviceControl {
         }
     };
 
-    private DeviceCommPort commPort;
+    private DeviceCommPort commandPort;
+    // used for managing command emulation and executing commands
+    private ControlPort commandControlPort;
 
     /**
      * Callback for device commands logic. It output byte arrays in format, which
      * device can understand.
      */
-    private DeviceCommPortListener commPortListener = new DeviceCommPortListener() {
+    private DeviceCommPortListener commandPortListener = new DeviceCommPortListener() {
+        /**
+         * Get serialized command and send it via Bluetooth
+         * @param data
+         */
         @Override
         public void sendData(byte[] data) {
-
+            btCommPort.sendData(data);
         }
 
         @Override
@@ -112,7 +131,6 @@ public class CommFacade implements DeviceControl {
 
         }
     };
-
 
     public CommFacade(Context context) {
         this.context = context;
@@ -146,9 +164,14 @@ public class CommFacade implements DeviceControl {
         this.controlFeedback = controlFeedback;
     }
 
+    public ControlPort getCommandControlPort() {
+        return commandControlPort;
+    }
+
     /**
      * Initialize all objects within this Service. Initialization can be done
      */
+
     public void start() {
         if (null != btCell) {
             return;
@@ -158,12 +181,10 @@ public class CommFacade implements DeviceControl {
         createCommandCell();
     }
 
-
     public void teardown() {
         btCell.suspend();
         commCell.suspend();
     }
-
 
     private void createBtCell() {
         // initialize bluetooth cell
@@ -176,13 +197,19 @@ public class CommFacade implements DeviceControl {
     }
 
     private void createCommandCell() {
+        // create and setup cell for processing commands.
         commCell = new DeviceCommandsLogicCell();
         commCellDeployer = new DeviceCommandsCellDeployer();
         commCellDeployer.deploy(commCell);
         // get reference to communicaiton port
-        commPort = commCell.getCommPort();
+        commandPort = commCell.getCommPort();
         // and set cell listener
-        commCell.setDeviceCommPortListener(commPortListener);
+        commCell.setDeviceCommPortListener(commandPortListener);
+        // reference port for controlling emulation and device commands.
+        commandControlPort = commCell.getControlPort();
+
     }
+
+
 
 }

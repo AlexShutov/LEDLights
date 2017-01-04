@@ -35,19 +35,19 @@ public class ControlPortAdapter extends Adapter implements ControlPort , Emulate
 
     }
 
-    /**
-     * Inherited from ControlPort
-     */
-
     @Override
-    public void enableEmulation() {
+    public void turnEmulationOn() {
         emulationControl.turnEmulationOn();
     }
 
     @Override
-    public void disableEmulation() {
+    public void turnEmulationOff() {
         emulationControl.turnEmulationOff();
     }
+
+    /**
+     * Inherited from ControlPort
+     */
 
     @Override
     public void setCallback(EmulationCallback callback) {

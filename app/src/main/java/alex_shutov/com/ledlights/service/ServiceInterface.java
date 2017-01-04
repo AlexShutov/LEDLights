@@ -4,6 +4,8 @@ package alex_shutov.com.ledlights.service;
  * Created by lodoss on 04/01/17.
  */
 
+import alex_shutov.com.ledlights.device_commands.ControlPort.EmulationCallback;
+import alex_shutov.com.ledlights.device_commands.main_logic.emulation_general.EmulationControl;
 import alex_shutov.com.ledlights.service.device_comm.DeviceControl;
 import alex_shutov.com.ledlights.service.device_comm.DeviceControlFeedback;
 
@@ -28,5 +30,19 @@ public interface ServiceInterface {
      */
     void setDeviceControlFeedback(DeviceControlFeedback deviceControlFeedback);
 
+    /**
+     * Get implementation of interface, turning on and off emulation.
+     * @return
+     */
+    EmulationControl getEmulationControl();
+
+    /**
+     * Connect some view of emulated device to this Service. Don't forget to detach it
+     * when UI goes out of scope and attach it again.
+     * @param device
+     */
+    void setEmulatedDevice(EmulationCallback device);
+
+    void test();
 
 }
