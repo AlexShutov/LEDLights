@@ -17,16 +17,6 @@ import alex_shutov.com.ledlights.device_commands.main_logic.CompositeExecutor;
  */
 public class DeviceEmulationFrame extends CompositeExecutor<EmulationExecutor>
         implements EmulationControl, CommandExecutor, LinkToEmulator {
-    private static final EmulatedDeviceControl dummydevice = new EmulatedDeviceControl() {
-        @Override
-        public void setColor(int color) {}
-
-        @Override
-        public void turnStrobeOn() {}
-
-        @Override
-        public void turnStrobeOff() {}
-    };
 
     // decorate this instance for resuming paused foreground command on background thread.
     private AnotherThreadDecorator resumeCommandInBackgroundExec;
@@ -42,7 +32,7 @@ public class DeviceEmulationFrame extends CompositeExecutor<EmulationExecutor>
         // create device state decorator
         deviceStateDecorator = new EmulatedDeviceControlLastStateDecorator();
         deviceStateDecorator.resetState();
-        setDevice(dummydevice);
+
         // decorate this instance by async decorator.
         resumeCommandInBackgroundExec = new AnotherThreadDecorator();
         resumeCommandInBackgroundExec.setUseAnotherThread(true);
@@ -92,14 +82,12 @@ public class DeviceEmulationFrame extends CompositeExecutor<EmulationExecutor>
      */
     public void setDevice(EmulatedDeviceControl device) {
         // if user decided to disconnect from emulated device
-        if (null == deviceStateDecorator.getDecoree()) {
-            deviceStateDecorator.setDecoree(dummydevice);
-            // dummy device doesn't need to be updated
-        } else {
-            deviceStateDecorator.setDecoree(device);
+        deviceStateDecorator.setDecoree(device);
+        if (null != deviceStateDecorator.getDecoree()){
             // update UI with actual state.
             deviceStateDecorator.feedCurrentState();
         }
+        deviceStateDecorator.initialize();
     }
 
     /**
@@ -151,7 +139,7 @@ public class DeviceEmulationFrame extends CompositeExecutor<EmulationExecutor>
      */
 
     /**
-     *
+     *  From now on assume that emulation is active. Initialize state decorator.
      */
     @Override
     public void turnEmulationOn() {
@@ -167,7 +155,6 @@ public class DeviceEmulationFrame extends CompositeExecutor<EmulationExecutor>
         isOn = false;
         // emulation is OFF, consider state as default
         deviceStateDecorator.resetState();
-        setDevice(dummydevice);
         Command stopCommand = new StopAllEmulatedCommands();
         resumeCommandInBackgroundExec.execute(stopCommand);
     }

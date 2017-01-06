@@ -2,28 +2,16 @@ package alex_shutov.com.ledlights.service;
 
 import android.app.Service;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-
-import java.util.Random;
 
 import alex_shutov.com.ledlights.device_commands.ControlPort.ControlPort;
 import alex_shutov.com.ledlights.device_commands.ControlPort.EmulationCallback;
 import alex_shutov.com.ledlights.device_commands.main_logic.Command;
-import alex_shutov.com.ledlights.device_commands.main_logic.commands.change_color.ChangeColorCommand;
-import alex_shutov.com.ledlights.device_commands.main_logic.commands.lights_sequence.LightsSequenceCommand;
-import alex_shutov.com.ledlights.device_commands.main_logic.commands.lights_sequence.models.Light;
-import alex_shutov.com.ledlights.device_commands.main_logic.commands.lights_sequence.models.LightsSequence;
-import alex_shutov.com.ledlights.device_commands.main_logic.commands.save_to_ee.SaveToEECommand;
-import alex_shutov.com.ledlights.device_commands.main_logic.commands.strobe_sequence.StrobeSequenceCommand;
-import alex_shutov.com.ledlights.device_commands.main_logic.commands.strobe_sequence.model.StrobeFlash;
-import alex_shutov.com.ledlights.device_commands.main_logic.commands.strobe_sequence.model.StrobeSequence;
 import alex_shutov.com.ledlights.device_commands.main_logic.emulation_general.EmulationControl;
 import alex_shutov.com.ledlights.service.device_comm.CommFacade;
 import alex_shutov.com.ledlights.service.device_comm.DeviceControl;
 import alex_shutov.com.ledlights.service.device_comm.DeviceControlFeedback;
-import rx.Subscription;
 
 /**
  * Created by lodoss on 04/01/17.
