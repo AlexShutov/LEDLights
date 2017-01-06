@@ -9,6 +9,7 @@ import alex_shutov.com.ledlights.device_commands.main_logic.Command;
 import alex_shutov.com.ledlights.device_commands.main_logic.emulation_general.EmulationControl;
 import alex_shutov.com.ledlights.service.device_comm.DeviceControl;
 import alex_shutov.com.ledlights.service.device_comm.DeviceControlFeedback;
+import rx.Observable;
 
 /**
  * Interface for communicating with Service, having all objects
@@ -44,6 +45,17 @@ public interface ServiceInterface {
      */
     void setEmulatedDevice(EmulationCallback device);
 
-
     void execute(Command command);
+
+    /**
+     * Specify if application has to connect at startup (true by default
+     * @param needToConnect
+     */
+    void setConnectAtStart(boolean needToConnect);
+
+    /**
+     * @return if true, app will try to connect at startup
+     */
+    Observable<Boolean> isConnectingAtStart();
+
 }
