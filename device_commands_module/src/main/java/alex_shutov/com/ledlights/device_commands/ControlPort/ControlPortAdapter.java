@@ -74,17 +74,23 @@ public class ControlPortAdapter extends Adapter implements ControlPort , Emulate
 
     @Override
     public void setColor(int color) {
-        callback.onLEDColorChanged(color);
+        if (isDeviceConnected()) {
+            callback.onLEDColorChanged(color);
+        }
     }
 
     @Override
     public void turnStrobeOn() {
-        callback.onStrobeOn();
+        if (isDeviceConnected()) {
+            callback.onStrobeOn();
+        }
     }
 
     @Override
     public void turnStrobeOff() {
-        callback.onStrobeOff();
+        if (isDeviceConnected()) {
+            callback.onStrobeOff();
+        }
     }
 
 
@@ -97,5 +103,8 @@ public class ControlPortAdapter extends Adapter implements ControlPort , Emulate
         this.executor = executor;
     }
 
+    private boolean isDeviceConnected() {
+        return callback != null;
+    }
 
 }

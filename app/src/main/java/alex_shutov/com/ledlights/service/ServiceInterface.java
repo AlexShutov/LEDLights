@@ -5,6 +5,7 @@ package alex_shutov.com.ledlights.service;
  */
 
 import alex_shutov.com.ledlights.device_commands.ControlPort.EmulationCallback;
+import alex_shutov.com.ledlights.device_commands.main_logic.Command;
 import alex_shutov.com.ledlights.device_commands.main_logic.emulation_general.EmulationControl;
 import alex_shutov.com.ledlights.service.device_comm.DeviceControl;
 import alex_shutov.com.ledlights.service.device_comm.DeviceControlFeedback;
@@ -43,6 +44,6 @@ public interface ServiceInterface {
      */
     void setEmulatedDevice(EmulationCallback device);
 
-    void test();
 
+    void execute(Command command);
 }

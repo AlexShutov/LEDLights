@@ -18,12 +18,12 @@ public class EmulatedDeviceControlLastStateDecorator implements EmulatedDeviceCo
 
     private int currColor;
     private boolean isStrobeOn;
-    private boolean isInitialized;
+    private boolean isReady;
 
     private EmulatedDeviceControl decoree;
 
     public EmulatedDeviceControlLastStateDecorator(){
-        isInitialized = false;
+        isReady = false;
         isStrobeOn = false;
         currColor = Color.BLACK;
         decoree = null;
@@ -51,7 +51,7 @@ public class EmulatedDeviceControlLastStateDecorator implements EmulatedDeviceCo
     }
 
     public void feedCurrentState() {
-        if (isInitialized) {
+        if (isReady) {
             decoree.setColor(currColor);
             if (isStrobeOn) {
                 decoree.turnStrobeOn();
@@ -62,7 +62,16 @@ public class EmulatedDeviceControlLastStateDecorator implements EmulatedDeviceCo
     }
 
     public void resetState() {
-        isInitialized = false;
+        isReady = false;
+    }
+
+    /**
+     * Mark as initialize if it is not
+     */
+    public void initialize() {
+        if (!isReady) {
+            isReady = true;
+        }
     }
 
     // accessors
@@ -83,13 +92,10 @@ public class EmulatedDeviceControlLastStateDecorator implements EmulatedDeviceCo
         isStrobeOn = strobeOn;
     }
 
-    public boolean isInitialized() {
-        return isInitialized;
+    public boolean isReady() {
+        return isReady;
     }
 
-    public void setInitialized(boolean initialized) {
-        isInitialized = initialized;
-    }
 
     public EmulatedDeviceControl getDecoree() {
         return decoree;
@@ -99,12 +105,4 @@ public class EmulatedDeviceControlLastStateDecorator implements EmulatedDeviceCo
         this.decoree = decoree;
     }
 
-    /**
-     * Mark as initialize if it is not
-     */
-    private void initialize() {
-        if (!isInitialized) {
-            isInitialized = true;
-        }
-    }
 }

@@ -156,6 +156,7 @@ public class DeviceEmulationFrame extends CompositeExecutor<EmulationExecutor>
     @Override
     public void turnEmulationOn() {
         isOn = true;
+        deviceStateDecorator.initialize();
     }
 
     /**
