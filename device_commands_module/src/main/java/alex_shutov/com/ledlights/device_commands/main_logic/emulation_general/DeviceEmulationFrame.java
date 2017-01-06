@@ -25,8 +25,6 @@ public class DeviceEmulationFrame extends CompositeExecutor<EmulationExecutor>
 
     private Command pausedForegroundCommand;
     private Command currentForegroundCommand;
-    // indicates if emulation is On. If not, commands will not be dispatched.
-    private boolean isOn;
 
     public DeviceEmulationFrame() {
         // create device state decorator
@@ -129,9 +127,7 @@ public class DeviceEmulationFrame extends CompositeExecutor<EmulationExecutor>
 
     @Override
     public void execute(Command command) {
-        if (isOn) {
             super.execute(command);
-        }
     }
 
     /**
@@ -143,7 +139,6 @@ public class DeviceEmulationFrame extends CompositeExecutor<EmulationExecutor>
      */
     @Override
     public void turnEmulationOn() {
-        isOn = true;
         deviceStateDecorator.initialize();
     }
 
@@ -152,7 +147,6 @@ public class DeviceEmulationFrame extends CompositeExecutor<EmulationExecutor>
      */
     @Override
     public void turnEmulationOff() {
-        isOn = false;
         // emulation is OFF, consider state as default
         deviceStateDecorator.resetState();
         Command stopCommand = new StopAllEmulatedCommands();
