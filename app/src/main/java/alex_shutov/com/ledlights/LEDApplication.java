@@ -44,11 +44,7 @@ public class LEDApplication extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
         startService();
-        SensorReader accReader = new AccelerationReader(this);
-        // decorate acceleration sensor by frame for removing bias
-        UnbiasingDecorator unbiasingDecorator = new UnbiasingDecorator(this);
-        unbiasingDecorator.setDecoree(accReader);
-        sensorReader = unbiasingDecorator;
+        sensorReader = new AccelerationReader(this);
         sensorReader.setCallback(new SensorReader.SensorReadingCallback() {
             @Override
             public void processSensorReading(Reading reading) {

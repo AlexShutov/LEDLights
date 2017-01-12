@@ -82,6 +82,10 @@ public class AccelerationReader extends SensorReaderDecorator implements SensorR
         } else {
             useOwnCustomAccelerometer();
         }
+        // get rid of bias in measurements
+        UnbiasingDecorator unbiasingDecorator = new UnbiasingDecorator(getContext());
+        unbiasingDecorator.setDecoree(getDecoree());
+        setDecoree(unbiasingDecorator);
     }
 
     /**
