@@ -10,6 +10,7 @@ import alex_shutov.com.ledlights.sensor.HardwareAccelerationReader;
 import alex_shutov.com.ledlights.sensor.HighPassFilterSensorDecorator;
 import alex_shutov.com.ledlights.sensor.Reading;
 import alex_shutov.com.ledlights.sensor.SensorReader;
+import alex_shutov.com.ledlights.sensor.UnbiasingDecorator;
 import alex_shutov.com.ledlights.sensor.filtering.Filter;
 import alex_shutov.com.ledlights.sensor.filtering.FirstOrderHighPassFilter;
 import alex_shutov.com.ledlights.service.BackgroundService;
@@ -43,7 +44,11 @@ public class LEDApplication extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
         startService();
-        sensorReader = new AccelerationReader(this);
+        SensorReader accReader = new AccelerationReader(this);
+        // decorate acceleration sensor by frame for removing bias
+        UnbiasingDecorator unbiasingDecorator = new UnbiasingDecorator(this);
+        unbiasingDecorator.setDecoree(accReader);
+        sensorReader = unbiasingDecorator;
         sensorReader.setCallback(new SensorReader.SensorReadingCallback() {
             @Override
             public void processSensorReading(Reading reading) {

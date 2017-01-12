@@ -1,6 +1,7 @@
 package alex_shutov.com.ledlights.sensor;
 
 import android.content.Context;
+import android.util.Log;
 
 import rx.Subscription;
 import rx.schedulers.Schedulers;
@@ -20,11 +21,15 @@ import static alex_shutov.com.ledlights.sensor.SensorReader.*;
  * I will tackle that problem by measuring offset when process transient process of
  * filter is complete and then will substract that value from all readings.
  */
-public class UnbiasingDecorator extends SensorReader implements SensorReadingCallback {
+public class UnbiasingDecorator extends SensorReaderDecorator implements SensorReadingCallback {
     /**
      * Assume that transient process will end in high pass filter after this number of readings.
      */
     private static final int NUMBER_OF_READINGS_FOR_TRANSIENT_PROCESS = 10;
+    /**
+     * How many samples we should average for getting not fluctuating bias
+     */
+    private static final int BIAS_AVERAGING_COUNT = 10;
 
 
     private SensorReader decoree;
@@ -47,39 +52,14 @@ public class UnbiasingDecorator extends SensorReader implements SensorReadingCal
      * Inherited from SensorReadingCallback
      */
 
-
+    /**
+     * Decorated reader pass reading to this method. Tunnel it to the
+     * 'biased pipe' so it will be processed further down the pipe.
+     * @param reading Sensor measurement
+     */
     @Override
     public void processSensorReading(Reading reading) {
-
-    }
-
-    @Override
-    public void onSensorAccuracyChanged(int newAccuracy) {
-        getCallback().onSensorAccuracyChanged(newAccuracy);
-    }
-
-    @Override
-    public void onBeforeStartingReadingSensor() {
-        getCallback().onBeforeStartingReadingSensor();
-    }
-
-    @Override
-    public void onAfterStoppedReadingSensor() {
-        getCallback().onAfterStoppedReadingSensor();
-    }
-
-    /**
-     * Inherited from SensorReader
-     */
-
-    @Override
-    protected int getSensorType() {
-        return 0;
-    }
-
-    @Override
-    protected int getSamplingPeriod() {
-        return 0;
+        biasedReadingSource.onNext(reading);
     }
 
     /**
@@ -109,6 +89,8 @@ public class UnbiasingDecorator extends SensorReader implements SensorReadingCal
 
     public void setDecoree(SensorReader decoree) {
         this.decoree = decoree;
+        // this is a decorator, use it as callback for redirecting calls to actual callback.
+        decoree.setCallback(this);
     }
 
     // private methods
@@ -121,7 +103,7 @@ public class UnbiasingDecorator extends SensorReader implements SensorReadingCal
         Subscription biasDeterminingSubscription = biasedReadingSource
                 .asObservable()
                 // average bias by 5 readings
-                .buffer(5, NUMBER_OF_READINGS_FOR_TRANSIENT_PROCESS)
+                .buffer(BIAS_AVERAGING_COUNT, NUMBER_OF_READINGS_FOR_TRANSIENT_PROCESS)
                 .take(1)
                 .subscribe(biasReadings -> {
                     // calculate average bias
@@ -131,9 +113,9 @@ public class UnbiasingDecorator extends SensorReader implements SensorReadingCal
                         bias.values[1] += r.values[1];
                         bias.values[2] += r.values[2];
                     }
-                    bias.values[0] /= NUMBER_OF_READINGS_FOR_TRANSIENT_PROCESS;
-                    bias.values[1] /= NUMBER_OF_READINGS_FOR_TRANSIENT_PROCESS;
-                    bias.values[2] /= NUMBER_OF_READINGS_FOR_TRANSIENT_PROCESS;
+                    bias.values[0] /= BIAS_AVERAGING_COUNT;
+                    bias.values[1] /= BIAS_AVERAGING_COUNT;
+                    bias.values[2] /= BIAS_AVERAGING_COUNT;
                     startSubstractingBias();
                 });
         algorithmConnections.add(biasDeterminingSubscription);

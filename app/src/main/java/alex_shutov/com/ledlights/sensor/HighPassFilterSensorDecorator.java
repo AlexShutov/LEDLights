@@ -16,9 +16,7 @@ import static alex_shutov.com.ledlights.sensor.SensorReader.*;
  * lowFrequencyComponent values and should be used on phones, not having Sensor.TYPE_LINEAR_ACCELERATION
  * accelerometer (prior to API 18, if I'm right).
  */
-public class HighPassFilterSensorDecorator extends SensorReader implements SensorReadingCallback {
-    // SensorReader implementation, doing all actual work.
-    private SensorReader decoree;
+public class HighPassFilterSensorDecorator extends SensorReaderDecorator implements SensorReadingCallback {
 
     /**
      * High- pass filters, used for substracting gravity component from accelerometer readings
@@ -41,59 +39,22 @@ public class HighPassFilterSensorDecorator extends SensorReader implements Senso
     }
 
     /**
-     * Do nothing, actual work is done by decoree
-     * @return
-     */
-    @Override
-    protected int getSensorType() {
-        return 0;
-    }
-
-    /**
-     * Do nothing, actual work is done by decoree
-     * @return
-     */
-    @Override
-    protected int getSamplingPeriod() {
-        return 0;
-    }
-
-    /**
      * Redirect call to decoree
      * @throws IllegalStateException
      */
     @Override
     public void startReadingSensors() throws IllegalStateException {
-        decoree.startReadingSensors();
+        getDecoree().startReadingSensors();
     }
 
     @Override
     public void stopReadingSensors() {
-        decoree.stopReadingSensors();
+        getDecoree().stopReadingSensors();
     }
 
     /**
      * Inherited from SensorReadingCallback
      */
-
-    /**
-     * Decorated instance think that this reader is a callback. When this method gets called
-     * call actual callback.
-     */
-    @Override
-    public void onBeforeStartingReadingSensor() {
-        getCallback().onBeforeStartingReadingSensor();
-    }
-
-    @Override
-    public void onAfterStoppedReadingSensor() {
-        getCallback().onAfterStoppedReadingSensor();
-    }
-
-    @Override
-    public void onSensorAccuracyChanged(int newAccuracy) {
-        getCallback().onSensorAccuracyChanged(newAccuracy);
-    }
 
     /**
      * pass measured acceleration to inputs of high pass filters (one for each axis) and
@@ -109,17 +70,5 @@ public class HighPassFilterSensorDecorator extends SensorReader implements Senso
         getCallback().processSensorReading(reading);
     }
 
-
-
-
     // Accessors
-
-    public SensorReader getDecoree() {
-        return decoree;
-    }
-
-    public void setDecoree(SensorReader decoree) {
-        this.decoree = decoree;
-        decoree.setCallback(this);
-    }
 }
