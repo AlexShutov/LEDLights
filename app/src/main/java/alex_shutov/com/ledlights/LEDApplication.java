@@ -1,8 +1,17 @@
 package alex_shutov.com.ledlights;
 
 import android.content.Intent;
+import android.hardware.SensorEvent;
 import android.support.multidex.MultiDexApplication;
+import android.util.Log;
 
+import alex_shutov.com.ledlights.sensor.AccelerationReader;
+import alex_shutov.com.ledlights.sensor.HardwareAccelerationReader;
+import alex_shutov.com.ledlights.sensor.HighPassFilterSensorDecorator;
+import alex_shutov.com.ledlights.sensor.Reading;
+import alex_shutov.com.ledlights.sensor.SensorReader;
+import alex_shutov.com.ledlights.sensor.filtering.Filter;
+import alex_shutov.com.ledlights.sensor.filtering.FirstOrderHighPassFilter;
 import alex_shutov.com.ledlights.service.BackgroundService;
 
 
@@ -11,6 +20,8 @@ import alex_shutov.com.ledlights.service.BackgroundService;
  */
 public class LEDApplication extends MultiDexApplication {
     private static final String LOG_TAG = LEDApplication.class.getSimpleName();
+
+    private SensorReader sensorReader;
 
 //    CellDeployer btCellDeployer;
 //    BtLogicCell cell;
@@ -32,11 +43,36 @@ public class LEDApplication extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
         startService();
+        sensorReader = new AccelerationReader(this);
+        sensorReader.setCallback(new SensorReader.SensorReadingCallback() {
+            @Override
+            public void processSensorReading(Reading reading) {
+                Log.i(LOG_TAG, "TS: " + reading.timeInterval + ", (" +
+                        reading.values[0] + ", " + reading.values[1] + ", " + reading.values[2] + ").");
+            }
+
+            @Override
+            public void onSensorAccuracyChanged(int newAccuracy) {
+
+            }
+
+            @Override
+            public void onBeforeStartingReadingSensor() {
+
+            }
+
+            @Override
+            public void onAfterStoppedReadingSensor() {
+
+            }
+        });
+        sensorReader.startReadingSensors();
     }
 
     @Override
     public void onTerminate() {
         stopService();
+        sensorReader.stopReadingSensors();
         super.onTerminate();
     }
 
