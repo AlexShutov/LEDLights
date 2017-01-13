@@ -12,7 +12,7 @@ import android.hardware.Sensor;
  * Sensor.TYPE_ACCELEROMETER. It ordinary accelerometer is used, it won't be substracting
  * gravity.
  */
-public class HardwareAccelerationReader extends SensorReader {
+public class HardwareAccelerationReader extends SensorManagerReader {
     private static final String LOG_ACCELERATION = "Acceleration sensor";
 
     // sample acceleration once in 50 milliseconds

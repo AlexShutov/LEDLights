@@ -21,15 +21,28 @@ import static alex_shutov.com.ledlights.sensor.SensorReader.*;
  */
 public class AccelerationReader extends SensorReaderDecorator implements SensorReadingCallback {
 
-    public AccelerationReader(Context context) {
+    private SensorManager sensorManager;
+    private boolean removeBias;
+    public AccelerationReader(Context context, boolean removeBias) {
         super(context);
+        this.removeBias = removeBias;
+        sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         initialize();
     }
-
 
     /**
      * Inherited from SensorReader
      */
+
+    @Override
+    protected void startPollingHardwareSensor() {
+
+    }
+
+    @Override
+    protected void stopPollingHardwareSensor() {
+
+    }
 
     @Override
     public void startReadingSensors() throws IllegalStateException {
@@ -54,6 +67,9 @@ public class AccelerationReader extends SensorReaderDecorator implements SensorR
         getCallback().processSensorReading(reading);
     }
 
+    public SensorManager getSensorManager() {
+        return sensorManager;
+    }
 
     /**
      * Check if this device has a accelerometer
@@ -82,10 +98,12 @@ public class AccelerationReader extends SensorReaderDecorator implements SensorR
         } else {
             useOwnCustomAccelerometer();
         }
-        // get rid of bias in measurements
-        UnbiasingDecorator unbiasingDecorator = new UnbiasingDecorator(getContext());
-        unbiasingDecorator.setDecoree(getDecoree());
-        setDecoree(unbiasingDecorator);
+        if (removeBias) {
+            // get rid of bias in measurements
+            UnbiasingDecorator unbiasingDecorator = new UnbiasingDecorator(getContext());
+            unbiasingDecorator.setDecoree(getDecoree());
+            setDecoree(unbiasingDecorator);
+        }
     }
 
     /**

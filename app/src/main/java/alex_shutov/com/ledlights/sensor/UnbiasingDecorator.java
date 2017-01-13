@@ -29,7 +29,7 @@ public class UnbiasingDecorator extends SensorReaderDecorator implements SensorR
     /**
      * How many samples we should average for getting not fluctuating bias
      */
-    private static final int BIAS_AVERAGING_COUNT = 10;
+    private static final int BIAS_AVERAGING_COUNT = 5;
 
 
     private SensorReader decoree;

@@ -12,6 +12,8 @@ import android.hardware.SensorEvent;
 public class Reading {
     public float values[];
     public long timeInterval;
+    // rarely used
+    public long timestamp;
 
     public Reading() {
         values = new float[3];
@@ -23,5 +25,6 @@ public class Reading {
         values[1] = event.values[1];
         values[2] = event.values[2];
         this.timeInterval = timeInterval;
+        timestamp = event.timestamp;
     }
 }

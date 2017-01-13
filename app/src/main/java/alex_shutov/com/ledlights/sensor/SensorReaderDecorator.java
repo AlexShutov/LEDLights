@@ -22,16 +22,19 @@ public abstract class SensorReaderDecorator extends SensorReader implements Sens
      * in a concrete decorator.
      */
 
-    @Override
-    protected int getSensorType() {
-        return 0;
-    }
 
     @Override
     protected int getSamplingPeriod() {
         return 0;
     }
 
+    @Override
+    protected void stopPollingHardwareSensor() {
+    }
+
+    @Override
+    protected void startPollingHardwareSensor() {
+    }
 
     /**
      * Inherited from SensorReadingCallback

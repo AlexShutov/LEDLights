@@ -1,10 +1,6 @@
 package alex_shutov.com.ledlights.sensor;
 
 import android.content.Context;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 
 import rx.Observable;
 import rx.Subscription;
@@ -46,41 +42,24 @@ public abstract class SensorReader {
         void onAfterStoppedReadingSensor();
     }
 
-
     private Context context;
 
-    private SensorManager sensorManager;
-    private Sensor sensor;
     // receives readings from sensor
-    private PublishSubject<SensorEvent> accelerationReadingPipe;
+    private PublishSubject<Reading> inputReadingPipe;
     // callback, receiving new values and updated of accuracy changes
     private SensorReadingCallback callback;
 
     private Subscription accelerationTracking;
-    private SensorEventListener listener = new SensorEventListener() {
-        @Override
-        public void onSensorChanged(SensorEvent event) {
-            accelerationReadingPipe.onNext(event);
-        }
 
-        @Override
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {
-            Observable.defer(() -> Observable.just(accuracy))
-            .subscribeOn(Schedulers.computation())
-                    .subscribe(t -> callback.onSensorAccuracyChanged(t));
-        }
-    };
 
     public SensorReader(Context context) {
         this.context = context;
-        sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
     }
 
-    /**
-     * Specify type of sensor you want to monitor in derived class
-     * @return
-     */
-    protected abstract int getSensorType();
+
+    protected abstract void startPollingHardwareSensor();
+
+    protected abstract void stopPollingHardwareSensor();
 
     /**
      * Get sampling period for this kind of sensor
@@ -93,15 +72,12 @@ public abstract class SensorReader {
      * @throws IllegalStateException if device doesn't have that sensor
      */
     public void startReadingSensors() throws IllegalStateException {
-        if (!isSensorPresent()) {
-            throw new IllegalStateException("Lack of sensor: " + getSensorType());
-        }
         stopAccelerationTracking();
         // create source, receiving measured values
-        accelerationReadingPipe = PublishSubject.create();
+        inputReadingPipe = PublishSubject.create();
         // subscribe to that source for processing readings on a background thread
-        Observable<SensorEvent> sourceOnBackground =
-        accelerationReadingPipe.asObservable()
+        Observable<Reading> sourceOnBackground =
+        inputReadingPipe.asObservable()
                 .observeOn(Schedulers.computation());
         // take first value for initializing previous timestamp
         sourceOnBackground.take(1)
@@ -114,29 +90,15 @@ public abstract class SensorReader {
                     .skip(1)
                     .subscribe(reading -> processAccelerationReading(reading));
 
-        // get type of sensor
-        int sensorType = getSensorType();
-        // register listener for that sensor
-        sensor = sensorManager.getDefaultSensor(sensorType);
-        // initialize additional features in derived class
-        getCallback().onBeforeStartingReadingSensor();
-        int samplingPeriod = getSamplingPeriod();
-        sensorManager.registerListener(listener, sensor, samplingPeriod);
+        startPollingHardwareSensor();
     }
 
     public void stopReadingSensors() {
         stopAccelerationTracking();
-        sensorManager.unregisterListener(listener);
+        stopPollingHardwareSensor();
         getCallback().onAfterStoppedReadingSensor();
     }
 
-    /**
-     * Check if phone has that kind of sensor.
-     * @return
-     */
-    public boolean isSensorPresent() {
-        return sensorManager.getDefaultSensor(getSensorType()) != null;
-    }
 
     // Accessors
 
@@ -152,9 +114,7 @@ public abstract class SensorReader {
         return context;
     }
 
-    public SensorManager getSensorManager() {
-        return sensorManager;
-    }
+
     // Private methods
 
     private void stopAccelerationTracking(){
@@ -167,11 +127,17 @@ public abstract class SensorReader {
     /**
      * Compute actual interval between samples and let actual logic handle read value.
      * It is called on background thread.
-     * @param event
+     * @param reading
      */
-    private void processAccelerationReading(SensorEvent event) {
-        long timeInterval = (event.timestamp - lastUpdateTime) / 1000000L;
-        lastUpdateTime = event.timestamp;
-        callback.processSensorReading(new Reading(event, timeInterval));
+    private void processAccelerationReading(Reading reading) {
+        long timeInterval = (reading.timestamp - lastUpdateTime) / 1000000L;
+        lastUpdateTime = reading.timestamp;
+        // set time interval to reading
+        reading.timeInterval = timeInterval;
+        callback.processSensorReading(reading);
+    }
+
+    protected PublishSubject<Reading> getReadingPipe() {
+        return inputReadingPipe;
     }
 }
