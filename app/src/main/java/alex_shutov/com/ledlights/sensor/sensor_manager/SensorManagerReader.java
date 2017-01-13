@@ -1,4 +1,4 @@
-package alex_shutov.com.ledlights.sensor;
+package alex_shutov.com.ledlights.sensor.sensor_manager;
 
 import android.content.Context;
 import android.hardware.Sensor;
@@ -6,6 +6,8 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
+import alex_shutov.com.ledlights.sensor.Reading;
+import alex_shutov.com.ledlights.sensor.SensorReader;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 

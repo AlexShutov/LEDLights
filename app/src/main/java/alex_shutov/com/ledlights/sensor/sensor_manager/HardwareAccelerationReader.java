@@ -1,4 +1,4 @@
-package alex_shutov.com.ledlights.sensor;
+package alex_shutov.com.ledlights.sensor.sensor_manager;
 
 import android.content.Context;
 import android.hardware.Sensor;

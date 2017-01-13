@@ -1,19 +1,12 @@
 package alex_shutov.com.ledlights;
 
 import android.content.Intent;
-import android.hardware.SensorEvent;
-import android.support.annotation.RequiresPermission;
 import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
 import alex_shutov.com.ledlights.sensor.AccelerationReader;
-import alex_shutov.com.ledlights.sensor.HardwareAccelerationReader;
-import alex_shutov.com.ledlights.sensor.HighPassFilterSensorDecorator;
 import alex_shutov.com.ledlights.sensor.Reading;
 import alex_shutov.com.ledlights.sensor.SensorReader;
-import alex_shutov.com.ledlights.sensor.UnbiasingDecorator;
-import alex_shutov.com.ledlights.sensor.filtering.Filter;
-import alex_shutov.com.ledlights.sensor.filtering.FirstOrderHighPassFilter;
 import alex_shutov.com.ledlights.service.BackgroundService;
 import rx.Observable;
 import rx.schedulers.Schedulers;

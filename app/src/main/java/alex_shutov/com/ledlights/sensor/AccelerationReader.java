@@ -6,10 +6,10 @@ package alex_shutov.com.ledlights.sensor;
 
 import android.content.Context;
 import android.hardware.Sensor;
-import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
 
 import alex_shutov.com.ledlights.sensor.filtering.FirstOrderHighPassFilter;
+import alex_shutov.com.ledlights.sensor.sensor_manager.HardwareAccelerationReader;
 
 import static alex_shutov.com.ledlights.sensor.SensorReader.*;
 
