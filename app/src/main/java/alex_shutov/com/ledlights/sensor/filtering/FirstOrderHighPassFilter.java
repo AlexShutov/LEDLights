@@ -9,8 +9,8 @@ import rx.subjects.PublishSubject;
 
 public class FirstOrderHighPassFilter implements Filter {
     // stores filter's lowFrequencyComponent value
-    private float lowFrequencyComponent;
-    private float highFrequencyComponent;
+    private double lowFrequencyComponent;
+    private double highFrequencyComponent;
 
     // alpha is calculated as t / (t + dT)
     // with t, the low-pass filter's time-constant
@@ -23,7 +23,7 @@ public class FirstOrderHighPassFilter implements Filter {
     }
 
     @Override
-    public float feedValue(float value) {
+    public double feedValue(double value) {
         lowFrequencyComponent = alpha * lowFrequencyComponent + (1 - alpha) * value;
         highFrequencyComponent = value - lowFrequencyComponent;
         return highFrequencyComponent;

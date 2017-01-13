@@ -12,7 +12,7 @@ public interface Filter {
      * @param value input value
      * @return response
      */
-    float feedValue(float value);
+    double feedValue(double value);
 
     /**
      * Clear current estimate

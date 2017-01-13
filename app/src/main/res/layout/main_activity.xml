@@ -35,6 +35,16 @@
             android:text="Send test command"
             />
 
+        <android.support.v7.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:id="@+id/ma_speed"
+            android:layout_below="@id/ma_btn_send_test_command"
+            android:layout_centerHorizontal="true"
+            />
+
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"

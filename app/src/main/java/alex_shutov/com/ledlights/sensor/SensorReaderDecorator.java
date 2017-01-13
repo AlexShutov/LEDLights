@@ -24,16 +24,23 @@ public abstract class SensorReaderDecorator extends SensorReader implements Sens
 
 
     @Override
-    protected int getSamplingPeriod() {
-        return 0;
-    }
-
-    @Override
     protected void stopPollingHardwareSensor() {
+        decoree.stopPollingHardwareSensor();
     }
 
     @Override
     protected void startPollingHardwareSensor() {
+        decoree.startPollingHardwareSensor();
+    }
+
+    @Override
+    public void startReadingSensors() throws IllegalStateException {
+        decoree.startReadingSensors();
+    }
+
+    @Override
+    public void stopReadingSensors() {
+        decoree.startReadingSensors();
     }
 
     /**

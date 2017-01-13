@@ -45,11 +45,16 @@ public abstract class SensorManagerReader extends SensorReader {
      */
     protected abstract int getSensorType();
 
+    /**
+     * Get sampling period for this kind of sensor
+     * @return
+     */
+    protected abstract int getSamplingPeriod();
+
     public SensorManagerReader(Context context) {
         super(context);
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
     }
-
 
     @Override
     public void startReadingSensors() throws IllegalStateException {

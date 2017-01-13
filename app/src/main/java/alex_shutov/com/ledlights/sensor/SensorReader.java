@@ -51,7 +51,6 @@ public abstract class SensorReader {
 
     private Subscription accelerationTracking;
 
-
     public SensorReader(Context context) {
         this.context = context;
     }
@@ -60,12 +59,6 @@ public abstract class SensorReader {
     protected abstract void startPollingHardwareSensor();
 
     protected abstract void stopPollingHardwareSensor();
-
-    /**
-     * Get sampling period for this kind of sensor
-     * @return
-     */
-    protected abstract int getSamplingPeriod();
 
     /**
      * Setup processing algorithm and start polling sensor.
@@ -89,7 +82,7 @@ public abstract class SensorReader {
             sourceOnBackground
                     .skip(1)
                     .subscribe(reading -> processAccelerationReading(reading));
-
+        getCallback().onBeforeStartingReadingSensor();
         startPollingHardwareSensor();
     }
 

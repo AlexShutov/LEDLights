@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import java.util.Random;
 
+import alex_shutov.com.ledlights.LEDApplication;
 import alex_shutov.com.ledlights.R;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 import alex_shutov.com.ledlights.databinding.MainActivityBinding;
@@ -44,6 +45,8 @@ public class MainActivity extends AppCompatActivity  implements EmulationCallbac
 
     private ServiceInterface serviceInterface;
     private DeviceControl control;
+
+    private Subscription speedSubscription;
 
     private DeviceControlFeedback deviceFeedback = new DeviceControlFeedback() {
         @Override
@@ -101,6 +104,15 @@ public class MainActivity extends AppCompatActivity  implements EmulationCallbac
         super.onStart();
         Intent startIntent = new Intent(this, BackgroundService.class);
         bindService(startIntent, connection, BIND_AUTO_CREATE);
+
+        LEDApplication app = (LEDApplication) getApplication();
+        speedSubscription =
+                app.getSpeedSource().subscribe(speed -> {
+                   // show speed in UI here
+                    int kmph = (int) (speed * 3.6);
+                    String speedMsg = "Speed: " + kmph + " kmph";
+                    binding.maSpeed.setText(speedMsg);
+                });
     }
 
     @Override
@@ -115,6 +127,11 @@ public class MainActivity extends AppCompatActivity  implements EmulationCallbac
         control = null;
         unbindService(connection);
         super.onStop();
+
+        if (null != speedSubscription && !speedSubscription.isUnsubscribed()) {
+            speedSubscription.unsubscribe();
+            speedSubscription = null;
+        }
     }
 
     private void showMessage(String msg) {
