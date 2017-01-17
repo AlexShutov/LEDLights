@@ -49,7 +49,7 @@ public abstract class SensorReader {
     // callback, receiving new values and updated of accuracy changes
     private SensorReadingCallback callback;
 
-    private Subscription accelerationTracking;
+    private Subscription sourceSubscription;
 
     public SensorReader(Context context) {
         this.context = context;
@@ -78,7 +78,7 @@ public abstract class SensorReader {
                     lastUpdateTime = reading.timestamp;
                 });
         // and process readings starting from second one
-        accelerationTracking =
+        sourceSubscription =
             sourceOnBackground
                     .skip(1)
                     .subscribe(reading -> processAccelerationReading(reading));
@@ -111,9 +111,9 @@ public abstract class SensorReader {
     // Private methods
 
     private void stopAccelerationTracking(){
-        if (null != accelerationTracking && !accelerationTracking.isUnsubscribed()) {
-            accelerationTracking.unsubscribe();
-            accelerationTracking = null;
+        if (null != sourceSubscription && !sourceSubscription.isUnsubscribed()) {
+            sourceSubscription.unsubscribe();
+            sourceSubscription = null;
         }
     }
     private long lastUpdateTime;
