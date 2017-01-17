@@ -11,8 +11,7 @@
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        style="@style/AppGeneral"
-        android:background="@color/blue_200"
+        style="@style/Base.Theme.GreenTheme"
         >
         <android.support.design.widget.TabLayout
             android:layout_width="match_parent"
@@ -28,8 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/apd_tl_view_mode_selector"
-        android:layout_weight="1"
-        android:background="@android:color/white" />
+        android:layout_weight="1" />
 
 
     </RelativeLayout>

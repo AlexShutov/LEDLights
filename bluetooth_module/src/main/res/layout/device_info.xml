@@ -29,7 +29,6 @@
             android:clipToPadding="false"
             app:cardElevation="7dp"
             android:onClick="@{(v) -> model.devicePickedListener.onClick(v)}"
-            app:cardBackgroundColor="@color/blue_500"
             >
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -43,7 +42,7 @@
                     android:layout_alignParentLeft="true"
                     android:layout_marginTop="@dimen/device_info_expand_btn_margin_top"
                     android:layout_marginLeft="@dimen/device_info_expand_btn_margin_left"
-                    android:src="@drawable/ic_details"
+                    android:src="@drawable/ic_details_black"
                     android:onClick="@{(v) -> model.showDeviceDetailsListener.onClick(v)}"
                     />
                 <android.support.v7.widget.AppCompatTextView
@@ -57,7 +56,6 @@
                     android:textSize="@dimen/device_info_device_name_text_size"
                     android:hint="@string/device_name_hint"
                     android:text="@{model.deviceName}"
-                    android:textColor="?android:textColorPrimaryInverse"
                     />
 
                 <!--container for device kind indicators (history, paired)-->
@@ -74,14 +72,14 @@
                     <android.support.v7.widget.AppCompatImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_device_from_history"
+                        android:src="@drawable/ic_motorcycle_black"
                         android:visibility="@{model.deviceFromHistory ? View.VISIBLE : View.GONE}"
                         />
                     <android.support.v7.widget.AppCompatImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="16dp"
-                        android:src="@drawable/ic_paired_phone"
+                        android:src="@drawable/ic_paired_phone_black"
                         android:visibility="@{model.pairedDevice ? View.VISIBLE : View.GONE}"
                         />
                 </LinearLayout>

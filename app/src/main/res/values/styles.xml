@@ -1,27 +1,34 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/app_primary</item>
-        <item name="colorPrimaryDark">@color/app_primary_dark</item>
-        <item name="colorAccent">@color/app_accent</item>
-    </style>
+    <!--<style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">-->
+        <!--&lt;!&ndash; Customize your theme here. &ndash;&gt;-->
+        <!--<item name="colorPrimary">@color/app_primary</item>-->
+        <!--<item name="colorPrimaryDark">@color/app_primary_dark</item>-->
+        <!--<item name="colorAccent">@color/app_accent</item>-->
+    <!--</style>-->
 
-    <style name="AppGeneral" parent="AppTheme">
-        <item name="colorPrimary">@color/app_primary</item>
-        <item name="colorPrimaryDark">@color/app_primary_dark</item>
-        <item name="colorAccent">@color/app_accent</item>
-        <item name="android:textColorPrimary">@android:color/black</item>
-        <item name="android:textColorPrimaryInverse">@color/text_light</item>
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/app_primary_dark</item>
-        <item name="android:textColor">@color/text_dark</item>
-        <item name="android:windowBackground">@color/blue_700</item>
-        <item name="android:colorBackground">@color/blue_900</item>
+    <!--<style name="AppGeneral" parent="AppTheme">-->
+        <!--<item name="colorPrimary">@color/app_primary</item>-->
+        <!--<item name="colorPrimaryDark">@color/app_primary_dark</item>-->
+        <!--<item name="colorAccent">@color/app_accent</item>-->
+        <!--<item name="android:textColorPrimary">@android:color/black</item>-->
+        <!--<item name="android:textColorPrimaryInverse">@color/text_light</item>-->
+        <!--<item name="android:statusBarColor" tools:targetApi="lollipop">@color/app_primary_dark</item>-->
+        <!--<item name="android:textColor">@color/text_dark</item>-->
+        <!--<item name="android:windowBackground">@color/blue_700</item>-->
+        <!--<item name="android:colorBackground">@color/blue_900</item>-->
 
-        <item name="colorControlNormal">@color/app_primary</item>
-        <item name="colorControlActivated">@color/app_primary</item>
-        <item name="colorControlHighlight">@color/app_primary</item>
+        <!--<item name="colorControlNormal">@color/app_primary</item>-->
+        <!--<item name="colorControlActivated">@color/app_primary</item>-->
+        <!--<item name="colorControlHighlight">@color/app_primary</item>-->
+    <!--</style>-->
+
+    <style name="Base.Theme.GreenTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/green_500</item>
+        <item name="colorPrimaryDark">@color/green_700</item>
+        <item name="colorAccent">@color/amber_500</item>
+        <item name="android:windowBackground">@color/window_background</item>
     </style>
 
 

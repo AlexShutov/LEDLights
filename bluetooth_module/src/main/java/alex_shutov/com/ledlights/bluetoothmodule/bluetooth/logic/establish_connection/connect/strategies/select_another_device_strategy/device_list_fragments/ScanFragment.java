@@ -147,8 +147,7 @@ public class ScanFragment extends DevicesFragment {
     private void startDiscovery() {
         Log.i(LOG_TAG, "We have all known devices (" + knownDevices.size() + " psc., starting " +
                 "discovery");
-        Toast.makeText(getActivity(), "source emitted " + knownDevices.size() + " items",
-                Toast.LENGTH_SHORT).show();
+
         // hide text, prompting to start discovery
         hideEmptyText();
         // clear device list
