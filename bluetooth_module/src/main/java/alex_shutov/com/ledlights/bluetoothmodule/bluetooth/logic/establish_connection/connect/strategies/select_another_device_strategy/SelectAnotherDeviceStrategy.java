@@ -1,4 +1,4 @@
-package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.select_another_device_strategy;
+package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.strategies.select_another_device_strategy;
 
 import android.util.Log;
 
@@ -17,9 +17,9 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtS
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.DataProvider;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.ConnectionManagerDataProvider;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.EstablishConnectionStrategy;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.select_another_device_strategy.events.PresenterInstanceEvent;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.select_another_device_strategy.mvp.AnotherDeviceModel;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.select_another_device_strategy.mvp.AnotherDevicePresenter;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.strategies.select_another_device_strategy.events.PresenterInstanceEvent;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.strategies.select_another_device_strategy.mvp.AnotherDeviceModel;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.strategies.select_another_device_strategy.mvp.AnotherDevicePresenter;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;

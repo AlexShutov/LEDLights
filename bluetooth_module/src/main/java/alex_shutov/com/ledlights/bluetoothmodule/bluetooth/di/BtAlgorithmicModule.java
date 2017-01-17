@@ -8,7 +8,7 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conne
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.reconnect.ReconnectManager;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.EstablishConnectionStrategy;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.strategies.ReconnectStrategy;
-import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.select_another_device_strategy.SelectAnotherDeviceStrategy;
+import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.strategies.select_another_device_strategy.SelectAnotherDeviceStrategy;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.reconnect.ReconnectSchedulingStrategy;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.reconnect.strategies.FinitAttemptCountSameDelay;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.reconnect.strategies.RetryIndefinetely;

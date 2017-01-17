@@ -1,4 +1,4 @@
-package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.select_another_device_strategy.mvp;
+package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.strategies.select_another_device_strategy.mvp;
 
 import alex_shutov.com.ledlights.hex_general.BaseView;
 

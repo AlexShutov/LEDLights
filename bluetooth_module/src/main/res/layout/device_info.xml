@@ -5,7 +5,7 @@
         <import type="android.view.View"/>
         <variable
             name="model"
-            type="alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.select_another_device_strategy.databinding.DeviceInfoViewModel"
+            type="alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.strategies.select_another_device_strategy.databinding.DeviceInfoViewModel"
             />
     </data>
 

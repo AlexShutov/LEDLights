@@ -1,4 +1,4 @@
-package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.select_another_device_strategy;
+package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.strategies.select_another_device_strategy;
 
 /**
  * Created by lodoss on 15/12/16.
