@@ -10,6 +10,7 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.DataProvider;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.ConnectionManagerDataProvider;
 
 import static alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.esb.BtConnEsbStore.*;
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.LOGI;
 
 /**
  * Created by lodoss on 19/12/16.
@@ -33,13 +34,13 @@ public class TransferManagerImpl extends TransferManagerBase {
 
     @Override
     protected void start() {
-        Log.i(LOG_TAG, "Selecting real TransferManager");
+        LOGI(LOG_TAG, "Selecting real TransferManager");
         eventBus.register(this);
     }
 
     @Override
     public void suspend() {
-        Log.i(LOG_TAG, "Putting aside real TransferManager");
+        LOGI(LOG_TAG, "Putting aside real TransferManager");
         eventBus.unregister(this);
     }
 

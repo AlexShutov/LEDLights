@@ -12,6 +12,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.LOGI;
+
 /**
  * Created by lodoss on 06/12/16.
  */
@@ -66,7 +68,7 @@ public abstract class HistoryPairedFragment extends DevicesFragment {
      */
     @Override
     protected void updateDeviceList() {
-        Log.i(LOG_TAG, "Updating history and paired device lists");
+        LOGI(LOG_TAG, "Updating history and paired device lists");
         suspendReceivingAlgorithm();
         scheduleAlgorithm();
         getPresenter().refreshDevicesFromSystem();
@@ -74,13 +76,13 @@ public abstract class HistoryPairedFragment extends DevicesFragment {
 
     @Override
     protected void suspend() {
-        Log.i(LOG_TAG, "stopping updating device list");
+        LOGI(LOG_TAG, "stopping updating device list");
         suspendReceivingAlgorithm();
     }
 
     @Override
     protected void init() {
-        Log.i(LOG_TAG, "init()");
+        LOGI(LOG_TAG, "init()");
         scheduleAlgorithm();
     }
 
@@ -98,7 +100,7 @@ public abstract class HistoryPairedFragment extends DevicesFragment {
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(deviceList -> {
-                            Log.i(LOG_TAG, deviceList.size() + " devices in history");
+                            LOGI(LOG_TAG, deviceList.size() + " devices in history");
                             // device list is updated
                             onUpdateComplete();
                             // show ot hide empty text and change list visibility
@@ -124,13 +126,13 @@ public abstract class HistoryPairedFragment extends DevicesFragment {
     }
 
     public void displayDevicesFromAppHistory(List<BtDevice> devices) {
-        Log.i(LOG_TAG, "There is " + devices.size() + " devices in app history");
+        LOGI(LOG_TAG, "There is " + devices.size() + " devices in app history");
         historyDevicesSource.onNext(devices);
     }
 
 
     public void displayPairedSystemDevices(List<BtDevice> devices) {
-        Log.i(LOG_TAG, "There is " + devices.size() + " paired devices");
+        LOGI(LOG_TAG, "There is " + devices.size() + " paired devices");
         pairedDevicesSource.onNext(devices);
     }
 

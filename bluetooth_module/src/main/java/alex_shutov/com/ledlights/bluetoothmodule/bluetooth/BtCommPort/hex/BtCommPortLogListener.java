@@ -3,6 +3,9 @@ package alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtCommPort.hex;
 import android.util.Log;
 
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
+import alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils;
+
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.*;
 
 /**
  * Created by lodoss on 12/10/16.
@@ -13,22 +16,22 @@ public class BtCommPortLogListener implements BtCommPortListener{
 
     @Override
     public void onConnectionStarted(BtDevice btDevice) {
-        Log.w(LOG_TAG, "onConnectionStarted()");
+        LOGW(LOG_TAG, "onConnectionStarted()");
     }
 
     @Override
     public void onConnectionFailed() {
-        Log.w(LOG_TAG, "onConnectionFailed()");
+        LOGW(LOG_TAG, "onConnectionFailed()");
     }
 
     @Override
     public void onDataSent() {
-        Log.w(LOG_TAG, "onDataSent()");
+        LOGW(LOG_TAG, "onDataSent()");
     }
 
     @Override
     public void onDataSendFailed() {
-        Log.w(LOG_TAG, "onDataSendFailed()");
+        LOGW(LOG_TAG, "onDataSendFailed()");
     }
 
     @Override
@@ -38,21 +41,21 @@ public class BtCommPortLogListener implements BtCommPortListener{
 
     @Override
     public void onReconnected(BtDevice btDevice) {
-        Log.w(LOG_TAG, "onReconnected()");
+        LOGW(LOG_TAG, "onReconnected()");
     }
 
     @Override
     public void onDummyDeviceSelected() {
-        Log.w(LOG_TAG, "onDummyDeviceSelected()");
+        LOGW(LOG_TAG, "onDummyDeviceSelected()");
     }
 
     @Override
     public void onPortReady(int portID) {
-        Log.w(LOG_TAG, "onPortReady(" + portID + ")");
+        LOGW(LOG_TAG, "onPortReady(" + portID + ")");
     }
 
     @Override
     public void onCriticalFailure(int portID, Exception e) {
-        Log.w(LOG_TAG, "onCriticalFailure(" + portID + " " + e.getMessage() + ")");
+        LOGW(LOG_TAG, "onCriticalFailure(" + portID + " " + e.getMessage() + ")");
     }
 }

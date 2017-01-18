@@ -13,6 +13,9 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.DataProvider;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.EstablishConnectionCallbackReactive.CallbackSubscriptionManager;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.EstablishConnectionStrategy;
 
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.LOGI;
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.LOGW;
+
 /**
  * Created by Alex on 10/26/2016.
  */
@@ -172,7 +175,7 @@ public class ConnectionManagerImpl extends BtAlgorithm implements
         currentStrategySubscriptions.successSubscription =
                 currentStrategyCallbackWrapper.getConnectedSource()
                         .subscribe(connectedDevice -> {
-                            Log.i(LOG_TAG, "device reconnected(): " + connectedDevice.getDeviceName());
+                            LOGI(LOG_TAG, "device reconnected(): " + connectedDevice.getDeviceName());
                             ConnectionManagerImpl.this.connectedDevice = connectedDevice;
                             if (null != callback){
                                 callback.onConnectionEstablished(connectedDevice);
@@ -181,7 +184,7 @@ public class ConnectionManagerImpl extends BtAlgorithm implements
         currentStrategySubscriptions.failureSubscription =
                 currentStrategyCallbackWrapper.getFailureSource()
                         .subscribe(t -> {
-                            Log.w(LOG_TAG, "Connection attempt have failed");
+                            LOGW(LOG_TAG, "Connection attempt have failed");
                             if (null != callback){
                                 callback.onAttemptFailed();
                             }
@@ -189,7 +192,7 @@ public class ConnectionManagerImpl extends BtAlgorithm implements
         currentStrategySubscriptions.unsupportedOperationSubscription =
                 currentStrategyCallbackWrapper.getUnsupportedOperationSource()
                         .subscribe(t -> {
-                            Log.i(LOG_TAG, "This is an unsupported operation");
+                            LOGI(LOG_TAG, "This is an unsupported operation");
                             callback.onUnsupportedOperation();
                         });
     }

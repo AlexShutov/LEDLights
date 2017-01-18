@@ -24,6 +24,9 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtScannerPort.hex.BtS
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.hex.BtStorageAdapter;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtStoragePort.hex.BtStoragePort;
 import alex_shutov.com.ledlights.hex_general.LogicCell;
+import alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils;
+
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.*;
 
 /**
  * Created by lodoss on 24/08/16.
@@ -86,7 +89,7 @@ public class BtLogicCell extends LogicCell {
      */
     @Override
     public void init() {
-        Log.i(LOG_TAG, "BtLogicCell.init()");
+        LOGI(LOG_TAG, "BtLogicCell.init()");
         // take reference to DI component
         BtPortAdapterCreator diComponent = (BtPortAdapterCreator) getAdaperCreator();
         btFacade = new BtLogicCellFacade(diComponent);

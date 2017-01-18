@@ -9,6 +9,8 @@ import rx.Observable;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
 
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.LOGI;
+
 /**
  * Created by lodoss on 20/12/16.
  */
@@ -54,7 +56,7 @@ public class FinitAttemptCountSameDelay extends ReconnectSchedulingStrategy {
                 .delay(reconnectDelay, reconnectDelayTimeUnit);
         Subscription s = Observable.defer(() -> task)
                 .subscribe(t -> {
-                    Log.i(LOG_TAG, "Trying to connect again (" + currentAttemptCount +  " time)");
+                    LOGI(LOG_TAG, "Trying to connect again (" + currentAttemptCount +  " time)");
                     getDecoreeManager().attemptToEstablishConnection();
                 });
         return s;

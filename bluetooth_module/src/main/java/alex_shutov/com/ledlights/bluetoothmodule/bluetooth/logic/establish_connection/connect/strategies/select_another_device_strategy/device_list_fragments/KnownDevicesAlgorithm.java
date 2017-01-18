@@ -14,6 +14,8 @@ import rx.Subscription;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.LOGI;
+
 /**
  * Created by lodoss on 08/12/16.
  */
@@ -100,7 +102,7 @@ public class KnownDevicesAlgorithm {
     public Observable<Map<String, DeviceInfoViewModel>> createPipeline() {
         // stop algorithm if it active
         if (isRunning()) {
-            Log.i(LOG_TAG, "algorithm for known devices is active, stopping it.");
+            LOGI(LOG_TAG, "algorithm for known devices is active, stopping it.");
             stop();
         }
         historyDevicesSource = PublishSubject.create();
@@ -122,7 +124,7 @@ public class KnownDevicesAlgorithm {
      *
      */
     private Observable<Map<String, DeviceInfoViewModel>> configurePipeline() {
-        Log.i(LOG_TAG, "Configuring pipeline");
+        LOGI(LOG_TAG, "Configuring pipeline");
         knownDevices = new TreeMap<>();
 //        historyPipeLink =
 //             historyDevices
@@ -155,7 +157,7 @@ public class KnownDevicesAlgorithm {
     }
 
     private void processKnownDevice(DeviceInfoViewModel device) {
-        Log.i(LOG_TAG, "Received device: " + device.getDeviceName());
+        LOGI(LOG_TAG, "Received device: " + device.getDeviceName());
         String deviceAddress = device.getDeviceAddress();
         // add new device to the list
         if (!knownDevices.containsKey(deviceAddress)) {

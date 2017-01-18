@@ -12,6 +12,9 @@ import rx.Observable;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
 
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.LOGI;
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.LOGW;
+
 /**
  * Created by Alex on 11/5/2016.
  */
@@ -95,18 +98,18 @@ public class ReconnectStrategy extends EstablishConnectionStrategy {
 
     @Override
     public void attemptToEstablishConnection() {
-        Log.i(LOG_TAG, "attemptToEstablishConnection()");
+        LOGI(LOG_TAG, "attemptToEstablishConnection()");
         stopTask();
         pendingLastDeviceTask = Observable.defer(() -> getLastDeviceFromDbTask)
                 .observeOn(Schedulers.computation())
                 .subscribe(lastDeviceInfo -> {
-                    Log.i(LOG_TAG, "Last connected device: " +
+                    LOGI(LOG_TAG, "Last connected device: " +
                             lastDeviceInfo.deviceInfo.getDeviceName());
                     BtDevice device = lastDeviceInfo.deviceInfo;
                     createPendingConnectTask(device);
                     connectToDevice(device);
                 }, error -> {
-                    Log.w(LOG_TAG, "There is no info about last connected device");
+                    LOGW(LOG_TAG, "There is no info about last connected device");
                     notifyAboutFailure();
                     // bring down all ungoing tasks
                     stopTask();
@@ -124,7 +127,7 @@ public class ReconnectStrategy extends EstablishConnectionStrategy {
      */
     @Override
     protected void doOnConnectionSuccessful(BtDevice device) {
-        Log.i(LOG_TAG, "Connection established, performing final action in 'Reconnect' strategy");
+        LOGI(LOG_TAG, "Connection established, performing final action in 'Reconnect' strategy");
     }
 
     /**
@@ -133,7 +136,7 @@ public class ReconnectStrategy extends EstablishConnectionStrategy {
      */
     @Override
     protected void doOnConnectionAttemptFailed() {
-        Log.i(LOG_TAG, "Connection attempt failed, perfforming action from 'reconnect' strategy");
+        LOGI(LOG_TAG, "Connection attempt failed, perfforming action from 'reconnect' strategy");
         ConnectionManagerCallback callback = getCallback();
         if (null != callback) {
             callback.onAttemptFailed();

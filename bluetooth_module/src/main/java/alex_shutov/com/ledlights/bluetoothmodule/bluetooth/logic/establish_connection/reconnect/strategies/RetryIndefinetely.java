@@ -9,6 +9,8 @@ import rx.Observable;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
 
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.LOGI;
+
 /**
  * Created by lodoss on 20/12/16.
  */
@@ -61,7 +63,7 @@ public class RetryIndefinetely extends ReconnectSchedulingStrategy {
                 .delay(reconnectDelay, reconnectDelayTimeUnit);
         Subscription s = Observable.defer(() -> task)
                 .subscribe(t -> {
-                    Log.i(LOG_TAG, "Attempting to connect again.");
+                    LOGI(LOG_TAG, "Attempting to connect again.");
                     getDecoreeManager().attemptToEstablishConnection();
                 });
         return s;

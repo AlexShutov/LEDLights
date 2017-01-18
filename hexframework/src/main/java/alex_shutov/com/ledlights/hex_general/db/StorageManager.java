@@ -4,6 +4,7 @@ package alex_shutov.com.ledlights.hex_general.db;
 import android.content.Context;
 import android.util.Log;
 
+import alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
@@ -57,7 +58,7 @@ public abstract class StorageManager {
 
     public void disposeOfInstance(Realm realm){
         if (null == realm){
-            Log.w(LOG_TAG, "Attempting to close null realm instance");
+            LogUtils.LOGW(LOG_TAG, "Attempting to close null realm instance");
             return;
         }
         realm.close();

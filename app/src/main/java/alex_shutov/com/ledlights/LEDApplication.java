@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
+import alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils;
 import alex_shutov.com.ledlights.sensor.AccelerationReader;
 import alex_shutov.com.ledlights.sensor.Reading;
 import alex_shutov.com.ledlights.sensor.SensorReader;
@@ -14,6 +15,8 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
+
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.*;
 
 
 /**
@@ -104,7 +107,7 @@ public class LEDApplication extends MultiDexApplication {
         // show time in seconds
         int interval = (int)( speed.timeInterval / 1000d);
         float s = (float) speed.values[0];
-        Log.i(LOG_TAG, "Average speed for time: " + interval + " is " + s);
+        LOGI(LOG_TAG, "Average speed for time: " + interval + " is " + s);
         speedSource.onNext(new Double(s));
     }
 

@@ -13,6 +13,8 @@ import rx.Observable;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
 
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.LOGI;
+
 /**
  * ReconnectManager is a decorator for ConnectionManager, which purpose is to intercept
  * reconnectCallback events from decoree and modify those events in some way. For example, assume
@@ -55,7 +57,7 @@ public class ReconnectManager implements ConnectionManager, ConnectionManagerCal
      * Called by wrapping entity whenever connection to device is lost.
      */
     public void onConnectionLost() {
-        Log.i(LOG_TAG, "Connection lost event received by ReconnectManager");
+        LOGI(LOG_TAG, "Connection lost event received by ReconnectManager");
         if (!isOnPause) {
             activate();
             // start reconnect attempt after some delay
@@ -226,7 +228,7 @@ public class ReconnectManager implements ConnectionManager, ConnectionManagerCal
      *
      */
     private void deactivate() {
-        Log.i(LOG_TAG, "Deactivating ReconnectManager");
+        LOGI(LOG_TAG, "Deactivating ReconnectManager");
         resetState();
         isActive = false;
     }
@@ -235,7 +237,7 @@ public class ReconnectManager implements ConnectionManager, ConnectionManagerCal
      *
      */
     private void activate() {
-        Log.i(LOG_TAG, "Activating ReconnectManager");
+        LOGI(LOG_TAG, "Activating ReconnectManager");
         resetState();
         reconnectStrategy.onRestarted();
         isActive = true;
@@ -246,7 +248,7 @@ public class ReconnectManager implements ConnectionManager, ConnectionManagerCal
      * ask to choose device by UI.
      */
     private void resetState() {
-        Log.i(LOG_TAG, "Resetting state of ReconnectManager");
+        LOGI(LOG_TAG, "Resetting state of ReconnectManager");
         reconnectStrategy.clearAttemptCounter();
         suspendReconnectAttempt();
     }

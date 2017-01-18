@@ -29,6 +29,8 @@ import alex_shutov.com.ledlights.bluetoothmodule.databinding.DeviceListBinding;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.LOGI;
+
 /**
  * Created by lodoss on 02/12/16.
  */
@@ -144,7 +146,7 @@ public abstract class DevicesFragment extends Fragment implements AnotherDeviceV
         presenter.detachView();
         // cancel refresh animation
         if (viewBinding.dlRefreshLayout.isRefreshing()) {
-            Log.i(LOG_TAG, "content is still refreshing, cancelling");
+            LOGI(LOG_TAG, "content is still refreshing, cancelling");
             viewBinding.dlRefreshLayout.setRefreshing(false);
         }
         super.onPause();

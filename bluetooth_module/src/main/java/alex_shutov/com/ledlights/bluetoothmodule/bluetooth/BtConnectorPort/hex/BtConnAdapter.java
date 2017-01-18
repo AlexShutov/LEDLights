@@ -17,6 +17,10 @@ import alex_shutov.com.ledlights.hex_general.Adapter;
 import alex_shutov.com.ledlights.hex_general.PortInfo;
 import alex_shutov.com.ledlights.hex_general.PortListener;
 
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.LOGE;
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.LOGI;
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.LOGW;
+
 /**
  * Created by Alex on 7/25/2016.
  */
@@ -88,7 +92,7 @@ public class BtConnAdapter extends Adapter implements BtConnPort {
             /** this is not 'critical failure - port will remain silent until we set
              * listener
              */
-            Log.e(LOG_TAG, "Port listener reference is null during BtConnAdapter creation");
+            LOGE(LOG_TAG, "Port listener reference is null during BtConnAdapter creation");
         }
     }
 
@@ -158,7 +162,7 @@ public class BtConnAdapter extends Adapter implements BtConnPort {
 
     @Override
     public void close() {
-        Log.i(LOG_TAG, "Stopping Bluetooth service");
+        LOGI(LOG_TAG, "Stopping Bluetooth service");
         btService.stop();
     }
 
@@ -171,11 +175,11 @@ public class BtConnAdapter extends Adapter implements BtConnPort {
     public void connect(BtDevice device) {
         String address = device.getDeviceAddress();
         if (null == address || address.equals("")){
-            Log.e(LOG_TAG, "Address for device: " + device.getDeviceName() + " is not set");
+            LOGE(LOG_TAG, "Address for device: " + device.getDeviceName() + " is not set");
         }
         BluetoothDevice androidBT = btAdapter.getRemoteDevice(device.getDeviceAddress());
         if (null == androidBT){
-            Log.e(LOG_TAG, "Error while getting bt device: " + device.getDeviceName());
+            LOGE(LOG_TAG, "Error while getting bt device: " + device.getDeviceName());
             return;
         }
         /**
@@ -185,13 +189,13 @@ public class BtConnAdapter extends Adapter implements BtConnPort {
         try {
             setDeviceAttributes(device);
         } catch (IllegalStateException e){
-            Log.w(LOG_TAG, "Trying to initiate connection while bt adapter is busy. " +
+            LOGW(LOG_TAG, "Trying to initiate connection while bt adapter is busy. " +
                     "Aborting all current tasks");
             btService.stop();
             try {
                 setDeviceAttributes(device);
             } catch (IllegalStateException e2){
-                Log.e(LOG_TAG, "Failed to abort current tasks - bt adapter is still busy");
+                LOGE(LOG_TAG, "Failed to abort current tasks - bt adapter is still busy");
                 return;
             }
         }
@@ -206,7 +210,7 @@ public class BtConnAdapter extends Adapter implements BtConnPort {
     @Override
     public void stopConnecting() {
         if (btService.getState() != BluetoothChatService.STATE_CONNECTING) {
-            Log.w(LOG_TAG, "can't cancel connection because device isn't connecting");
+            LOGW(LOG_TAG, "can't cancel connection because device isn't connecting");
             return;
         }
         /**
@@ -241,7 +245,7 @@ public class BtConnAdapter extends Adapter implements BtConnPort {
             /** Assume everything is OK - no cast checking */
             BtConnPortListener feedback = (BtConnPortListener) getPortListener();
             if (null == feedback){
-                Log.e(LOG_TAG, "Feedback interface is null, ignoring message");
+                LOGE(LOG_TAG, "Feedback interface is null, ignoring message");
                 return;
             }
             String logMsg = "Dispatching message ";
@@ -268,37 +272,37 @@ public class BtConnAdapter extends Adapter implements BtConnPort {
                             feedback.onStateIdle();
                             break;
                     }
-                    Log.d(LOG_TAG, logMsg);
+                    LOGI(LOG_TAG, logMsg);
                     break;
                 case Constants.MESSAGE_READ:
                     int messageSize = msg.arg1;
                     byte[] message = (byte[]) msg.obj;
-                    Log.i(LOG_TAG, "Received " + messageSize+ " bytes in message");
+                    LOGI(LOG_TAG, "Received " + messageSize+ " bytes in message");
                     feedback.onMessageRead(message, messageSize);
                     break;
                 case Constants.MESSAGE_WRITE:
-                    Log.i(LOG_TAG, "Message sent");
+                    LOGI(LOG_TAG, "Message sent");
                     feedback.onMessageSent();
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
                     Bundle b = msg.getData();
                     if (!b.containsKey(Constants.DEVICE_NAME)){
-                        Log.e(LOG_TAG, "Device connected, but message doesn't have device " +
+                        LOGE(LOG_TAG, "Device connected, but message doesn't have device " +
                                 "name");
                         return;
                     }
                     BtDevice device = new BtDevice();
                     String deviceName = b.getString(Constants.DEVICE_NAME);
-                    Log.i(LOG_TAG, "Device: " + deviceName + " is connected");
+                    LOGI(LOG_TAG, "Device: " + deviceName + " is connected");
                     device.setDeviceName(deviceName);
                     feedback.onDeviceConnected(device);
                     break;
                 case Constants.MESSAGE_CONNECTION_FAILED:
-                    Log.i(LOG_TAG, "Connectioin failed");
+                    LOGI(LOG_TAG, "Connectioin failed");
                     feedback.onConnectionFailed();
                     break;
                 case Constants.MESSAGE_CONNECTION_LOST:
-                    Log.i(LOG_TAG, "Connection lost");
+                    LOGI(LOG_TAG, "Connection lost");
                     feedback.onConnectionLost();
                     break;
             }

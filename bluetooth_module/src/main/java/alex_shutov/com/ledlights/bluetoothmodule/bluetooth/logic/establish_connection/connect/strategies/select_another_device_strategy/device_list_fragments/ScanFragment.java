@@ -24,6 +24,8 @@ import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 import static alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.connect.strategies.select_another_device_strategy.databinding.ViewModelConverter.convertToViewModel;
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.LOGI;
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.LOGW;
 
 /**
  * Created by lodoss on 08/12/16.
@@ -145,7 +147,7 @@ public class ScanFragment extends DevicesFragment {
     }
 
     private void startDiscovery() {
-        Log.i(LOG_TAG, "We have all known devices (" + knownDevices.size() + " psc., starting " +
+        LOGI(LOG_TAG, "We have all known devices (" + knownDevices.size() + " psc., starting " +
                 "discovery");
 
         // hide text, prompting to start discovery
@@ -187,7 +189,7 @@ public class ScanFragment extends DevicesFragment {
         // check if at least one device is discovered. If not, show message, that no
         // devices were found.
         if (discoveredAddresses.isEmpty()) {
-            Log.i(LOG_TAG, "No devices found");
+            LOGI(LOG_TAG, "No devices found");
             showEmptyText(R.string.device_discovery_not_found);
         }
     }
@@ -197,7 +199,7 @@ public class ScanFragment extends DevicesFragment {
      * @param justDiscovered
      */
     private void processDiscoveredDevice(BtDevice justDiscovered) {
-        Log.i(LOG_TAG, "Processing discovered device: " + justDiscovered.getDeviceName() +
+        LOGI(LOG_TAG, "Processing discovered device: " + justDiscovered.getDeviceName() +
             " " + justDiscovered.getDeviceAddress());
         DeviceInfoViewModel vm = convertToViewModel(justDiscovered);
         String deviceAddress = vm.getDeviceAddress();
@@ -232,7 +234,7 @@ public class ScanFragment extends DevicesFragment {
         // Some devices might have no device name (some Apple keyboards, etc.).
         // In that case show name for 'unknown device'
         if (t.getDeviceName() == null) {
-            Log.w(LOG_TAG, "Device name not specified for device with address: " +
+            LOGW(LOG_TAG, "Device name not specified for device with address: " +
                     t.getDeviceAddress());
             String nameUnknown = getString(R.string.device_info_unnamed);
             t.setDeviceName(nameUnknown);

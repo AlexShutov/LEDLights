@@ -28,10 +28,13 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_conne
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.establish_connection.reconnect.strategies.RetryIndefinetely;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.transfer_data.TransferManagerBase;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.transfer_data.TransferManagerFeedback;
+import alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils;
 import rx.Observable;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
+
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.*;
 
 /**
  * Created by Alex on 11/6/2016.
@@ -149,7 +152,7 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
      * Request all objects after everything is ready (BtLogicCell is initialized)
      */
     public void onInitialized(){
-        Log.i(LOG_TAG, "onInitialized()");
+        LOGI(LOG_TAG, "onInitialized()");
         diComponent.injectBtLogicCellFacade(this);
         setupTransferManagers();
         setupConnectAndReconnectManagers();
@@ -157,7 +160,7 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
     }
 
     public void onDestroying(){
-        Log.i(LOG_TAG, "onDestroying()");
+        LOGI(LOG_TAG, "onDestroying()");
         // unsubscribe from ESB events
         eventBus.unregister(this);
     }
@@ -168,16 +171,16 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
 
     @Override
     public void startConnection() {
-        Log.i(LOG_TAG, "startConnection()");
+        LOGI(LOG_TAG, "startConnection()");
         connectManager.attemptToEstablishConnection();
     }
 
     @Override
     public void disconnect() {
-        Log.i(LOG_TAG, "disconnect()");
+        LOGI(LOG_TAG, "disconnect()");
         reconnectManager.stopConnecting();
         if (isDeviceConnected()) {
-            Log.i(LOG_TAG, "Device is connected: " + connectedDevice.getDeviceName() +
+            LOGI(LOG_TAG, "Device is connected: " + connectedDevice.getDeviceName() +
                 ", disconnecting");
         }
     }
@@ -242,7 +245,7 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
     public void setupFixAttemptsFixTimeStrategy(int numberOfAttempts, int timeInterval,
                                          TimeUnit timeUnit) {
         if (numberOfAttempts == 0) {
-            Log.w(LOG_TAG, "Number of attempts can not be 0, using 1 instead");
+            LOGW(LOG_TAG, "Number of attempts can not be 0, using 1 instead");
             numberOfAttempts = 1;
         }
         FinitAttemptCountSameDelay strategy =
@@ -271,7 +274,7 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
         @Override
         public void onConnectionEstablished(BtDevice connectedDevice) {
             String msg = "Connection established with device ";
-            Log.i(LOG_TAG, connectedDevice == null ? msg : msg +
+            LOGI(LOG_TAG, connectedDevice == null ? msg : msg +
                     connectedDevice.getDeviceName());
             BtLogicCellFacade.this.connectedDevice = connectedDevice;
             // select real data transfer manager first
@@ -282,7 +285,7 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
 
         @Override
         public void onAttemptFailed() {
-            Log.i(LOG_TAG, "onAttemptFailed" );
+            LOGI(LOG_TAG, "onAttemptFailed" );
             commFeedback.onConnectionFailed();
         }
 
@@ -306,7 +309,7 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
         // setup callback for reconnection
         reconnectManager.setReconnectCallback(device -> {
             String msg = "Device reconnected: ";
-            Log.i(LOG_TAG, device == null ? msg : msg +
+            LOGI(LOG_TAG, device == null ? msg : msg +
                     device.getDeviceName());
             // save device info
             BtLogicCellFacade.this.connectedDevice = device;
@@ -330,7 +333,7 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
         connectionLostEventSource.asObservable()
                 .observeOn(Schedulers.computation())
                 .subscribe(t -> {
-                    Log.i(LOG_TAG, "Connection lost");
+                    LOGI(LOG_TAG, "Connection lost");
                     reconnectManager.onConnectionLost();
                 });
     }
@@ -345,7 +348,7 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
     private TransferManagerFeedback transferManagerFeedback = new TransferManagerFeedback() {
         @Override
         public void onDataSent() {
-            Log.i(LOG_TAG, "Data sent");
+            LOGI(LOG_TAG, "Data sent");
             // inform feedback interface of successful data sending
             // do it in background
             Observable.defer(() -> Observable.just(true))
@@ -357,12 +360,12 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
 
         @Override
         public void onDataSendFailed() {
-            Log.i(LOG_TAG, "Data sending failed");
+            LOGI(LOG_TAG, "Data sending failed");
         }
 
         @Override
         public void receiveData(byte[] data, int size) {
-            Log.i(LOG_TAG, "Data received: " + data + " size: " + size);
+            LOGI(LOG_TAG, "Data received: " + data + " size: " + size);
             Pair<byte[], Integer> msgRead = new Pair<>(data, size);
             // Inform feedback interface of received message in background
             Observable.defer(() -> Observable.just(msgRead))
@@ -438,7 +441,7 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
      * Call this method from callback, informing on connection loss
      */
     private void handleConnectionLossByTransferManager() {
-        Log.i(LOG_TAG, "Processing loss of connection by transfer manager");
+        LOGI(LOG_TAG, "Processing loss of connection by transfer manager");
         synchronized (transferManagerSelectionLock) {
             selectMockTransferManager();
         }
@@ -449,7 +452,7 @@ public class BtLogicCellFacade implements CommInterface, ConnectionManagerDataPr
      * @param device
      */
     private void handleNewConnectionByTransferManager(BtDevice device) {
-        Log.i(LOG_TAG, "Picking real data transfer manager (not mock implementation).");
+        LOGI(LOG_TAG, "Picking real data transfer manager (not mock implementation).");
         synchronized (transferManagerSelectionLock) {
             selectRealTransferManafer();
         }

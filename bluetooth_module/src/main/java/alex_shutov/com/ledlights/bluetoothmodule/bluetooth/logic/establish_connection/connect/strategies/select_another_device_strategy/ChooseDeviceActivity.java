@@ -39,6 +39,8 @@ import rx.Observable;
 import rx.schedulers.Schedulers;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.LOGI;
+
 /**
  * Created by lodoss on 09/11/16.
  */
@@ -63,7 +65,7 @@ public class ChooseDeviceActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i(LOG_TAG, "onCreate()");
+        LOGI(LOG_TAG, "onCreate()");
         // inflate layout, create data binding and set model
         View root = DataBindingUtil.setContentView(this, R.layout.activity_pick_device).getRoot();
         activityBinding = DataBindingUtil.bind(root);
@@ -102,7 +104,7 @@ public class ChooseDeviceActivity extends AppCompatActivity implements
     public void onEvent(PresenterInstanceEvent instanceEvent) {
         if (null == presenter) {
             presenter = instanceEvent.getPresenter();
-            Log.i(LOG_TAG, "Initializing Activity for choosing device");
+            LOGI(LOG_TAG, "Initializing Activity for choosing device");
             init();
         }
     }
@@ -147,7 +149,7 @@ public class ChooseDeviceActivity extends AppCompatActivity implements
      */
 
     private void setupViewPager() {
-        Log.i(LOG_TAG, "Setting up ViewPager");
+        LOGI(LOG_TAG, "Setting up ViewPager");
         Adapter adapter = new Adapter(getSupportFragmentManager());
         // init all fragments here
         // fragment for device history
@@ -168,7 +170,7 @@ public class ChooseDeviceActivity extends AppCompatActivity implements
 
     @Override
     public void onDevicePicked(int fragmentType, DeviceInfoViewModel device) {
-        Log.i(LOG_TAG, "Device picked: " + device.getDeviceName() + " " +
+        LOGI(LOG_TAG, "Device picked: " + device.getDeviceName() + " " +
                 device.getDeviceAddress());
         Observable.defer(() -> Observable.just(device))
                 .subscribeOn(Schedulers.computation())

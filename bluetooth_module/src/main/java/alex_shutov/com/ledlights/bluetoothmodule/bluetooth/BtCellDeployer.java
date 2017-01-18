@@ -19,7 +19,10 @@ import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.di.BtStorageModule;
 import alex_shutov.com.ledlights.hex_general.CellDeployer;
 import alex_shutov.com.ledlights.hex_general.LogicCell;
 import alex_shutov.com.ledlights.hex_general.PortAdapterCreator;
+import alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils;
 import alex_shutov.com.ledlights.hex_general.di.SystemModule;
+
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.*;
 
 /**
  * Created by lodoss on 24/08/16.
@@ -75,7 +78,7 @@ public class BtCellDeployer extends CellDeployer {
     @Override
     public void connectPorts(LogicCell logicCell) {
         if (null == btScanAdapter){
-            Log.e(LOG_TAG, "DI did not work , something is broken");
+            LOGE(LOG_TAG, "DI did not work , something is broken");
             return;
         }
         BtLogicCell btCell = (BtLogicCell) logicCell;

@@ -44,7 +44,7 @@ public class DeviceCommPortAdapter extends Adapter implements DeviceCommPort,
 
     @Override
     public void onDataSent() {
-        Log.i("iosjoif", "oijsdofi");
+        
     }
 
     @Override

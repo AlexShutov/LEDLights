@@ -1,7 +1,6 @@
 package alex_shutov.com.ledlights.sensor;
 
 import android.content.Context;
-import android.hardware.SensorEvent;
 
 import alex_shutov.com.ledlights.sensor.filtering.Filter;
 

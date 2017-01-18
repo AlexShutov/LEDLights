@@ -18,6 +18,9 @@ import rx.subjects.PublishSubject;
 
 import static alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.esb.BtConnEsbStore.*;
 import static alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.esb.BtConnEsbStore.PortState.*;
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.LOGE;
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.LOGI;
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.LOGW;
 
 /**
  * Created by Alex on 11/5/2016.
@@ -118,7 +121,7 @@ public abstract class EstablishConnectionStrategy extends BtAlgorithm
      * @param dataProvider
      */
      protected void getDependenciesFromFacade(DataProvider dataProvider){
-        eventBus = dataProvider.provideEventBus();
+         eventBus = dataProvider.provideEventBus();
          historyDb = dataProvider.provideHistoryDatabase();
      }
 
@@ -132,12 +135,12 @@ public abstract class EstablishConnectionStrategy extends BtAlgorithm
                 .subscribeOn(Schedulers.io())
                 .subscribe(connectedDevice -> {
                     if (null == device){
-                        Log.e(LOG_TAG, "can't save last device history for null object");
+                        LOGE(LOG_TAG, "can't save last device history for null object");
                         return;
                     }
                     historyDb.setLastConnectedMotorcycleInfo(connectedDevice);
                     Long nowTime = System.currentTimeMillis();
-                    Log.i(LOG_TAG, "Saving device: " + connectedDevice.getDeviceName() +
+                    LOGI(LOG_TAG, "Saving device: " + connectedDevice.getDeviceName() +
                         " as last device, connected at: " + nowTime);
                     historyDb.setLastConnectionStartTime(nowTime);
                     // connection is just started, clear connection end time
@@ -157,7 +160,7 @@ public abstract class EstablishConnectionStrategy extends BtAlgorithm
 
     @Subscribe
     public void onEvent(ArgumentConnectionFailedEvent failedEvent){
-        Log.i(LOG_TAG, "Connection port told that connection attempt have failed");
+        LOGI(LOG_TAG, "Connection port told that connection attempt have failed");
         connResultPipe.onNext(false);
     }
 
@@ -169,7 +172,7 @@ public abstract class EstablishConnectionStrategy extends BtAlgorithm
     @Subscribe
     public void onEvent(ArgumentStateChangedEvent event){
         if (!event.isGeneralCallbackFired && event.portState == CONNECTED){
-            Log.i(LOG_TAG, "Device connected ");
+            LOGI(LOG_TAG, "Device connected ");
             connResultPipe.onNext(true);
         }
     }
@@ -221,7 +224,7 @@ public abstract class EstablishConnectionStrategy extends BtAlgorithm
         pendingConnectTask = trigger
                 .observeOn(Schedulers.computation())
                 .subscribe(connectedDevice -> {
-                    Log.i(LOG_TAG, "Connected to: " + connectedDevice.getDeviceName());
+                    LOGI(LOG_TAG, "Connected to: " + connectedDevice.getDeviceName());
                     // save device we just connected to as last connected device into history db.
                     updateLastConnectedDeviceRecord(connectedDevice);
                     // tell callback that connection is established
@@ -232,7 +235,7 @@ public abstract class EstablishConnectionStrategy extends BtAlgorithm
                     // call final action (abstract) - from concrete strategy
                     doOnConnectionSuccessful(connectedDevice);
                 }, error -> {
-                    Log.w(LOG_TAG, "Can't connect to device");
+                    LOGW(LOG_TAG, "Can't connect to device");
                     // attempt failed, don't touch history database.
                     doOnConnectionAttemptFailed();
                 });
@@ -266,12 +269,12 @@ public abstract class EstablishConnectionStrategy extends BtAlgorithm
         Observable.defer(() -> sendAttemptFailedEventTask)
                 .subscribe(t -> {
                     if (t) {
-                        Log.i(LOG_TAG, "callback notified of failure");
+                        LOGI(LOG_TAG, "callback notified of failure");
                         if (null != callback){
                             callback.onUnsupportedOperation();
                         }
                     } else {
-                        Log.w(LOG_TAG, "callback is null, can't tell it of failure");
+                        LOGW(LOG_TAG, "callback is null, can't tell it of failure");
                     }
                 });
     }

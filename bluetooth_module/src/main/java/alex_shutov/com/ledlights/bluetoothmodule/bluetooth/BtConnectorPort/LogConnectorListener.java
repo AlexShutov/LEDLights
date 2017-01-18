@@ -7,6 +7,8 @@ import android.widget.Toast;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtConnectorPort.hex.BtConnPortListener;
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.BtDevice;
 
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.LOGI;
+
 
 /**
  * Created by lodoss on 26/07/16.
@@ -29,31 +31,31 @@ public class LogConnectorListener implements BtConnPortListener {
     @Override
     public void onConnectionFailed() {
 //        showMessage("Connection failed");
-        Log.i(LOG_TAG, "Connection failed");
+        LOGI(LOG_TAG, "Connection failed");
     }
 
     @Override
     public void onStateChanged(int state) {
-        Log.i(LOG_TAG, "Bt state changed to: " + state);
+        LOGI(LOG_TAG, "Bt state changed to: " + state);
     }
 
     @Override
     public void onStateConnected() {
 //        showMessage("Connected");
-        Log.i(LOG_TAG, "Connected");
+        LOGI(LOG_TAG, "Connected");
     }
 
     @Override
     public void onStateConnecting() {
         String m = "Connecting";
-        Log.i(LOG_TAG, m);
+        LOGI(LOG_TAG, m);
 //        showMessage(m);
     }
 
     @Override
     public void onStateListening() {
         String m = "listening for connection";
-        Log.i(LOG_TAG, m);
+        LOGI(LOG_TAG, m);
 //        showMessage(m);
     }
 
@@ -61,7 +63,7 @@ public class LogConnectorListener implements BtConnPortListener {
     public void onStateIdle() {
         String m = "Bt doing nothing right now";
 //        showMessage(m);
-        Log.i(LOG_TAG, m);
+        LOGI(LOG_TAG, m);
     }
 
     @Override
@@ -69,13 +71,13 @@ public class LogConnectorListener implements BtConnPortListener {
         String msg = new String(message,0,  messageSize);
         String m = "Received " + messageSize + " bytes: " + msg;
 //        showMessage(m);
-        Log.i(LOG_TAG, m);
+        LOGI(LOG_TAG, m);
     }
 
     @Override
     public void onMessageSent() {
         String m = "Message sent";
-        Log.i(LOG_TAG, m);
+        LOGI(LOG_TAG, m);
 //        showMessage(m);
     }
 
@@ -85,7 +87,7 @@ public class LogConnectorListener implements BtConnPortListener {
                 btDevice.getDeviceUuIdInsecure();
         String m = "device connected: " +btDevice.getDeviceName() + " " + btDevice.getDeviceAddress() +
                 " " + uuid + " " + btDevice.getDeviceDescription();
-        Log.i(LOG_TAG, m);
+        LOGI(LOG_TAG, m);
 //        showMessage(m);
     }
 
@@ -93,20 +95,20 @@ public class LogConnectorListener implements BtConnPortListener {
     public void onConnectionLost() {
         String m = "Connection lost";
 //        showMessage(m);
-        Log.i(LOG_TAG, m);
+        LOGI(LOG_TAG, m);
     }
 
     @Override
     public void onPortReady(int portID) {
         String m = "Port is ready: " + portID;
-        Log.i(LOG_TAG, m);
+        LOGI(LOG_TAG, m);
 //        showMessage(m);
     }
 
     @Override
     public void onCriticalFailure(int portID, Exception e) {
         String m = "Critical failure has occured on port: " + portID ;
-        Log.i(LOG_TAG, m);
+        LOGI(LOG_TAG, m);
 //        showMessage(m);
     }
 

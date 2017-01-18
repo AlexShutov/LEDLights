@@ -4,6 +4,9 @@ import android.util.Log;
 
 import alex_shutov.com.ledlights.bluetoothmodule.bluetooth.logic.DataProvider;
 
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.LOGI;
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.LOGW;
+
 /**
  * Created by lodoss on 19/12/16.
  */
@@ -26,7 +29,7 @@ public class TransferManagerMock extends TransferManagerBase {
 
     @Override
     protected void start() {
-        Log.i(LOG_TAG, "Mock transfer manager is selected");
+        LOGI(LOG_TAG, "Mock transfer manager is selected");
     }
 
     @Override
@@ -40,7 +43,7 @@ public class TransferManagerMock extends TransferManagerBase {
 
     @Override
     public void sendData(byte[] data) {
-        Log.w(LOG_TAG, "Attempting to send data via mock transfer manager");
+        LOGW(LOG_TAG, "Attempting to send data via mock transfer manager");
         // consider data being sent
         getFeedback().onDataSent();
     }

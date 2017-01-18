@@ -16,6 +16,8 @@ import rx.Subscriber;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.LOGI;
+
 /**
  * Created by lodoss on 30/06/16.
  */
@@ -92,7 +94,7 @@ public class BTDeviceScanner {
         for (BluetoothDevice device : devices){
             logBluetoothDevice(device);
         }
-        Log.i(LOG_TAG, "There are " + devices.size() + " paired devices");
+        LOGI(LOG_TAG, "There are " + devices.size() + " paired devices");
         return devices;
     }
 
@@ -146,14 +148,14 @@ public class BTDeviceScanner {
      * @param device
      */
     private void logBluetoothDevice(BluetoothDevice device){
-        Log.i(LOG_TAG, "-----------------------------------------");
+        LOGI(LOG_TAG, "-----------------------------------------");
         String deviceName = device.getName();
-        Log.i(LOG_TAG, "Device name: " + deviceName);
+        LOGI(LOG_TAG, "Device name: " + deviceName);
         String deviceAddress = device.getAddress();
-        Log.i(LOG_TAG, "Device address: " + deviceAddress);
+        LOGI(LOG_TAG, "Device address: " + deviceAddress);
         BluetoothClass bc = device.getBluetoothClass();
         String bluetoothClass = bc == null ? "" : device.getBluetoothClass().toString();
-        Log.i(LOG_TAG, "Device bluetooth class: " + bluetoothClass);
+        LOGI(LOG_TAG, "Device bluetooth class: " + bluetoothClass);
     }
 
     /**
@@ -180,17 +182,17 @@ public class BTDeviceScanner {
             if (BluetoothDevice.ACTION_FOUND.equals(action)){
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 // handle device
-                Log.i(LOG_TAG, "-----------------------------------------");
-                Log.i(LOG_TAG, "discovered not paired device ");
+                LOGI(LOG_TAG, "-----------------------------------------");
+                LOGI(LOG_TAG, "discovered not paired device ");
                 logBluetoothDevice(device);
                 if (null != drain) {
                     drain.onNext(device);
                 }
 
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)){
-                Log.i(LOG_TAG, "discovery finished");
+                LOGI(LOG_TAG, "discovery finished");
                 if (btAdapter.isDiscovering()){
-                    Log.i(LOG_TAG, "Disabling discovery from broadcast receiver");
+                    LOGI(LOG_TAG, "Disabling discovery from broadcast receiver");
                 }
                 if (null != drain) {
                     drain.onCompleted();

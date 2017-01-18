@@ -21,6 +21,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.LOGI;
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.LOGW;
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 /**
@@ -89,7 +91,7 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
 
     @Override
     protected void onViewDetached() {
-        Log.i(LOG_TAG, "View detached");
+        LOGI(LOG_TAG, "View detached");
         severAllLinks();
         cachePairedDevices.clear();
     }
@@ -101,7 +103,7 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
 
     @Override
     protected void onModelDetached() {
-        Log.i(LOG_TAG, "Model detached");
+        LOGI(LOG_TAG, "Model detached");
         severAllLinks();
     }
 
@@ -129,7 +131,7 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
                 getModel().getDevicesFromConnectionHistory()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(devices -> {
-                    Log.i(LOG_TAG, devices.size() + " devices in history");
+                    LOGI(LOG_TAG, devices.size() + " devices in history");
                     sourceHistory.onNext(devices);
                 });
         return sourceHistory.asObservable().take(1);
@@ -143,7 +145,7 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
     public Observable<List<BtDevice>> queryListOfPairedDevices() {
         if (!cachePairedDevices.isEmpty()) {
             sourcePairedDevices.onNext(cachePairedDevices);
-            Log.i(LOG_TAG, cachePairedDevices.size() + " cached paired devices");
+            LOGI(LOG_TAG, cachePairedDevices.size() + " cached paired devices");
 //            getView().displayPairedSystemDevices(cachePairedDevices);
         } else {
             refreshPairedDevices();
@@ -229,7 +231,7 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
      */
     public void stopDiscovery() {
         if (isDiscoveryInProgress()) {
-            Log.w(LOG_TAG, "Attempting to start discovery while another discovery is in progress, " +
+            LOGW(LOG_TAG, "Attempting to start discovery while another discovery is in progress, " +
                     "aborting the old one");
             getModel().stopDiscovery();
             if (null != linkDeviceDiscovery && !linkDeviceDiscovery.isUnsubscribed()) {
@@ -260,7 +262,7 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
      * @param device
      */
     public void suggestConnectingAgainAfterAttemptFailed(BtDevice device) {
-        Log.i(LOG_TAG, "Suggesting to retry or get over with it");
+        LOGI(LOG_TAG, "Suggesting to retry or get over with it");
         ConnectionAttemptFailedEvent event = new ConnectionAttemptFailedEvent();
         event.setDevice(device);
         getEventBus().post(event);
@@ -271,7 +273,7 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
      */
 
     private void refreshPairedDevices() {
-        Log.i(LOG_TAG, "refreshPairedDevices()");
+        LOGI(LOG_TAG, "refreshPairedDevices()");
         // check if this operation requested already
         if (null != linkQueryPairedDevices && !linkQueryPairedDevices.isUnsubscribed()) {
             return;
@@ -282,7 +284,7 @@ public class AnotherDevicePresenter extends BasePresenter<AnotherDeviceModel, An
                 .getPairedSystemDevices()
                 .subscribeOn(Schedulers.io())
                 .map(devices -> {
-                    Log.i(LOG_TAG, "Refreshed: " + devices.size() + " paired devices");
+                    LOGI(LOG_TAG, "Refreshed: " + devices.size() + " paired devices");
                     cachePairedDevices.clear();
                     cachePairedDevices.addAll(devices);
                     return cachePairedDevices;

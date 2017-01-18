@@ -9,6 +9,8 @@ import alex_shutov.com.ledlights.hex_general.db.StorageManager;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.LOGI;
+
 /**
  * Created by lodoss on 11/10/16.
  */
@@ -23,7 +25,7 @@ public class BtDeviceStorageManager extends StorageManager {
         RealmConfiguration dbConfig = null;
         if (getDbFilename() == null || getDbFilename().equals("")){
             // db file name is not specified, use default configuration
-            Log.i(StorageManager.LOG_TAG, "File name not specified, using default configuration");
+            LOGI(StorageManager.LOG_TAG, "File name not specified, using default configuration");
             dbConfig = new RealmConfiguration.Builder(getContext()).build();
         } else {
             dbConfig = new RealmConfiguration.Builder(getContext())

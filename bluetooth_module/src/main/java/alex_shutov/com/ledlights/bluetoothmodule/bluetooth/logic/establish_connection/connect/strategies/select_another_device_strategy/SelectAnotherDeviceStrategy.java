@@ -25,6 +25,9 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.LOGI;
+import static alex_shutov.com.ledlights.hex_general.common.utils.impl.LogUtils.LOGW;
+
 /**
  * Created by Alex on 11/7/2016.
  */
@@ -84,7 +87,7 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
     @Override
     protected void doOnConnectionSuccessful(BtDevice device) {
         String message = "Device successfully connected: " + device.getDeviceName();
-        Log.i(LOG_TAG, message);
+        LOGI(LOG_TAG, message);
         // close Ui
         presenter.hideUi();
     }
@@ -96,7 +99,7 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
      */
     @Override
     protected void doOnConnectionAttemptFailed() {
-        Log.w(LOG_TAG, "Connection attempt failed");
+        LOGW(LOG_TAG, "Connection attempt failed");
         presenter.suggestConnectingAgainAfterAttemptFailed(selectedDevice);
     }
 
@@ -132,13 +135,13 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
 
     @Override
     public void onPortReady(int portID) {
-        Log.i(LOG_TAG, "onPortReady(" + portID + ")");
+        LOGI(LOG_TAG, "onPortReady(" + portID + ")");
 
     }
 
     @Override
     public void onCriticalFailure(int portID, Exception e) {
-        Log.i(LOG_TAG, "onCriticalFailure( portID: " + portID + ", error: " + e.getMessage());
+        LOGI(LOG_TAG, "onCriticalFailure( portID: " + portID + ", error: " + e.getMessage());
     }
 
     /**
@@ -241,7 +244,7 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
      */
     @Override
     public void onDeviceFound(BtDevice device) {
-        Log.i(LOG_TAG, "Bluetooth device found: " + device.getDeviceName());
+        LOGI(LOG_TAG, "Bluetooth device found: " + device.getDeviceName());
         discoveredDeviceVortex.onNext(device);
     }
 
@@ -250,7 +253,7 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
      */
     @Override
     public void onScanCompleted() {
-        Log.i(LOG_TAG, "Bluetooth discovery complete");
+        LOGI(LOG_TAG, "Bluetooth discovery complete");
         discoveredDeviceVortex.onCompleted();
     }
 
@@ -259,7 +262,7 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
      */
 
     private void cancelOngoingConnectionAttemptsAndDiscovery() {
-        Log.i(LOG_TAG, "Cancelling all Bluetooth activities before attempting to select another " +
+        LOGI(LOG_TAG, "Cancelling all Bluetooth activities before attempting to select another " +
                 "device");
         // cancel ongoing connection attempts
         if (isAttemptingToConnect()) {
@@ -277,7 +280,7 @@ public class SelectAnotherDeviceStrategy extends EstablishConnectionStrategy
      * @return
      */
     protected String getUUID(BtDevice device) {
-        Log.i(LOG_TAG, "Using UUID for HC-05 Bluetooth module");
+        LOGI(LOG_TAG, "Using UUID for HC-05 Bluetooth module");
         String uuid = BluetoothChatService.HC_05_UUID.toString();
         return uuid;
     }
