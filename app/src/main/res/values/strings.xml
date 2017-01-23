@@ -2,4 +2,44 @@
     <string name="app_name">LEDLights</string>
     <string name="uuid_secure">fa87c0d0-afac-11de-8a39-0800200c9a66</string>
     <string name="uuid_insecure">8ce255c0-200a-11e0-ac64-0800200c9a66</string>
+
+
+    <!-- Menu item to open the Explore screen [CHAR_LIMIT=20] -->
+    <string name="navdrawer_item_explore">Explore</string>
+
+    <!-- Accessibility description for menu item to open the Explore screen. -->
+    <string name="navdrawer_item_explore_a11y">Explore Google I/O</string>
+
+    <!-- Menu item to open the Map screen [CHAR_LIMIT=20] -->
+    <string name="navdrawer_item_map">Map</string>
+
+    <!-- Menu item to open the My Schedule screen [CHAR_LIMIT=20] -->
+    <string name="navdrawer_item_my_schedule">Schedule</string>
+
+    <!-- Menu item to open the Explore Screen with the Live I/O card [CHAR_LIMIT=20] -->
+    <string name="navdrawer_item_io_live">I/O Live</string>
+
+    <!-- Menu item to open the Settings screen [CHAR_LIMIT=20] -->
+    <string name="navdrawer_item_settings">Settings</string>
+
+    <!-- Menu item to start the Sign In flow [CHAR_LIMIT=20] -->
+    <string name="navdrawer_item_sign_in">Sign in</string>
+
+    <!-- Menu item to open a screen that lists I/O related hashtags. Each hashtag, when clicked, will
+    open Google+ stream of posts that uses the hashtag [CHAR_LIMIT=20] -->
+    <string name="navdrawer_item_social">Social</string>
+
+    <!-- Menu item to open a list of current and past I/O videos [CHAR_LIMIT=20] -->
+    <string name="navdrawer_item_video_library">Videos</string>
+
+    <!-- Menu item to open the debugging screen on debug builds [CHAR_LIMIT=20] -->
+    <string name="navdrawer_item_debug">Debug</string>
+
+    <!-- Accessibility description for a control that allows the user to close the current screen
+        and go back to the previous one. -->
+    <string name="close_and_go_back">Close and go back</string>
+
+    <!-- Accessibility description for navigation drawer -->
+    <string name="navdrawer_description_a11y">Navigation Menu</string>
+
 </resources>

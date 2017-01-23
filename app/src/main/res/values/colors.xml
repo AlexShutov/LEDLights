@@ -14,6 +14,36 @@
     <color name="text_dark">#616161</color>
 
 
+    <color name="navview_icon">#ff444444</color>
+
+    <!-- App Primary Text Colors (might be deprecated). -->
+    <color name="app_body_text_1">#de000000</color>
+    <color name="app_body_text_2">#8a000000</color>
+    <color name="app_body_text_disabled">#44000000</color>
+    <color name="app_body_text_1_inverse">#deffffff</color>
+    <color name="app_body_text_2_inverse">#8affffff</color>
+    <color name="flat_button_text">#ff0097a7</color>
+    <color name="text_on_primary">#ff004446</color>
+    <color name="subtitle_on_primary">#de004446</color>
+    <color name="unselected_tab_on_primary">#b3004446</color>
+    <color name="preferred_action">#b3000000</color>
+    <color name="about_link">#ff00a7b6</color>
+    <color name="dark_icon">#99000000</color>
+
+    <!-- start deprecated -->
+    <color name="body_text_1">#de000000</color>
+    <color name="body_text_2">#8a000000</color>
+    <color name="body_text_3">#60000000</color>
+    <color name="body_text_disabled">#44000000</color>
+
+    <!--Navdrawer colors-->
+    <color name="navdrawer_background">#ffffffff</color>
+    <color name="navdrawer_text_color">@color/body_text_1</color>
+    <color name="navdrawer_text_color_selected">@color/cyan_700</color>
+    <color name="navdrawer_icon_tint">#444</color>
+    <color name="navdrawer_icon_tint_selected">@color/cyan_700</color>
+    <color name="navdrawer_selected_item_background">#1a000000</color>
+
 
     <!-- Material Color Resources -->
     <color name="red_050">#fde0dc</color> <!-- Use with black text -->

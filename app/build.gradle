@@ -8,11 +8,22 @@ android {
 
     defaultConfig {
         applicationId "alex_shutov.com.ledlights"
-        minSdkVersion 14
         targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
+        versionCode = Integer.valueOf("" + appVersionCode).intValue()
+        versionName "${appVersionName}"
+        minSdkVersion 14
+
+        // Multidex is used since dev build types don't use minification (for faster builds). The
+        // release builds do use minificaton and only have a single dex file. If the release builds
+        // start using 2+ dex files we would need to look for opportunities to fix that for an app
+        // of this size. Multidex doesn't incur the long app startup time when more dex files
+        // doesn't exist in the APK.
+        multiDexEnabled true
+
+        vectorDrawables.useSupportLibrary = true
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -28,6 +39,23 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    packagingOptions {
+        // Exclude files to avoid packaging collisions (same file name in multiple dependencies).
+        exclude 'LICENSE.txt'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE-FIREBASE.txt'
+        exclude 'META-INF/NOTICE'
+    }
+
+    // Test Android jar comes with unimplemented methods that throw exceptions by default. This
+    // option forces the methods to return default values instead. Required for static methods,
+    // such as TextUtils, as those cannot be mocked with Mockito.
+    // Refer http://tools.android.com/tech-docs/unit-testing-support#TOC-Method-...-not-mocked.-
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+
 }
 
 repositories {
@@ -36,24 +64,25 @@ repositories {
     }
 }
 
-
-
 dependencies {
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.0.1'
-    compile 'com.android.support:design:23.1.1'
-    compile 'com.android.support:support-v4:23.0.1'
 
-    // Multidex support, because we project has more than one modules
-    compile 'com.android.support:multidex:1.0.0'
+    // Android support libraries.
+    compile "com.android.support:appcompat-v7:${android_support_lib_version}"
+    compile "com.android.support:cardview-v7:${android_support_lib_version}"
+    compile "com.android.support:design:${android_support_lib_version}"
+    compile "com.android.support:support-v13:${android_support_lib_version}"
+    compile "com.android.support:recyclerview-v7:${android_support_lib_version}"
+    compile "com.android.support:preference-v7:${android_support_lib_version}"
 
-    compile ('com.android.support:recyclerview-v7:23.0.1'){
+    // Glide library, used to handle asynchronous loading and caching of images.
+    compile 'com.github.bumptech.glide:glide:3.5.2'
+
+    compile ('com.android.support:recyclerview-v7:23.0.1') {
         exclude group: 'com.android.support', module: 'support-v4'
     }
-    // Multidex support, because we project has more than one modules
-    compile 'com.android.support:multidex:1.0.0'
 
     //Reactive / event-based programing
     compile 'io.reactivex:rxjava:1.0.13'
@@ -64,6 +93,35 @@ dependencies {
     compile 'com.google.dagger:dagger:2.0'
     apt 'com.google.dagger:dagger-compiler:2.0'
     provided 'org.glassfish:javax.annotation:10.0-b28'
+
+    // Dependencies for android tests which reside in the "androidTest" src folder.
+    androidTestCompile 'com.android.support.test:runner:0.5'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
+    androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2.2'
+    androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.2.2'
+    // Resolve conflicts between main and test APK:
+    androidTestCompile "com.android.support:support-annotations:${android_support_lib_version}"
+    androidTestCompile "com.android.support:recyclerview-v7:${android_support_lib_version}"
+    androidTestCompile "com.android.support:design:${android_support_lib_version}"
+
+    // Dependencies for unit tests which reside in the "tests" src folder.
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.hamcrest:hamcrest-core:1.3'
+    testCompile 'org.mockito:mockito-core:1.10.8'
+    testCompile 'org.powermock:powermock-api-mockito:1.6.4'
+    testCompile 'org.powermock:powermock-module-junit4-rule-agent:1.6.4'
+    testCompile 'org.powermock:powermock-module-junit4-rule:1.6.4'
+    testCompile 'org.powermock:powermock-module-junit4:1.6.4'
+    testCompile 'org.json:json:20090211'
+
+    // Added to resolve conflicts between the app build and the test build. The app build resolves
+    // the jsr305 dependency to version 1.3.9, but in the test build the espresso-core dependency
+    // resolves jsr305 to 2.0.1. Declaring a compile dependency on jsr305 2.0.1 will ensure 2.0.1 or
+    // greater is used for both app and test builds.
+    compile 'com.google.code.findbugs:jsr305:2.0.1'
+
+    compile 'com.google.guava:guava:18.0'
+    compile 'com.android.support:multidex:1.0.1'
 
     compile project(path: ':bluetooth_module')
     compile project(':device_commands_module')
