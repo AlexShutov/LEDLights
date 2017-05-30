@@ -97,6 +97,14 @@ public class MainActivity extends AppCompatActivity  implements EmulationCallbac
         binding.maBtnSendTestCommand.setOnClickListener(v -> {
             sendTestCommand();
         });
+
+        binding.maBtnRed.setOnClickListener(v -> changeColor(Color.RED));
+        binding.maBtnGreen.setOnClickListener(v -> changeColor(Color.GREEN));
+        binding.maBtnBlue.setOnClickListener(v -> changeColor(Color.BLUE));
+        int c = Color.argb(0xff, 255, 102, 0);
+//        int c = Color.argb(0xff, 102, 255, 51);
+        binding.maBtnFavoriteColor.setOnClickListener(v -> changeColor(c));
+        binding.maBtnRandomColor.setOnClickListener(v -> changeRandomColor());
     }
 
 
@@ -202,12 +210,23 @@ public class MainActivity extends AppCompatActivity  implements EmulationCallbac
 //        testSaveCommand();
     }
 
-    private void changeColor(){
+    private void changeRandomColor(){
         ChangeColorCommand command = new ChangeColorCommand();
         int color = Color.argb(0xff, r.nextInt(255), r.nextInt(255), r.nextInt(255));
         command.setColor(color);
         execute(command);
     }
+
+    /**
+     * Create command, changing LED color
+     * @param color desirable color
+     */
+    private void changeColor(int color){
+        ChangeColorCommand command = new ChangeColorCommand();
+        command.setColor(color);
+        execute(command);
+    }
+
 
     private void playSequence() {
         LightsSequenceCommand command = new LightsSequenceCommand();
@@ -220,12 +239,14 @@ public class MainActivity extends AppCompatActivity  implements EmulationCallbac
         Light l;
 
         l = new Light();
-        l.setColor(Color.RED);
+        int c1 = Color.argb(0xff, 102, 255, 51);
+        l.setColor(c1);
         l.setDuration(500);
         lightsSequence.addLight(l);
 
         l = new Light();
-        l.setColor(Color.BLUE);
+        int c2 = Color.argb(0xff, 204, 153, 0);
+        l.setColor(c2);
         l.setDuration(500);
         lightsSequence.addLight(l);
 
@@ -266,7 +287,7 @@ public class MainActivity extends AppCompatActivity  implements EmulationCallbac
 
         flash = new StrobeFlash();
         flash.setTimeOn(50);
-        flash.setTimeOff(300);
+        flash.setTimeOff(1000);
         sequence.addFlash(flash);
 
         execute(command);
